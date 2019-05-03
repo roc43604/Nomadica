@@ -9,7 +9,7 @@ namespace JModelling.JModelling
     /// <summary>
     /// The thing the player will be viewing the scene from. 
     /// </summary>
-    class Camera
+    public class Camera
     {
         /// <summary>
         /// How fast the camera will normally move.

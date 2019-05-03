@@ -93,7 +93,7 @@ namespace JModelling
 
             // TODO: Add your update logic here
             manager.Update();
-            
+
             base.Update(gameTime);
         }
 
@@ -104,6 +104,15 @@ namespace JModelling
         protected override void Draw(GameTime gameTime)
         {
             // TODO: Add your drawing code here
+            GraphicsDevice.Clear(Color.Green); 
+            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone);
+            {
+                spriteBatch.Draw(manager.GetSkyboxTexture(), new Rectangle(0, 0, Width, Height), Color.White);
+                spriteBatch.Draw(manager.GetWorldTexture(), new Rectangle(0, 0, Width, Height), Color.White);
+            }
+            spriteBatch.End();
+
+            //Console.WriteLine(1f / (float)(gameTime.ElapsedGameTime.TotalSeconds)); 
 
             base.Draw(gameTime);
         }

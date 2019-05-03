@@ -72,21 +72,31 @@
     <Reference Include="System.Net" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Game1.cs" />
     <Compile Include="GraphicsEngine\ImageReference.cs" />
     <Compile Include="GraphicsEngine\Painter.cs" />
+    <Compile Include="JModelling\Billboard.cs" />
     <Compile Include="JModelling\Camera.cs" />
     <Compile Include="JModelling\Controls.cs" />
+    <Compile Include="JModelling\Entity.cs" />
+    <Compile Include="JModelling\Hue.cs" />
     <Compile Include="JModelling\JManager.cs" />
+    <Compile Include="JModelling\Light.cs" />
     <Compile Include="JModelling\Load.cs" />
     <Compile Include="JModelling\Map.cs" />
+    <Compile Include="JModelling\MathExtensions.cs" />
     <Compile Include="JModelling\Matrix.cs" />
     <Compile Include="JModelling\Mesh.cs" />
+    <Compile Include="JModelling\Satellite.cs" />
+    <Compile Include="JModelling\SkyBox.cs" />
+    <Compile Include="JModelling\SkyboxTriangle.cs" />
+    <Compile Include="JModelling\ThreeDim.cs" />
     <Compile Include="JModelling\Triangle.cs" />
     <Compile Include="JModelling\Vec3.cs" />
     <Compile Include="JModelling\Vec4.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="JModelling\WeatherAndTime.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="Game1.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Game.ico" />

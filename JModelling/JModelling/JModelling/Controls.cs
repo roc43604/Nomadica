@@ -41,6 +41,11 @@ namespace JModelling.JModelling
         /// <summary>
         /// How fast the camera will look when the mouse is moved. 
         /// </summary>
-        public const int MouseSensitivity = 200; 
+        public const int MouseSensitivity = 200;
+
+        /// <summary>
+        /// Whether or not the player is using a light. 
+        /// </summary>
+        public const Keys LightButton = Keys.L; 
     }
 }

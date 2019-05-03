@@ -46,6 +46,25 @@ namespace JModelling.JModelling
         }
 
         /// <summary>
+        /// Creates a copy of this Vec3
+        /// </summary>
+        public Vec3 Clone()
+        {
+            return new Vec3(U, V, W);
+        }
+
+        /// <summary>
+        /// Divides the U, V, and W components of this vector 
+        /// by a float value. 
+        /// </summary>
+        public void DivideEquals(float val)
+        {
+            U /= val;
+            V /= val;
+            W /= val; 
+        }
+
+        /// <summary>
         /// Returns a printable version of this Vec3, which is
         /// just "(U, V, W)"
         /// </summary>

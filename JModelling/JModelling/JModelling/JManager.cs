@@ -15,7 +15,12 @@ namespace JModelling.JModelling
     /// </summary>
     public class JManager
     {
-        private const float PITimesTwo = (float)(Math.PI * 2d);
+        public const float PITimesTwo = (float)(Math.PI * 2d);
+
+        /// <summary>
+        /// The last keyboard state
+        /// </summary>
+        private KeyboardState lastKb; 
 
         /// <summary>
         /// The thing that this manager belongs to. 
@@ -68,7 +73,7 @@ namespace JModelling.JModelling
         /// How far away a polygon has to be before we
         /// draw its average color instead of its image.
         /// </summary>
-        private float AverageColorDrawDistance = 1f / 10f;
+        private float AverageColorDrawDistance = 1f;
 
         /// <summary>
         /// How many triangles are currently in this scene. 
@@ -81,12 +86,36 @@ namespace JModelling.JModelling
         /// </summary>
         private Matrix matProj;
 
+        private Billboard billboard;
+
+        /// <summary>
+        /// A test for day/night cycles. Represents the sun and the moon. 
+        /// </summary>
+        private Satellite[] satellites;
+
+        /// <summary>
+        /// A test for the skybox. 
+        /// </summary>
+        private SkyBox skybox;
+        private Mesh skyboxMesh;
+
+        private float NormalShadowImportance = 0.25f;
+        private float SunShadowImportance = 0.75f;
+
+        public Texture2D lastTexture;
+
+        public Light[] lights;
+        private bool turnOnLights; 
+
         /// <summary>
         /// Creates a manager that will construct necessary fields for use
         /// with the methods. 
         /// </summary>
         public JManager(Game host, int width, int height, GraphicsDeviceManager graphicsDeviceManager, SpriteBatch spriteBatch)
         {
+            // Assigns the last keyboard state
+            lastKb = Keyboard.GetState(); 
+
             // Assigns the host
             this.host = host; 
 
@@ -94,16 +123,25 @@ namespace JModelling.JModelling
             Width = width;
             Height = height;
 
-            DrawWidth = width / 4;
-            DrawHeight = height / 4;
+            DrawWidth = (int)(width / 3);
+            DrawHeight = (int)(height / 3);
 
             centerX = width / 2;
             centerY = height / 2;
 
             painter = new Painter(width, height, graphicsDeviceManager.GraphicsDevice, spriteBatch);
 
+            // Create the skybox test
+            skybox = new SkyBox(
+                new WeatherAndTime[] { WeatherAndTime.Day, WeatherAndTime.Night },
+                new string[] { @"Images/skybox", @"Images/night" },
+                2048,
+                1536);
+
             // Create the models
-            meshes = new Mesh[] { Load.Mesh(@"Content/Models/mountains.obj") };
+            meshes = new Mesh[] {
+                //new Mesh(skybox.Triangles),
+                Load.Mesh(@"Content/Models/mountains.obj") };
 
             numTriangles = 0;
             foreach (Mesh mesh in meshes)
@@ -122,6 +160,18 @@ namespace JModelling.JModelling
             // Set the last mouse's position. 
             lastMouseX = -1;
             lastMouseY = -1;
+
+            // Create the billboard test. 
+            billboard = new Billboard(Load.OneDimImage("Images/fire"), 64, 92);
+
+            // Create the satellite test.
+            satellites = new Satellite[2]; 
+            satellites[0] = new Satellite((float)(Math.PI / 60 / 10), Load.OneDimImage(@"Images/sun"), 2000, 2000, 0f, 500, 500, 300);
+            satellites[1] = new Satellite((float)(Math.PI / 60 / 10), Load.OneDimImage(@"Images/moon"), 1859, 1897, (float)(Math.PI), 500, 500, 800);
+
+            lights = new Light[1];
+            lights[0] = new Light(100f, null);
+            turnOnLights = false;  
         }
 
         /// <summary>
@@ -129,9 +179,27 @@ namespace JModelling.JModelling
         /// </summary>
         public void Update()
         {
-            UpdateInputs();
+            // TEST ILLUMINATION
+            float shadow = -0.347f * (satellites[0].Angle * satellites[0].Angle) + 1.091f * satellites[0].Angle - 0.028f;
+            if (shadow < 0) shadow = 0;
+            else if (shadow > 1) shadow = 1;
 
-            painter.Begin(DrawWidth, DrawHeight);
+            // Test hues
+            Hue hue = GetHue(satellites[0]);
+
+            Vec4 lightDirection = satellites[0].Loc;
+            lightDirection.Normalize(); 
+
+            UpdateInputs();
+            skybox.Update(camera.loc);
+
+            // Set light to player's location
+            lights[0].Loc = camera.loc; 
+
+            satellites[0].Step(camera.loc);
+            satellites[1].Step(camera.loc);
+
+            painter.CreateCanvas(DrawWidth, DrawHeight);
 
             float[,] depthBuffer = new float[DrawWidth, DrawHeight];
 
@@ -143,109 +211,184 @@ namespace JModelling.JModelling
             Matrix matView = Matrix.PointAt(camera.loc, target, new Vec4(0, 1, 0));
             matView.QuickInverse();
 
-            Triangle[] triangles = new Triangle[numTriangles];
-            int triIndex = 0;
+            Light[] activeLights = (turnOnLights) ? lights : new Light[] { }; 
 
             foreach (Mesh mesh in meshes)
             {
-                foreach (Triangle tri in mesh.Triangles)
+                DrawTrianglesToPainterCanvas(painter, depthBuffer, GetDrawableTrianglesFromMesh(mesh, hue, activeLights, matView, lightDirection, shadow)); 
+            }
+
+            foreach (Satellite satellite in satellites)
+            {
+                satellite.DrawToCanvas(
+                    camera, painter, depthBuffer,
+                    matView, matProj,
+                    DrawWidth, DrawHeight); 
+            }
+
+            lastTexture = painter.GetCanvas();
+            lastKb = Keyboard.GetState(); 
+        }
+
+        public Texture2D GetWorldTexture()
+        {
+            return lastTexture; 
+        }
+
+        public Texture2D GetSkyboxTexture()
+        {
+            painter.CreateCanvas(DrawWidth, DrawHeight);
+
+            Vec4 target = new Vec4(0, -camera.pitch, 1);
+            Vec4 lookDir = camera.GetLookDir(target);
+            target = camera.loc + lookDir;
+            camera.lookDir = lookDir;
+
+            Matrix matView = Matrix.PointAt(camera.loc, target, new Vec4(0, 1, 0));
+            matView.QuickInverse();
+
+            skybox.DrawToCanvas(painter, camera, matView, matProj, DrawWidth, DrawHeight, GetHue(satellites[0])); 
+            
+            return painter.GetCanvas(); 
+        }
+
+        private List<Triangle> GetDrawableTrianglesFromMesh(Mesh mesh, Hue hue, Light[] activeLights, Matrix matView, Vec4 lightDirection, float shadow)
+        {
+            List<Triangle> unclippedTriangles = new List<Triangle>();
+
+            Random random = new Random(); 
+            foreach (Triangle original in mesh.Triangles)
+            {
+                // Get ray from triangle to camera
+                Vec4 cameraRay = original.Points[0] - camera.loc;
+
+                // If ray is aligned with normal, then triangle is visible
+                if (Vec4.DotProduct(original.Normal, cameraRay) < 0)
                 {
-                    // Get ray from triangle to camera
-                    Vec4 cameraRay = tri.Points[0] - camera.loc;
+                    // ILLUMINATION TEST
+                    float alpha = 0;
 
-                    // If ray is aligned with normal, then triangle is visible
-                    if (Vec4.DotProduct(tri.Normal, cameraRay) < 0)
+                    // Clone triangle so we can edit and not need to make new
+                    // triangle objects.
+                    Triangle tri = original.Clone();
+
+                    switch (hue.Status)
                     {
-                        // Convert World Space to View Space
-                        Triangle triViewed = new Triangle(
-                            matView * tri.Points[0],
-                            matView * tri.Points[1],
-                            matView * tri.Points[2],
-                            tri.Texels[0],
-                            tri.Texels[1],
-                            tri.Texels[2],
-                            tri.Color,
-                            tri.Image);
+                        case (WeatherAndTime.Day):
+                            alpha = Math.Max(0.2f, Vec4.DotProduct(lightDirection, original.Normal));
+                            alpha = alpha * SunShadowImportance + shadow * NormalShadowImportance;
+                            tri.Color = Color.Lerp(tri.Color, hue.Color, hue.Amount);
+                            break;
 
-                        // Clip viewed triangle against near plane (this could
-                        // form two additional triangles)
-                        Triangle[] clipped = Vec4.TriangleClipAgainstPlane(
-                            new Vec4(0, 0, 0.1f),
-                            new Vec4(0, 0, 1),
-                            triViewed);
+                        case (WeatherAndTime.Night):
+                            alpha = Vec4.DotProduct(new Vec4(0, 1, 0), original.Normal) / 4;
+                            tri.Color = Color.Lerp(tri.Color, hue.Color, hue.Amount);
+                            break;
 
-                        foreach (Triangle clippedTri in clipped)
+                        case (WeatherAndTime.Dusk):
+                            float dayAlpha = Math.Max(0.2f, Vec4.DotProduct(lightDirection, original.Normal));
+                            dayAlpha = dayAlpha * SunShadowImportance + shadow * NormalShadowImportance;
+                            float nightAlpha = Vec4.DotProduct(new Vec4(0, 1, 0), original.Normal) / 4;
+
+                            alpha = (1f - hue.Amount) * dayAlpha + hue.Amount * nightAlpha;
+
+                            break;
+
+                        case (WeatherAndTime.Dawn):
+                            dayAlpha = Math.Max(0.2f, Vec4.DotProduct(lightDirection, original.Normal));
+                            dayAlpha = dayAlpha * SunShadowImportance + shadow * NormalShadowImportance;
+                            nightAlpha = Vec4.DotProduct(new Vec4(0, 1, 0), original.Normal) / 4;
+
+                            alpha = (1f - hue.Amount) * nightAlpha + hue.Amount * dayAlpha;
+
+                            break;
+                    }
+
+                    foreach (Light light in activeLights)
+                    {
+                        float dist = MathExtensions.Dist(lights[0].Loc, Vec4.Average(new Vec4[] { tri.Points[0], tri.Points[1], tri.Points[2] }));
+                        if (dist <= light.DistAway + light.DistAway / 5)
                         {
-                            // Project triangle from 3D to 2D
-                            Vec4 a = clippedTri.Points[0] * matProj;
-                            Vec4 b = clippedTri.Points[1] * matProj;
-                            Vec4 c = clippedTri.Points[2] * matProj;
-                            Triangle triProjected = new Triangle(
-                                a, b, c,
-                                new Vec3(
-                                    clippedTri.Texels[0].U / a.W,
-                                    clippedTri.Texels[0].V / a.W,
-                                    1f / a.W),
-                                new Vec3(
-                                    clippedTri.Texels[1].U / b.W,
-                                    clippedTri.Texels[1].V / b.W,
-                                    1f / b.W),
-                                new Vec3(
-                                    clippedTri.Texels[2].U / c.W,
-                                    clippedTri.Texels[2].V / c.W,
-                                    1f / c.W),
-                                clippedTri.Color,
-                                clippedTri.Image);
+                            // Light polygons depending on distance to light.
+                            float lightAlpha = light.CalcAlphaFromDist(dist);
 
-                            // Scale into view 
-                            triProjected.Points[0] = triProjected.Points[0] / triProjected.Points[0].W;
-                            triProjected.Points[1] = triProjected.Points[1] / triProjected.Points[1].W;
-                            triProjected.Points[2] = triProjected.Points[2] / triProjected.Points[2].W;
-
-                            // X/Y are inverted so put them back 
-                            triProjected.Points[0].X *= -1;
-                            triProjected.Points[1].X *= -1;
-                            triProjected.Points[2].X *= -1;
-                            triProjected.Points[0].Y *= -1;
-                            triProjected.Points[1].Y *= -1;
-                            triProjected.Points[2].Y *= -1;
-
-                            // Offset verts into visible normalized space 
-                            Vec4 offsetView = new Vec4(1, 1, 0);
-                            triProjected.Points[0] = triProjected.Points[0] + offsetView;
-                            triProjected.Points[1] = triProjected.Points[1] + offsetView;
-                            triProjected.Points[2] = triProjected.Points[2] + offsetView;
-
-                            triProjected.Points[0].X *= 0.5f * DrawWidth; triProjected.Points[0].Y *= 0.5f * DrawHeight;
-                            triProjected.Points[1].X *= 0.5f * DrawWidth; triProjected.Points[1].Y *= 0.5f * DrawHeight;
-                            triProjected.Points[2].X *= 0.5f * DrawWidth; triProjected.Points[2].Y *= 0.5f * DrawHeight;
-
-                            triProjected.ClosestDist = triProjected.Texels[0].W;
-                            if (triProjected.Texels[1].W < triProjected.ClosestDist)
+                            if (lightAlpha > 0.2)
                             {
-                                triProjected.ClosestDist = triProjected.Texels[1].W;
-                            }
-                            if (triProjected.Texels[2].W < triProjected.ClosestDist)
-                            {
-                                triProjected.ClosestDist = triProjected.Texels[2].W;
-                            }
+                                // Average light and alpha together. 
+                                alpha = (alpha + lightAlpha) / 2;
 
-                            // Illumination
-                            float alpha = Math.Max(0, (float)(1 - Dist(camera.loc, tri.Points[0]) / 160));
-                            triProjected.Alpha = alpha;
-
-                            triangles[triIndex++] = triProjected;
+                                tri.Color = Color.Lerp(tri.Color, Color.Yellow, alpha);
+                            }
                         }
+                    }
+
+                    // Convert World Space to View Space
+                    tri.TimesEquals(matView);
+
+                    // Clip viewed triangle against near plane (this could
+                    // form two additional triangles)
+                    Triangle[] clipped = Vec4.TriangleClipAgainstPlane(
+                        new Vec4(0, 0, 0.1f),
+                        new Vec4(0, 0, 1),
+                        tri);
+
+                    foreach (Triangle clippedTri in clipped)
+                    {
+                        // Project triangle from 3D to 2D
+                        clippedTri.TimesEquals(matProj);
+                        clippedTri.DivideTexel(0, clippedTri.Points[0].W);
+                        clippedTri.DivideTexel(1, clippedTri.Points[1].W);
+                        clippedTri.DivideTexel(2, clippedTri.Points[2].W);
+
+                        // Scale into view 
+                        clippedTri.Points[0].DivideEquals(clippedTri.Points[0].W);
+                        clippedTri.Points[1].DivideEquals(clippedTri.Points[1].W);
+                        clippedTri.Points[2].DivideEquals(clippedTri.Points[2].W);
+
+                        // X/Y are inverted so put them back 
+                        clippedTri.Points[0].X *= -1;
+                        clippedTri.Points[1].X *= -1;
+                        clippedTri.Points[2].X *= -1;
+                        clippedTri.Points[0].Y *= -1;
+                        clippedTri.Points[1].Y *= -1;
+                        clippedTri.Points[2].Y *= -1;
+
+                        // Offset verts into visible normalized space 
+                        Vec4 offsetView = new Vec4(1, 1, 0);
+                        clippedTri.Points[0].PlusEquals(offsetView);
+                        clippedTri.Points[1].PlusEquals(offsetView);
+                        clippedTri.Points[2].PlusEquals(offsetView);
+
+                        clippedTri.Points[0].X *= 0.5f * DrawWidth; clippedTri.Points[0].Y *= 0.5f * DrawHeight;
+                        clippedTri.Points[1].X *= 0.5f * DrawWidth; clippedTri.Points[1].Y *= 0.5f * DrawHeight;
+                        clippedTri.Points[2].X *= 0.5f * DrawWidth; clippedTri.Points[2].Y *= 0.5f * DrawHeight;
+
+                        clippedTri.ClosestDist = clippedTri.Texels[0].W;
+                        if (clippedTri.Texels[1].W < clippedTri.ClosestDist)
+                        {
+                            clippedTri.ClosestDist = clippedTri.Texels[1].W;
+                        }
+                        if (clippedTri.Texels[2].W < clippedTri.ClosestDist)
+                        {
+                            clippedTri.ClosestDist = clippedTri.Texels[2].W;
+                        }
+
+                        // Illumination
+                        // float alpha = Math.Max(0, (float)(1 - Dist(camera.loc, tri.Points[0]) / 160));
+                        clippedTri.Alpha = alpha;
+
+                        unclippedTriangles.Add(clippedTri);
                     }
                 }
             }
 
-            for (int index = 0; index < triIndex; index++)
+            List<Triangle> drawableTriangles = new List<Triangle>();
+            foreach (Triangle triangle in unclippedTriangles)
             {
                 Queue<Triangle> listTriangles = new Queue<Triangle>();
                 int nNewTriangles = 1;
 
-                listTriangles.Enqueue(triangles[index]);
+                listTriangles.Enqueue(triangle);
                 for (int p = 0; p < 4; p++)
                 {
                     while (nNewTriangles > 0)
@@ -298,9 +441,22 @@ namespace JModelling.JModelling
                     nNewTriangles = listTriangles.Count;
                 }
 
-                foreach (Triangle t in listTriangles)
+                foreach (Triangle tri in listTriangles)
                 {
-                    if(t.ClosestDist < AverageColorDrawDistance)
+                    // REFACTOR THIS: add queues to the list instead of individual triangles,
+                    // Check to see if it flows well with garbage collector. 
+                    drawableTriangles.Add(tri);
+                }
+            }
+
+            return drawableTriangles;
+        }
+
+        private void DrawTrianglesToPainterCanvas(Painter painter, float[,] depthBuffer, List<Triangle> triangles)
+        {
+            foreach (Triangle t in triangles)
+            {
+                if (t.ClosestDist < AverageColorDrawDistance)
                     UntexturedTriangle(
                         (int)t.Points[0].X, (int)t.Points[0].Y,
                         (int)t.Points[1].X, (int)t.Points[1].Y,
@@ -312,7 +468,7 @@ namespace JModelling.JModelling
                         painter,
                         t.ClosestDist,
                         depthBuffer);
-                    else
+                else
                     TexturedTriangle(
                         (int)t.Points[0].X, (int)t.Points[0].Y,
                         (int)t.Points[1].X, (int)t.Points[1].Y,
@@ -323,23 +479,53 @@ namespace JModelling.JModelling
                         t.Alpha,
                         t.Image,
                         painter,
-                        depthBuffer); 
+                        depthBuffer);
 
-                    //Polygon((int)t.Points[0].X, (int)t.Points[0].Y,
-                    //        (int)t.Points[1].X, (int)t.Points[1].Y,
-                    //        (int)t.Points[2].X, (int)t.Points[2].Y);
-                }
+                //Polygon((int)t.Points[0].X, (int)t.Points[0].Y,
+                //        (int)t.Points[1].X, (int)t.Points[1].Y,
+                //        (int)t.Points[2].X, (int)t.Points[2].Y);
             }
-
-            painter.DrawToScreen(painter.GetCanvas());
         }
 
-        private double Dist(Vec4 a, Vec4 b)
-        {
-            return Math.Sqrt(
-                Math.Pow(a.X - b.X, 2) +
-                Math.Pow(a.Y - b.Y, 2) +
-                Math.Pow(a.Z - b.Z, 2));
+        private Hue GetHue(Satellite sun)
+        { 
+            float sunAngleLoc = sun.Angle;
+
+            // Dawn
+            if (sunAngleLoc > Hue.DawnStart)
+            {
+                return new Hue(new Color(0, 0, 0, 0), WeatherAndTime.Dawn, (sunAngleLoc - Hue.DawnStart) / Hue.DawnLength, false);
+            }
+            else if (sunAngleLoc < Hue.DawnEndWrapped)
+            {
+                float sunAngleTemp = sunAngleLoc + PITimesTwo;
+                return new Hue(new Color(0, 0, 0, 0), WeatherAndTime.Dawn, (sunAngleTemp - Hue.DawnStart) / Hue.DawnLength, false);
+            }
+
+            // Day
+            else if (sunAngleLoc > Hue.DayStart && sunAngleLoc < Hue.DayEnd)
+            {
+                return new Hue(Color.Yellow, WeatherAndTime.Day, 0f, true);
+            } 
+
+            // Dusk
+            else if (sunAngleLoc < Hue.DuskEnd)
+            {
+                return new Hue(new Color(0, 0, 0, 0), WeatherAndTime.Dusk, (sunAngleLoc - Hue.DuskStart) / Hue.DuskLength, true); 
+            }
+
+            // Night
+            else if (sunAngleLoc < Hue.NightEnd)
+            {
+                float amount = -0.360f * (sunAngleLoc * sunAngleLoc) + 3.395f * sunAngleLoc - 7.5f; 
+                return new Hue(Hue.NightColor, WeatherAndTime.Night, amount, false); 
+            }
+
+            // Not implemented
+            else
+            {
+                return null; 
+            }
         }
 
         private void Polygon(int x1, int y1, int x2, int y2, int x3, int y3)
@@ -727,7 +913,7 @@ namespace JModelling.JModelling
                         texU = (1f - t) * texSu + t * texEu;
                         texV = (1f - t) * texSv + t * texEv;
                         texW = (1f - t) * texSw + t * texEw;
-
+                        
                         if (texW > depthBuffer[j, i])
                         {
                             int spriteLocU = (int)(texU / texW * (sprite.GetLength(0) - 1));
@@ -800,10 +986,16 @@ namespace JModelling.JModelling
             }
 
             // If Tab is pressed, unfocus/focus the mouse. 
-            else if (kb.IsKeyDown(Controls.FocusOrUnfocusMouse))
+            else if (kb.IsKeyDown(Controls.FocusOrUnfocusMouse) && lastKb.IsKeyUp(Controls.FocusOrUnfocusMouse))
             {
                 isMouseFocused = !isMouseFocused;
                 host.IsMouseVisible = !isMouseFocused;
+            }
+
+            // If LightButton is pressed, turn on/off the light.
+            else if (kb.IsKeyDown(Controls.LightButton) && lastKb.IsKeyUp(Controls.LightButton))
+            {
+                turnOnLights = !turnOnLights; 
             }
         }
 

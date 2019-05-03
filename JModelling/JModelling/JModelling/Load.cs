@@ -52,8 +52,8 @@ namespace JModelling.JModelling
         public static Mesh Mesh(string fileName, float scale, float locX, float locY, float locZ)
         {
             // Loads the images the mesh will use.
-            Color[,] grass = Image(@"Images/grass");
-            Color[,] stone = Image(@"Images/stone"); 
+            Color[,] grass = TwoDimImage(@"Images/grass");
+            Color[,] stone = TwoDimImage(@"Images/stone"); 
 
             // Creates the system that will be reading the file. 
             StreamReader reader = null;
@@ -135,11 +135,27 @@ namespace JModelling.JModelling
             return (float)Math.Acos(Vec4.DotProduct(one, two)); 
         }
 
-        public static Color[,] Image(string fileName)
+        /// <summary>
+        /// Loads an image into a one-dimensional array of colors. 
+        /// </summary>
+        public static Color[] OneDimImage(string fileName)
         {
             Texture2D tex = content.Load<Texture2D>(fileName);
 
-            Color[] oneDimArray = new Color[tex.Width * tex.Height]; 
+            Color[] oneDimArray = new Color[tex.Width * tex.Height];
+            tex.GetData<Color>(oneDimArray);
+
+            return oneDimArray; 
+        }
+
+        /// <summary>
+        /// Loads an image into a two-dimensional array of colors.
+        /// </summary>
+        public static Color[,] TwoDimImage(string fileName)
+        {
+            Texture2D tex = content.Load<Texture2D>(fileName);
+
+            Color[] oneDimArray = new Color[tex.Width * tex.Height];
             tex.GetData<Color>(oneDimArray);
 
             Color[,] twoDimArray = new Color[tex.Width, tex.Height]; 

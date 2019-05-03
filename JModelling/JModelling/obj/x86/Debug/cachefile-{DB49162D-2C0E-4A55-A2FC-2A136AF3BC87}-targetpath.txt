@@ -1,6 +1,12 @@
 Content\Images\grass.xnb
 Content\Images\stone.xnb
+Content\Images\fire.xnb
+Content\Images\moon.xnb
+Content\Images\night.xnb
+Content\Images\skybox.xnb
+Content\Images\sun.xnb
 Content\Models\cow.obj
+Content\Models\cube.obj
 Content\Models\mountains.obj
 Content\Models\polygon.obj
 Content\Models\teapot.obj

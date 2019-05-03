@@ -12,7 +12,7 @@ namespace GraphicsEngine
     /// When drawing something, call Begin(), perform all of the tasks you 
     /// want (i.e. DrawImage() or DrawString()), and call End().   
     /// </summary>
-    class Painter
+    public class Painter
     {
         /// <summary>
         /// The dimensions of the screen this Painter is drawing
@@ -29,7 +29,7 @@ namespace GraphicsEngine
         /// <summary>
         /// What we're drawing on/with. 
         /// </summary>
-        private Color[] canvas;
+        public Color[] canvas;
 
         /// <summary>
         /// Performs rendering, creates resources, handles variables, etc.
@@ -46,6 +46,11 @@ namespace GraphicsEngine
         private SpriteBatch spriteBatch;
 
         /// <summary>
+        /// The thing we're drawing to for the finished canvas. 
+        /// </summary>
+        private Texture2D image; 
+
+        /// <summary>
         /// Creates a default Painter object.
         /// </summary>
         public Painter(int width, int height, GraphicsDevice graphicsDevice, SpriteBatch spriteBatch)
@@ -56,14 +61,10 @@ namespace GraphicsEngine
             this.spriteBatch = spriteBatch; 
         }
 
-        /// <summary>
-        /// Tells the program to start accepting what you want to draw. 
-        /// This must be called before you begin drawing. 
-        /// </summary>
-        public void Begin(int drawWidth, int drawHeight)
+        public void CreateCanvas(int drawWidth, int drawHeight)
         {
             this.drawWidth = drawWidth;
-            this.drawHeight = drawHeight; 
+            this.drawHeight = drawHeight;
             canvas = new Color[drawWidth * drawHeight];
         }
 
@@ -72,24 +73,10 @@ namespace GraphicsEngine
         /// </summary>
         public Texture2D GetCanvas()
         {
-            graphicsDevice.Textures[0] = null;
-
-            Texture2D image = new Texture2D(graphicsDevice, drawWidth, drawHeight);
+            image = new Texture2D(graphicsDevice, drawWidth, drawHeight);
             image.SetData<Color>(canvas);
 
-            return image; 
-        }
-
-        /// <summary>
-        /// Draws 
-        /// </summary>
-        public void DrawToScreen(Texture2D texture)
-        {
-            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone); 
-            {
-                spriteBatch.Draw(texture, new Rectangle(0, 0, width, height), Color.White);
-            }
-            spriteBatch.End(); 
+            return image;
         }
 
         /// <summary>
@@ -102,6 +89,15 @@ namespace GraphicsEngine
             Color[] data = new Color[image.Width * image.Height];
             image.GetData<Color>(data);
 
+            DrawImage(data, image.Width, image.Height, location); 
+        }
+
+        /// <summary>
+        /// Draws an image at the specified location. The image can be
+        /// any size at any location. 
+        /// </summary>
+        public void DrawImage(Color[] data, int imageWidth, int imageHeight, Rectangle location)
+        {
             // Gets the bounds of the area we're drawing to. Sometimes, the programmer
             // may supply an area that is out-of-bounds; as such, we would need to crop
             // it to fit on the screen. 
@@ -109,53 +105,140 @@ namespace GraphicsEngine
             int endRow = location.Y + location.Height,
                 endCol = location.X + location.Width;
 
-            int startRow = location.Y; 
-            if(startRow < 0) // Above the top of the screen
+            int startRow = location.Y;
+            if (startRow < 0) // Above the top of the screen
             {
                 // Gets a percentage of how much of the location we cropped off, 
                 // and applys it to the image rectangle as well. 
-                float diff = 100f / (float)location.Height * (0 - startRow); 
-                imageY = image.Height / 100 * diff;
+                float diff = 100f / (float)location.Height * (0 - startRow);
+                imageY = imageHeight / 100 * diff;
                 startRow = 0;
             }
 
-            if(endRow > height)
+            if (endRow > height-1)
             {
                 float diff = 100f / (float)location.Height * (endRow - height);
-                imageY = image.Height / 100 * diff;
-                endRow = height;
+                imageY = imageHeight / 100 * diff;
+                endRow = height-1;
             }
 
-            int startCol = location.X; 
-            if(startCol < 0)
+            int startCol = location.X;
+            if (startCol < 0)
             {
                 float diff = 100f / (float)location.Width * (0 - startCol);
-                imageStartX = image.Width / 100 * diff;
-                startCol = 0; 
+                imageStartX = imageWidth / 100 * diff;
+                startCol = 0;
             }
 
-            if(endCol > width)
+            if (endCol > width-1)
             {
                 float diff = 100f / (float)location.Width * (endCol - width);
-                imageStartX = image.Width / 100 * diff;
-                endCol = width; 
+                imageStartX = imageWidth / 100 * diff;
+                endCol = width-1;
             }
 
             // These represent how many image pixels pass for every screen pixel. 
-            float mx = (float)image.Width / (float)location.Width, my = (float)image.Height / (float)location.Height;
+            float mx = (float)imageWidth / (float)location.Width, my = (float)imageHeight / (float)location.Height;
 
             // Goes through each pixel we would draw to, and finds out what texture
             // color we would place there.
-            float imageX; 
-            for(int row = startRow; row < endRow; row++)
+            float imageX;
+            for (int row = startRow; row < endRow; row++)
             {
-                imageX = imageStartX; 
-                for(int col = startCol; col < endCol; col++)
+                imageX = imageStartX;
+                for (int col = startCol; col < endCol; col++)
                 {
-                    canvas[row * drawWidth + col] = data[(int)imageY * image.Width + (int)imageX];
+                    int canvasIndex = row * drawWidth + col;
+                    int dataIndex = (int)imageY * imageWidth + (int)imageX; 
+
+                    // If the indices are in bounds, we can set the pixels. 
+                    if (canvasIndex >= 0 && canvasIndex < canvas.Length && 
+                        dataIndex >= 0 && dataIndex < data.Length)
+                    {
+                        SetPixel(canvasIndex, data[dataIndex]);
+                    }
+                    
                     imageX += mx;
                 }
-                imageY += my; 
+                imageY += my;
+            }
+        }
+
+        /// <summary>
+        /// Draws the image with a supplied depth buffer 
+        /// </summary>
+        public void DrawImage(Color[] data, int imageWidth, int imageHeight, Rectangle location, float[,] depthBuffer, float depth)
+        {
+            // Gets the bounds of the area we're drawing to. Sometimes, the programmer
+            // may supply an area that is out-of-bounds; as such, we would need to crop
+            // it to fit on the screen. 
+            float imageY = 0, imageStartX = 0; // texture coords
+            int endRow = location.Y + location.Height,
+                endCol = location.X + location.Width;
+
+            int startRow = location.Y;
+            if (startRow < 0) // Above the top of the screen
+            {
+                // Gets a percentage of how much of the location we cropped off, 
+                // and applys it to the image rectangle as well. 
+                float diff = 100f / (float)location.Height * (0 - startRow);
+                imageY = imageHeight / 100 * diff;
+                startRow = 0;
+            }
+
+            if (endRow > height - 1)
+            {
+                float diff = 100f / (float)location.Height * (endRow - height);
+                imageY = imageHeight / 100 * diff;
+                endRow = height - 1;
+            }
+
+            int startCol = location.X;
+            if (startCol < 0)
+            {
+                float diff = 100f / (float)location.Width * (0 - startCol);
+                imageStartX = imageWidth / 100 * diff;
+                startCol = 0;
+            }
+
+            if (endCol > width - 1)
+            {
+                float diff = 100f / (float)location.Width * (endCol - width);
+                imageStartX = imageWidth / 100 * diff;
+                endCol = width - 1;
+            }
+
+            // These represent how many image pixels pass for every screen pixel. 
+            float mx = (float)imageWidth / (float)location.Width, my = (float)imageHeight / (float)location.Height;
+
+            // Goes through each pixel we would draw to, and finds out what texture
+            // color we would place there.
+            float imageX;
+            for (int row = startRow; row < endRow; row++)
+            {
+                imageX = imageStartX;
+                for (int col = startCol; col < endCol; col++)
+                {
+                    int canvasIndex = row * drawWidth + col;
+                    int dataIndex = (int)imageY * imageWidth + (int)imageX;
+
+                    // If the indices are in bounds, we can set the pixels. 
+                    if (canvasIndex >= 0 && canvasIndex < canvas.Length &&
+                        dataIndex >= 0 && dataIndex < data.Length &&
+                        col >= 0 && col < depthBuffer.GetLength(0) &&
+                        row >= 0 && row < depthBuffer.GetLength(1))
+                    {
+                        // Checks if the depth makes this pixel visible
+                        if (depth > depthBuffer[col, row])
+                        {
+                            SetPixel(canvasIndex, data[dataIndex]);
+                            depthBuffer[col, row] = depth;
+                        }
+                    }
+
+                    imageX += mx;
+                }
+                imageY += my;
             }
         }
 
@@ -247,18 +330,81 @@ namespace GraphicsEngine
         /// <summary>
         /// Sets the pixel at (x,y) to the specified color.
         /// </summary>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        /// <param name="color"></param>
         public void SetPixel(int x, int y, Color color)
         {
-            canvas[y * drawWidth + x] = color;
+            int index = y * drawWidth + x;
+            SetPixel(index, color); 
         }
 
-        //public void DrawLine(Line line, Color color)
-        //{
-        //    DrawLine(line.A.X, line.A.Y, line.B.X, line.B.Y, color); 
-        //}
+        /// <summary>
+        /// Sets the pixel at the index of the array to the 
+        /// specified color. 
+        /// </summary>
+        private void SetPixel(int index, Color color)
+        {
+            if (color.A != 255 && canvas[index] != null)
+            {
+                canvas[index] = Color.Lerp(canvas[index], color, color.A / 255f);
+            }
+            else
+            {
+                canvas[index] = color;
+            }
+        }
+
+        public Color GetPixel(int x, int y)
+        {
+            return canvas[y * drawWidth + x]; 
+        }
+
+        private static Color RGBToHSV(Color color)
+        {
+            // Taken from https://www.programmingalgorithms.com/algorithm/rgb-to-hsv
+            double delta, min;
+            double h = 0, s, v;
+
+            min = Math.Min(Math.Min(color.R, color.G), color.B);
+            v = Math.Max(Math.Max(color.R, color.G), color.B);
+            delta = v - min; 
+
+            if (v == 0)
+            {
+                s = 0; 
+            }
+            else
+            {
+                s = delta / v; 
+            }
+
+            if (s == 0)
+            {
+                h = 0; 
+            }
+            else
+            {
+                if (color.R == v)
+                {
+                    h = (color.G - color.B) / delta; 
+                }
+                else if (color.G == v)
+                {
+                    h = 2 + (color.B - color.R) / delta; 
+                }
+                else if (color.B == v)
+                {
+                    h = 4 + (color.R - color.G) / delta; 
+                }
+
+                h *= 60; 
+
+                if (h < 0)
+                {
+                    h += 360; 
+                }
+            }
+
+            return new Color((int)h, (int)s, (int)(v / 255f)); 
+        }
 
         /// <summary>
         /// Draws a line from (x1,y1) to (x2,y2) 

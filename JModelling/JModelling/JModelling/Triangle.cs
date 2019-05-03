@@ -104,11 +104,85 @@ namespace JModelling.JModelling
         /// as well as all three texture coords. 
         /// </summary>
         public Triangle(Vec4[] points, Vec3[] texels, Color color, Color[,] image)
+            : this(points, texels, color, image, Vec4.Zero, 0)
+        { }
+
+        public Triangle(Vec4[] points, Vec3[] texels, Color color, Color[,] image, Vec4 normal, float normalLength)
         {
             Points = points;
             Texels = texels;
-            Color = color; 
-            Image = image;  
+            Color = color;
+            Image = image;
+            Normal = normal;
+            NormalLength = normalLength; 
+        }
+
+        /// <summary>
+        /// Creates a copy of this triangle.
+        /// </summary>
+        public Triangle Clone()
+        {
+            return new Triangle(
+                new Vec4[] 
+                {
+                    Points[0].Clone(),
+                    Points[1].Clone(),
+                    Points[2].Clone()
+                },
+                new Vec3[]
+                {
+                    Texels[0].Clone(),
+                    Texels[1].Clone(),
+                    Texels[2].Clone()
+                },                
+                Color,
+                Image, 
+                Normal, 
+                NormalLength);
+        }
+
+        public override bool Equals(object obj)
+        {
+            return this == (Triangle)obj; 
+        }
+
+        public override int GetHashCode()
+        {
+            return (int)(Points[0].X + Points[1].Y + Points[2].Z); 
+        }
+
+        public static bool operator ==(Triangle left, Triangle right)
+        {
+            return (
+                left.Points[0] == right.Points[0] &&
+                left.Points[1] == right.Points[1] &&
+                left.Points[2] == right.Points[2]);
+        }
+
+        public static bool operator !=(Triangle left, Triangle right)
+        {
+            return !(left == right); 
+        }
+
+        /// <summary>
+        /// Multiplies the points of this triangle against the
+        /// matrix. 
+        /// </summary>
+        public void TimesEquals(Matrix mat)
+        {
+            Points[0].TimesEquals(mat);
+            Points[1].TimesEquals(mat);
+            Points[2].TimesEquals(mat);
+        }
+
+        /// <summary>
+        /// Divides the texel index by the specified value. 
+        /// </summary>
+        public void DivideTexel(int index, float val)
+        {
+            Texels[index].U /= val;
+            Texels[index].V /= val;
+            Texels[index].W /= val;
         }
 
         /// <summary>

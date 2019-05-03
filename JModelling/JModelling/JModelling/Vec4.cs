@@ -21,7 +21,7 @@ namespace JModelling.JModelling
         /// <summary>
         /// A blank Vec4. 
         /// </summary>
-        public static readonly Vec4 Zero = new Vec4(0, 0, 0, 1); 
+        public static readonly Vec4 Zero = new Vec4(0, 0, 0, 1);
 
         /// <summary>
         /// One of the four numbers used to create a Vec4.
@@ -51,6 +51,14 @@ namespace JModelling.JModelling
             Z = z;
             W = w; 
         }
+
+        /// <summary>
+        /// Creates a copy of this Vec4
+        /// </summary>
+        public Vec4 Clone()
+        {
+            return new Vec4(X, Y, Z, W);
+        }
         
         /// <returns>Whether or not the X, Y, and Z coords are equivilant.</returns>
         public static bool operator ==(Vec4 left, Vec4 right)
@@ -77,7 +85,8 @@ namespace JModelling.JModelling
         /// because it will take up A LOT of time/resources to complete.</returns>
         public override int GetHashCode()
         {
-            return ((short)X * (short)Y * (short)Z); 
+            return base.GetHashCode() / 10000; 
+            //return ((short)X * (short)Y * (short)Z); 
         }
 
         /// <returns>A new Vec4 object, which is a combined value of adding the X, Y, and
@@ -90,6 +99,17 @@ namespace JModelling.JModelling
                 left.Z + right.Z); 
         }
 
+        /// <summary>
+        /// Is the same as doing one += two, in the sense that one.PlusEquals(two). This
+        /// doesn't create a new Vec4 object like the + operator above does. 
+        /// </summary>
+        public void PlusEquals(Vec4 other)
+        {
+            X += other.X;
+            Y += other.Y;
+            Z += other.Z; 
+        }
+
         /// <returns>A new Vec4 object, which is a combined value of subtracting the X, Y,
         /// and Z coords of each parameter. The W value is not affected. </returns>
         public static Vec4 operator -(Vec4 left, Vec4 right)
@@ -98,6 +118,17 @@ namespace JModelling.JModelling
                 left.X - right.X,
                 left.Y - right.Y,
                 left.Z - right.Z); 
+        }
+
+        /// <summary>
+        /// Is the same as doing one -= two, in the sense that one.MinusEquals(two). This
+        /// doesn't create a new Vec4 object like the - operator above does. 
+        /// </summary>
+        public void MinusEquals(Vec4 other)
+        {
+            X -= other.X;
+            Y -= other.Y;
+            Z -= other.Z; 
         }
 
         /// <returns>A new Vec4 object, which is a combined value of multiplying the X, Y, 
@@ -110,6 +141,33 @@ namespace JModelling.JModelling
                 vec.Z * val); 
         }
 
+        /// <summary>
+        /// Is the same as doing one *= val, in the sense that one.TimesEquals(val). This
+        /// doesn't create a new Vec4 object like the * operator above does. 
+        /// </summary>
+        public void TimesEquals(float val)
+        {
+            X *= val;
+            Y *= val;
+            Z *= val;
+        }
+
+        /// <summary>
+        /// Multiplies this against the specified matrix. 
+        /// </summary>
+        public void TimesEquals(Matrix mat)
+        {
+            float newX = X * mat.M[0, 0] + Y * mat.M[1, 0] + Z * mat.M[2, 0] + W * mat.M[3, 0];
+            float newY = X * mat.M[0, 1] + Y * mat.M[1, 1] + Z * mat.M[2, 1] + W * mat.M[3, 1];
+            float newZ = X * mat.M[0, 2] + Y * mat.M[1, 2] + Z * mat.M[2, 2] + W * mat.M[3, 2];
+            float newW = X * mat.M[0, 3] + Y * mat.M[1, 3] + Z * mat.M[2, 3] + W * mat.M[3, 3];
+
+            X = newX;
+            Y = newY;
+            Z = newZ;
+            W = newW;
+        }
+
         /// <returns>A new Vec4 object, which is a combined value of dividing the X, Y, 
         /// and Z coords of the Vec4 against the float val. The W value is not affected. </returns>
         public static Vec4 operator /(Vec4 vec, float val)
@@ -118,6 +176,17 @@ namespace JModelling.JModelling
                 vec.X / val,
                 vec.Y / val,
                 vec.Z / val); 
+        }
+
+        /// <summary>
+        /// Is the same as doing one /= val, in the sense that one.DivideEquals(val). This
+        /// doesn't create a new Vec4 object like the / operator above does. 
+        /// </summary>
+        public void DivideEquals(float val)
+        {
+            X /= val;
+            Y /= val;
+            Z /= val; 
         }
 
         /// <summary>
@@ -235,10 +304,8 @@ namespace JModelling.JModelling
 
                 newTri.Alpha = tri.Alpha;
                 newTri.ClosestDist = tri.ClosestDist;
-
-                newTri.Image = tri.Image; 
-
-                newTri.Color = tri.Color;  
+                newTri.Image = tri.Image;
+                newTri.Color = tri.Color;                
 
                 // The inside point is valid, so...
                 newTri.Points[0] = insidePoints[0];
@@ -298,10 +365,10 @@ namespace JModelling.JModelling
                 // The second triangle is composed of one of the inside points, a new point
                 // determined by the intersection of the other side of the triangle and the
                 // plane, and the newly created point above. 
-                tri2.Points[0] = insidePoints[1];
-                tri2.Points[1] = tri1.Points[2];
-                tri2.Texels[0] = insideTexels[1];
-                tri2.Texels[1] = tri1.Texels[2]; 
+                tri2.Points[0] = insidePoints[1].Clone();
+                tri2.Points[1] = tri1.Points[2].Clone();
+                tri2.Texels[0] = insideTexels[1].Clone();
+                tri2.Texels[1] = tri1.Texels[2].Clone(); 
 
                 c = IntersectPlane(planeP, planeN, insidePoints[1], outsidePoints[0]);
                 tri2.Points[2] = c.V;
@@ -311,6 +378,25 @@ namespace JModelling.JModelling
                     c.T * (outsideTexels[0].W - insideTexels[1].W) + insideTexels[1].W);
 
                 return new Triangle[] { tri1, tri2 };
+            }
+        }
+
+        public static bool VecClipAgainstPlane(Vec4 planeP, Vec4 planeN, Vec4 vec)
+        {
+            // Make sure plane normal is actually normal
+            planeN.Normalize();
+
+            // Get signed distance of each point in triangle to plane. 
+            float dotProduct = DotProduct(planeN, planeP);
+            float d = Dist(planeN, vec, dotProduct);
+
+            if (d >= 0)
+            {
+                return true; 
+            }
+            else
+            {
+                return false; 
             }
         }
 

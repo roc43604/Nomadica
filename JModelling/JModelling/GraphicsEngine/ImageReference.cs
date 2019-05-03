@@ -5,7 +5,7 @@ using System.Text;
 
 namespace GraphicsEngine
 {
-    enum ImageReference
+    public enum ImageReference
     {
         TopLeft,
         TopCenter,

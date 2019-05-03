@@ -2,13 +2,49 @@
 <XnaContent xmlns:Pipeline="Microsoft.Xna.Framework.Content.Pipeline">
   <Asset Type="Pipeline:BuildItemCollection">
     <Item>
+      <Source>Images\fire.png</Source>
+      <Name>Images\fire</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>\\Fisd-student1\hs\lhs\122341\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\Images\fire.xnb</Output>
+      <Time>2019-05-03T11:09:24.2171492-05:00</Time>
+    </Item>
+    <Item>
       <Source>Images\grass.jpg</Source>
       <Name>Images\grass</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\150190\Desktop\JModelling\JModelling\JModelling\bin\x86\Release\Content\Images\grass.xnb</Output>
-      <Time>2019-03-23T20:32:58-05:00</Time>
+      <Output>\\Fisd-student1\hs\lhs\122341\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\Images\grass.xnb</Output>
+      <Time>2019-05-03T11:09:24.2639498-05:00</Time>
+    </Item>
+    <Item>
+      <Source>Images\moon.png</Source>
+      <Name>Images\moon</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>\\Fisd-student1\hs\lhs\122341\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\Images\moon.xnb</Output>
+      <Time>2019-05-03T11:09:24.4511522-05:00</Time>
+    </Item>
+    <Item>
+      <Source>Images\night.jpg</Source>
+      <Name>Images\night</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>\\Fisd-student1\hs\lhs\122341\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\Images\night.xnb</Output>
+      <Time>2019-05-03T11:09:24.5447534-05:00</Time>
+    </Item>
+    <Item>
+      <Source>Images\skybox.png</Source>
+      <Name>Images\skybox</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>\\Fisd-student1\hs\lhs\122341\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\Images\skybox.xnb</Output>
+      <Time>2019-05-03T11:09:24.7319558-05:00</Time>
     </Item>
     <Item>
       <Source>Images\stone.jpg</Source>
@@ -16,8 +52,17 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\150190\Desktop\JModelling\JModelling\JModelling\bin\x86\Release\Content\Images\stone.xnb</Output>
-      <Time>2019-03-24T11:03:38-05:00</Time>
+      <Output>\\Fisd-student1\hs\lhs\122341\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\Images\stone.xnb</Output>
+      <Time>2019-05-03T11:09:24.7943566-05:00</Time>
+    </Item>
+    <Item>
+      <Source>Images\sun.png</Source>
+      <Name>Images\sun</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>\\Fisd-student1\hs\lhs\122341\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\Images\sun.xnb</Output>
+      <Time>2019-05-03T11:09:24.1703486-05:00</Time>
     </Item>
     <BuildSuccessful>true</BuildSuccessful>
     <Settings>
@@ -26,10 +71,10 @@
       <TargetProfile>Reach</TargetProfile>
       <BuildConfiguration>Release</BuildConfiguration>
       <CompressContent>true</CompressContent>
-      <RootDirectory>C:\Users\150190\Desktop\JModelling\JModelling\JModellingContent\</RootDirectory>
-      <LoggerRootDirectory>C:\Users\150190\Desktop\JModelling\JModelling\JModelling\</LoggerRootDirectory>
-      <IntermediateDirectory>C:\Users\150190\Desktop\JModelling\JModelling\JModelling\obj\x86\Release\</IntermediateDirectory>
-      <OutputDirectory>C:\Users\150190\Desktop\JModelling\JModelling\JModelling\bin\x86\Release\Content\</OutputDirectory>
+      <RootDirectory>\\Fisd-student1\hs\lhs\122341\Documents\GitHub\Nomadica\JModelling\JModellingContent\</RootDirectory>
+      <LoggerRootDirectory>\\Fisd-student1\hs\lhs\122341\Documents\GitHub\Nomadica\JModelling\JModelling\</LoggerRootDirectory>
+      <IntermediateDirectory>\\Fisd-student1\hs\lhs\122341\Documents\GitHub\Nomadica\JModelling\JModelling\obj\x86\Release\</IntermediateDirectory>
+      <OutputDirectory>\\Fisd-student1\hs\lhs\122341\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\</OutputDirectory>
     </Settings>
     <Assemblies>
       <Assembly>

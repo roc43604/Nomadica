@@ -9,7 +9,7 @@ namespace JModelling.JModelling
     /// A collection of Vectors and Triangles connecting these
     /// vectors to form a model. 
     /// </summary>
-    class Mesh
+    public class Mesh
     {
         /// <summary>
         /// A list of all of the points in this mesh. 

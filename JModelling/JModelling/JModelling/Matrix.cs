@@ -8,7 +8,7 @@ namespace JModelling.JModelling
     /// <summary>
     /// A matrix of variable size that is used in calculations. 
     /// </summary>
-    class Matrix
+    public class Matrix
     {
         /// <summary>
         /// How wide this Matrix is. Represented by M.GetLength(1). 
@@ -41,25 +41,7 @@ namespace JModelling.JModelling
             Height = size; 
             M = new float[Height, Width]; 
         }
-
-        /// <summary>
-        /// Creates a Vec4 which is a result of multiplying another Vec4
-        /// against every part of a Matrix. 
-        /// </summary>
-        public static Vec4 operator *(Matrix mat, Vec4 v)
-        {
-            return new Vec4(
-                v.X * mat.M[0,0] + v.Y * mat.M[1,0] + v.Z * mat.M[2,0] + v.W * mat.M[3,0],
-                v.X * mat.M[0,1] + v.Y * mat.M[1,1] + v.Z * mat.M[2,1] + v.W * mat.M[3,1],
-                v.X * mat.M[0,2] + v.Y * mat.M[1,2] + v.Z * mat.M[2,2] + v.W * mat.M[3,2],
-                v.X * mat.M[0,3] + v.Y * mat.M[1,3] + v.Z * mat.M[2,3] + v.W * mat.M[3,3]); 
-        }
-
-        public static Vec4 operator *(Vec4 v, Matrix mat)
-        {
-            return mat * v;
-        }
-
+        
         /// <summary>
         /// Returns the result of two matricies being multiplied together. 
         /// </summary>
@@ -91,6 +73,26 @@ namespace JModelling.JModelling
             mat.M[2, 2] = 1;
             mat.M[3, 3] = 1;
             return mat; 
+        }
+
+        public static Vec4 operator *(Matrix mat, Vec4 vec)
+        {
+            return new Vec4(
+                vec.X * mat.M[0, 0] + vec.Y * mat.M[1, 0] + vec.Z * mat.M[2, 0] + vec.W * mat.M[3, 0],
+                vec.X * mat.M[0, 1] + vec.Y * mat.M[1, 1] + vec.Z * mat.M[2, 1] + vec.W * mat.M[3, 1],
+                vec.X * mat.M[0, 2] + vec.Y * mat.M[1, 2] + vec.Z * mat.M[2, 2] + vec.W * mat.M[3, 2],
+                vec.X * mat.M[0, 3] + vec.Y * mat.M[1, 3] + vec.Z * mat.M[2, 3] + vec.W * mat.M[3, 3]); 
+        }
+
+        public static Vec4 operator *(Vec4 vec, Matrix mat)
+        {
+            //Console.WriteLine("Matrix: {0} * {1} + {2} * {3} + {4} * {5} + {6} * {7}", vec.X, mat.M[0, 0], vec.Y, mat.M[1, 0], vec.Z, mat.M[2, 0], vec.W, mat.M[3, 0]);
+
+            return new Vec4(
+                vec.X * mat.M[0, 0] + vec.Y * mat.M[1, 0] + vec.Z * mat.M[2, 0] + vec.W * mat.M[3, 0],
+                vec.X * mat.M[0, 1] + vec.Y * mat.M[1, 1] + vec.Z * mat.M[2, 1] + vec.W * mat.M[3, 1],
+                vec.X * mat.M[0, 2] + vec.Y * mat.M[1, 2] + vec.Z * mat.M[2, 2] + vec.W * mat.M[3, 2],
+                vec.X * mat.M[0, 3] + vec.Y * mat.M[1, 3] + vec.Z * mat.M[2, 3] + vec.W * mat.M[3, 3]);
         }
 
         /// <summary>
