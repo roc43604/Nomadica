@@ -10,10 +10,8 @@ namespace JModelling
         private const int GradientSizeTable = 256;
         private readonly Random _random;
         private readonly double[] _gradients = new double[GradientSizeTable * 3];
-        /* Borrowed from Darwyn Peachey (see references above).
-           The gradient table is indexed with an XYZ triplet, which is first turned
-           into a single random index using a lookup in this table. The table simply
-           contains all numbers in [0..255] in random order. */
+
+
         private readonly byte[] _perm = new byte[] {
               225,155,210,108,175,199,221,144,203,116, 70,213, 69,158, 33,252,
                 5, 82,173,133,222,139,174, 27,  9, 71, 90,246, 75,130, 91,191,
@@ -30,7 +28,8 @@ namespace JModelling
               184,149,171,178,101, 66, 29, 59,146, 61,254,107, 42, 86,154,  4,
               236,232,120, 21,233,209, 45, 98,193,114, 78, 19,206, 14,118,127,
                48, 79,147, 85, 30,207,219, 54, 88,234,190,122, 95, 67,143,109,
-              137,214,145, 93, 92,100,245,  0,216,186, 60, 83,105, 97,204, 52};
+              137,214,145, 93, 92,100,245,  0,216,186, 60, 83,105, 97,204, 52
+        };
 
         public PerlinNoise(int seed)
         {
@@ -38,12 +37,11 @@ namespace JModelling
             InitGradients();
         }
 
+
+        private double max = Double.MinValue;
+        private double min = Double.MaxValue;
         public double Noise(double x, double y, double z)
         {
-            /* The main noise function. Looks up the pseudorandom gradients at the nearest
-               lattice points, dots them with the input vector, and interpolates the
-               results to produce a single output value in [0, 1] range. */
-
             int ix = (int)Math.Floor(x);
             double fx0 = x - ix;
             double fx1 = fx0 - 1;
@@ -80,13 +78,18 @@ namespace JModelling
             double vz1 = Lerp(wy, vy0, vy1);
 
             double res = Lerp(wz, vz0, vz1);
+            
+            return (res + 1)/2;
+        }
 
-            if (res > 1)
-                res = 1;
-           // else if (res < 0)
-           //     res = 0;
-
-            return res;
+        public float CreateNoiseHeight(float x, float y, float z)
+        {
+            return (float)(Noise(x, y, z)
+                + 0.5 * Noise(x * 2, y * 2, z * 2)
+                + 0.25 * Noise(x * 4, y * 4, z * 4)
+                + 0.125 * Noise(x * 8, y * 8, z * 8)
+                + 0.0625 * Noise(x * 14, y * 14, z * 14)
+            );
         }
 
         private void InitGradients()
@@ -110,13 +113,11 @@ namespace JModelling
 
         private int Index(int ix, int iy, int iz)
         {
-            // Turn an XYZ triplet into a single gradient table index.
             return Permutate(ix + Permutate(iy + Permutate(iz)));
         }
 
         private double Lattice(int ix, int iy, int iz, double fx, double fy, double fz)
         {
-            // Look up a random gradient at [ix,iy,iz] and dot it with the [fx,fy,fz] vector.
             int index = Index(ix, iy, iz);
             int g = index * 3;
             return _gradients[g] * fx + _gradients[g + 1] * fy + _gradients[g + 2] * fz;
@@ -124,14 +125,11 @@ namespace JModelling
 
         private double Lerp(double t, double value0, double value1)
         {
-            // Simple linear interpolation.
             return value0 + t * (value1 - value0);
         }
 
         private double Smooth(double x)
         {
-            /* Smoothing curve. This is used to calculate interpolants so that the noise
-              doesn't look blocky when the frequency is low. */
             return x * x * (3 - 2 * x);
         }
     }

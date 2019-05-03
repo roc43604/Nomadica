@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using JModelling.Chunk;
+using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -58,8 +59,8 @@ namespace JModelling.JModelling.Chunk
         private PerlinNoise chunkNoise;
         private PerlinNoise colorNoise;
 
-        public int triSizeX = 80;
-        public int triSizeZ = 80;
+        public int triSizeX = 40;
+        public int triSizeZ = 40;
 
         public int viewDistX;
         public int viewDistZ;
@@ -70,10 +71,6 @@ namespace JModelling.JModelling.Chunk
         private JManager manager;
 
         private bool generated;
-
-        private int amp = 700;
-        private int zoom = 15;
-        private double modi = 0.5;
         
         public ChunkGenerator(int seed, int chunkSizeX, int chunkSizeZ, int viewDist, JManager manager, Mesh cow)
         {
@@ -100,13 +97,19 @@ namespace JModelling.JModelling.Chunk
 
         public float GetHeightAt(float posX, float posZ)
         {
-            float posXn = posX/zoom / (triSizeX);
+            //  float posXn = posX/zoom / (triSizeX);
 
-            return (float)chunkNoise.Noise(
-                posX / zoom / (triSizeX),
-                posZ / zoom / (triSizeZ),
-                modi
-            ) * amp;
+            //  return (float)chunkNoise.Noise(
+            //      posX / zoom / (triSizeX),
+            //      posZ / zoom / (triSizeZ),
+            //      modi
+            //  ) * amp;
+            return 0;
+        }
+
+        public Biome BiomeAt(Vec4 pos)
+        {
+            return BiomeRegistry.GetBiomeFor(0.5);
         }
 
         /// <summary>
@@ -122,51 +125,57 @@ namespace JModelling.JModelling.Chunk
             {
                 for (int cz = 0; cz<viewDist * 2; cz++)
                 {
+                    int increment = 1;
+                    //int distFromMid = Math.Abs(viewDist - cx);
+                    //if (distFromMid > 2)
+                   // {
+                    //    increment = 2;
+                    //}
+
                     Triangle[] tris = new Triangle[chunkSizeX * chunkSizeZ * 2];
 
-                    Color c = new Color(cx*255, 0, cz*255);
+                    //Create tris
                     int idx = 0;
-
-                    double colorA = colorNoise.Noise(
-                        (indexX+cx)/10,
-                        (indexZ+cz)/10,
-                        0.5
-                    );
-                    if (colorA > 0.1)
-                        c = Color.LawnGreen;
-                    else if (colorA <= 0.1 && colorA > -0.1)
-                        c = Color.Tan;
-                    else if (colorA <= -0.1)
-                        c = Color.Brown;
-
-
-                    for (int x = 0; x < chunkSizeX; x++)
+                    for (int x = 0; x < chunkSizeX; x+=increment)
                     {
-                        for (int z = 0; z < chunkSizeZ; z++)
+                        for (int z = 0; z < chunkSizeZ; z+=increment)
                         {
                             int xF = (x + (indexX - viewDist + cx) * chunkSizeX);
                             int zF = (z + (indexZ - viewDist + cz) * chunkSizeZ);
 
-                            double amp = 700;
-                            double zoom = 15;
+                            Biome chunkBiome = BiomeRegistry.GetBiomeFor(
+                                colorNoise.Noise(
+                                    xF,//(indexX + cx),
+                                    zF,//(indexZ + cz),
+                                    0.5
+                                )
+                            );
 
-                            double tL = chunkNoise.Noise(
+
+                            float amp = chunkBiome.amp;
+                            float zoom = chunkBiome.zoom;
+                            float modi = chunkBiome.thatMagicNumber;
+
+                            // double amp = 700;
+                            // double zoom = 15;
+
+                            double tL = chunkNoise.CreateNoiseHeight(
                                 xF / zoom,
                                 zF / zoom,
                                 modi
                             ) * amp;
 
-                            double tR = chunkNoise.Noise(
+                            double tR = chunkNoise.CreateNoiseHeight(
                                 (xF + 1) / zoom,
                                 zF / zoom,
                                 modi
                             ) * amp;
-                            double bL = chunkNoise.Noise(
+                            double bL = chunkNoise.CreateNoiseHeight(
                                 xF / zoom,
                                 (zF + 1) / zoom,
                                 modi
                             ) * amp;
-                            double bR = chunkNoise.Noise(
+                            double bR = chunkNoise.CreateNoiseHeight(
                                 (xF + 1) / zoom,
                                 (zF + 1) / zoom,
                                 modi
@@ -174,8 +183,8 @@ namespace JModelling.JModelling.Chunk
 
                             int basePX = x * triSizeX + (indexX - viewDist + cx) * chunkSizeX * triSizeX;// - (chunkSizeX * triSizeX)/2;
                             int basePZ = z * triSizeZ + (indexZ - viewDist + cz) * chunkSizeZ * triSizeZ;// - (chunkSizeZ * triSizeZ)/2;
-                            
 
+                            //Top Right, Bottom Left, Top Left
                             Triangle nA = new Triangle(new Vec4[] {
                                 new Vec4(
                                     basePX + triSizeX,
@@ -193,15 +202,13 @@ namespace JModelling.JModelling.Chunk
                                     basePZ
                                 )
                             });
-                            //Top Right, Bottom Left, Top Left
                             nA.Normal = Vec4.CrossProduct(
                                 nA.Points[1] - nA.Points[0],
                                 nA.Points[2] - nA.Points[0]
                             );
                             nA.Normal.Normalize();
-                            nA.Color = c;
-                            nA.Color = new Color((int)(chunkNoise.Noise(xF, zF, modi))*255, 240, 240);
                             nA.Normal *= -1;
+
 
                             //Bottom Left, Bottom Right, Top Right
                             Triangle nB = new Triangle(new Vec4[] {
@@ -226,35 +233,55 @@ namespace JModelling.JModelling.Chunk
                                 nB.Points[2] - nB.Points[0]
                             );
                             nB.Normal.Normalize();
-                            nB.Color = new Color((int)(chunkNoise.Noise(xF + 1, zF + 1, modi) * 255), 240, 240);
-
-                            //nA.Color = new Color(1f, 0, 0);
-                            //nB.Color = new Color(0, 1f, 0);
-
-                            nB.Color = Color.LawnGreen;
-                            nA.Color = Color.LawnGreen;
-
-                            //  nB.Color = Color.LightBlue;
-                            //  nA.Color = Color.LightBlue;
-
-                            // else
-                            // {
-
-                            // }
-                            
-                            nA.Color = c;
-                            nB.Color = c;
-
 
                             tris[idx] = nA;
                             idx++;
                             tris[idx] = nB;
                             idx++;
+
+
+
+                            //Colors
+                            double clrNoise = colorNoise.Noise(
+                                (xF / zoom) * 5,
+                                (zF / zoom) * 5,
+                                0.5
+                            );
+                            double shadeModifier = 20;
+
+                            Color biomeColor = chunkBiome.GetEstimatedColorY(clrNoise);
+                            double txtrVari = clrNoise * 2 - 1;
+
+                            Color curColor = new Color(
+                                (int)(biomeColor.R + shadeModifier * txtrVari),
+                                (int)(biomeColor.G + shadeModifier * txtrVari),
+                                (int)(biomeColor.B + shadeModifier * txtrVari)
+                            );
+
+
+                            nB.Color = curColor;
+                            nA.Color = curColor;
+                            
+                            if (MathHelper.ToDegrees((float)Math.Sin(nA.Normal.Y)) < 40)
+                            {
+                                nA.Color = Color.Gray;
+                            }
+                            if (MathHelper.ToDegrees((float)Math.Sin(nB.Normal.Y)) < 40)
+                            {
+                                nB.Color = Color.Gray;
+                            }
+
+
+                            //Object Placement
+
+                            /*
+                              Ned sum code hear
+                            */
+
                         }
                     }
 
                     chunkMesh[cx, cz].Triangles = tris;
-
                     
                 }
             }
@@ -266,35 +293,14 @@ namespace JModelling.JModelling.Chunk
                     for (int z = 0; z < viewDist * 2; z++)
                     {
                         manager.AddMesh(chunkMesh[x, z]);
-                        Console.WriteLine("ADDED");
                     }
                 }
                 generated = true;
-
-               // chunkMesh[34543, 345345] = null;
             }
 
 
         }
-
-
-        public void translate(Mesh mes, float x, float y, float z)
-        {
-            Triangle[] points = mes.Triangles;
-
-            for (int i=0; i<points.Length; i++)
-            {
-                Vec4[] tri = points[i].Points;
-                for (int j=0; j<tri.Length; j++)
-                {
-                    tri[j].X += x;
-                    tri[j].Y += y;
-                    tri[j].Z += z;
-                }
-                
-            }
-        }
-
+        
         public int GetIndexX(int posX)
         {
             return (posX) / (chunkSizeX * triSizeX);
@@ -305,10 +311,6 @@ namespace JModelling.JModelling.Chunk
         {
             return (posZ) / (chunkSizeZ * triSizeZ);
         }
-
-
-
-    
 
     }
 }

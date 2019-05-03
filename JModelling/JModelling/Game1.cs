@@ -11,6 +11,8 @@ using Microsoft.Xna.Framework.Media;
 using JModelling.JModelling;
 using GraphicsEngine;
 using JModelling.JModelling.Chunk;
+using System.Diagnostics;
+using System.Threading;
 
 namespace JModelling
 {
@@ -38,6 +40,17 @@ namespace JModelling
         private Mesh cube;
         private Mesh meshWater;
 
+        private SpriteFont debugFont;
+        private enum MovementMode
+        {
+            Fly, Normal
+        }
+        private MovementMode movementMode;
+
+        private KeyboardState oldKeyState;
+
+        private int debugUpdateInterval = 250;
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -60,8 +73,9 @@ namespace JModelling
         {
             // TODO: Add your initialization logic here
 
-            
+            this.movementMode = MovementMode.Normal;
 
+           
 
             base.Initialize();
         }
@@ -79,12 +93,13 @@ namespace JModelling
             Load.Init(Services);
             manager = new JManager(this, Width, Height, graphics, spriteBatch);
 
+            debugFont = this.Content.Load<SpriteFont>("DebugFont");
             // cube = Load.Mesh(@"Content/Models/cube.obj");
             // manager.AddMesh(cube);
 
             cube = Load.Mesh(@"Content/Models/cube.obj");
             
-            generator = new ChunkGenerator(43545544, 20, 20, 4, manager, Load.Mesh(@"Content/Models/cube.obj"));
+            generator = new ChunkGenerator(43545544, 10, 10, 8, manager, Load.Mesh(@"Content/Models/cube.obj"));
 
 
             Triangle a = new Triangle(
@@ -128,6 +143,15 @@ namespace JModelling
             // TODO: Unload any non ContentManager content here
         }
 
+
+
+
+        private double debug_LastUpdate;
+        private double debug_FPS;
+        private double debug_UPS;
+
+
+
         /// <summary>
         /// Allows the game to run logic such as updating the world,
         /// checking for collisions, gathering input, and playing audio.
@@ -139,23 +163,19 @@ namespace JModelling
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
 
-            // TODO: Add your update logic here
-
-            //manager.updateTriangleCount();
-
-            
+            Stopwatch stopWatch = Stopwatch.StartNew();
+            stopWatch.Start();
+            //////////////////////////////////////////////////////////////////////////////////
 
 
             Vec4 pos = manager.camera.loc;
-            //Vec4 sizeWater = meshWater.Size;
 
-           // cube.MoveTo(pos.X - 50, generator.GetHeightAt(pos.X - 50, pos.Z), pos.Z);
-      
-            //Console.WriteLine("[" + pos.X + ":" + pos.Z + "] , [" + generator.GetHeightAt(pos.X - 100, pos.Z) + "]");
-
-            // meshWater.MoveTo(pos.X, 1, pos.Z);
-            manager.camera.loc.Y = generator.GetHeightAt(pos.X, pos.Z) + 100;
-
+            switch (movementMode)
+            {
+                case MovementMode.Normal:
+                    manager.camera.loc.Y = generator.GetHeightAt(pos.X, pos.Z) + 100;
+                    break;
+            }
 
             int chunkIndexX = generator.GetIndexX((int)pos.X);
             int chunkIndexZ = generator.GetIndexZ((int)pos.Z);
@@ -172,18 +192,39 @@ namespace JModelling
                 curChunkZ = chunkIndexZ;
 
             }
-            
-            // Console.WriteLine(chunkIndexX + " : " + chunkIndexZ);
 
-            // 
-            // ;
-            //        }
+            KeyboardState keyState = Keyboard.GetState();
 
-        //    Console.WriteLine(chunkIndexX + " : " + chunkIndexZ);
-            
+            if (keyState.IsKeyDown(Keys.O) && oldKeyState.IsKeyUp(Keys.O))
+            {
+                if (movementMode == MovementMode.Fly)
+                {
+                    movementMode = MovementMode.Normal;
+                }
+                else
+                {
+                    movementMode = MovementMode.Fly;
+                }
+            }
+
+            oldKeyState = keyState;
+
+
+
+            Thread.Sleep(1);
+            //////////////////////////////////////////////////////////////////////////////////
+            stopWatch.Stop();
+            if (gameTime.TotalGameTime.TotalMilliseconds - debug_LastUpdate > debugUpdateInterval)
+            {
+                debug_UPS = 1000 / stopWatch.ElapsedMilliseconds;
+
+
+                debug_LastUpdate = gameTime.TotalGameTime.TotalMilliseconds;
+            }
 
             base.Update(gameTime);
         }
+
 
         /// <summary>
         /// This is called when the game should draw itself.
@@ -192,8 +233,64 @@ namespace JModelling
         protected override void Draw(GameTime gameTime)
         {
             // TODO: Add your drawing code here
+            Stopwatch stopWatch = Stopwatch.StartNew();
+            stopWatch.Start();
+            //////////////////////////////////////////////////////////////////////////////////
+
+
             manager.Update();
 
+            Thread.Sleep(1);
+            //////////////////////////////////////////////////////////////////////////////////
+            stopWatch.Stop();
+            if (gameTime.TotalGameTime.TotalMilliseconds - debug_LastUpdate > debugUpdateInterval)
+            {
+                debug_FPS = (1000) / (stopWatch.ElapsedMilliseconds);
+               
+            }
+
+
+
+
+
+            ////////////////////////////////////////////////////////////////////////////////////
+            // DEBUG DRAWING
+            ////////////////////////////////////////////////////////////////////////////////////
+            spriteBatch.Begin();
+
+            spriteBatch.DrawString(
+                debugFont, 
+                "FPS   : " + debug_FPS, 
+                new Vector2(5, 5),
+                Color.White
+            );
+            spriteBatch.DrawString(
+                debugFont,
+                "UPS   : " + debug_UPS,
+                new Vector2(5, debugFont.LineSpacing+5),
+                Color.White
+            );
+            spriteBatch.DrawString(
+                debugFont, 
+                "Mode  : " + movementMode, 
+                new Vector2(5, debugFont.LineSpacing*2+5), 
+                Color.White
+            );
+            spriteBatch.DrawString(
+                debugFont,
+                "Biome : " + generator.BiomeAt(manager.camera.loc).ToString(),
+                new Vector2(5, debugFont.LineSpacing * 3 + 5),
+                Color.White
+            );
+
+            spriteBatch.DrawString(
+                debugFont,
+                "Pos : " + manager.camera.loc.ToString(),
+                new Vector2(5, debugFont.LineSpacing * 5 + 5),
+                Color.White
+            );
+
+            spriteBatch.End();
             base.Draw(gameTime);
         }
     }

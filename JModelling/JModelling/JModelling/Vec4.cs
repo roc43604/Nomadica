@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace JModelling.JModelling
 {
@@ -158,8 +159,7 @@ namespace JModelling.JModelling
         public void TimesEquals(Matrix mat)
         {
             //Console.WriteLine("Vec4: {0} * {1} + {2} * {3} + {4} * {5} + {6} * {7}", X, mat.M[0, 0], Y, mat.M[1, 0], Z, mat.M[2, 0], W, mat.M[3, 0]); 
-
-
+            float[,] matrix = mat.M;
 
             float newX = X * mat.M[0, 0] + Y * mat.M[1, 0] + Z * mat.M[2, 0] + W * mat.M[3, 0];
             float newY = X * mat.M[0, 1] + Y * mat.M[1, 1] + Z * mat.M[2, 1] + W * mat.M[3, 1];
