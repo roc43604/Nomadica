@@ -29,7 +29,7 @@ namespace GraphicsEngine
         /// <summary>
         /// What we're drawing on/with. 
         /// </summary>
-        public Color[] canvas;
+        private Color[] canvas;
 
         /// <summary>
         /// Performs rendering, creates resources, handles variables, etc.

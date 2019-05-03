@@ -57,7 +57,7 @@ namespace JModelling.JModelling
         /// <summary>
         /// The thing the user will be seeing through. 
         /// </summary>
-        private Camera camera;
+        public Camera camera;
 
         /// <summary>
         /// The last known location of the mouse. 
@@ -68,6 +68,8 @@ namespace JModelling.JModelling
         /// All of the meshes/models being used in this scene currently. 
         /// </summary>
         private Mesh[] meshes;
+        private ListUtil<Mesh> meshList;
+        private Dictionary<Mesh, ListNode<Mesh>> meshListNodeDict;
 
         /// <summary>
         /// How far away a polygon has to be before we

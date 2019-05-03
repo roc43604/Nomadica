@@ -72,6 +72,7 @@
     <Reference Include="System.Net" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BiomeThing.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="GraphicsEngine\ImageReference.cs" />
     <Compile Include="GraphicsEngine\Painter.cs" />
@@ -95,6 +96,8 @@
     <Compile Include="JModelling\Vec3.cs" />
     <Compile Include="JModelling\Vec4.cs" />
     <Compile Include="JModelling\WeatherAndTime.cs" />
+    <Compile Include="ListUtil.cs" />
+    <Compile Include="PerlinNoise.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
