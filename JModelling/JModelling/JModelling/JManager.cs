@@ -125,8 +125,8 @@ namespace JModelling.JModelling
             Width = width;
             Height = height;
 
-            DrawWidth = (int)(width / 3);
-            DrawHeight = (int)(height / 3);
+            DrawWidth = (int)(width / 4);
+            DrawHeight = (int)(height / 4);
 
             centerX = width / 2;
             centerY = height / 2;
@@ -141,14 +141,15 @@ namespace JModelling.JModelling
                 1536);
 
             // Create the models
-            meshes = new Mesh[] {
-                //new Mesh(skybox.Triangles),
-                Load.Mesh(@"Content/Models/mountains.obj") };
+            meshList = new ListUtil<Mesh>();
+            meshListNodeDict = new Dictionary<Mesh, ListNode<Mesh>>();
 
             numTriangles = 0;
-            foreach (Mesh mesh in meshes)
+            ListNode<Mesh> meshNode = meshList.list;
+            while (meshNode != null)
             {
-                numTriangles += mesh.Triangles.Length;
+                numTriangles += meshNode.dat.Triangles.Length;
+                meshNode = meshNode.next;
             }
 
             // Projection matrix
@@ -174,6 +175,45 @@ namespace JModelling.JModelling
             lights = new Light[1];
             lights[0] = new Light(100f, null);
             turnOnLights = false;  
+        }
+
+        /// <summary>
+        /// Adds a mesh to the render engine. The method will return
+        /// a <see cref="ListNode{T}"/> which is used to store this mesh
+        /// in a linked list.
+        /// </summary>
+        /// <param name="mesh"> Mesh to add </param>
+        /// <returns>The list node of this mesh</returns>
+        public ListNode<Mesh> AddMesh(Mesh mesh)
+        {
+            ListNode<Mesh> node = new ListNode<Mesh>(mesh);
+            meshList.Add(node);
+            numTriangles += mesh.Triangles.Length;
+
+            meshListNodeDict.Add(mesh, node);
+
+            return node;
+        }
+
+        /// <summary>
+        /// Removes a <see cref="ListNode{Mesh}"/> from the render engine
+        /// </summary>
+        /// <param name="mesh"> <see cref="ListNode"/> to remove </param>
+        public void RemoveMesh(ListNode<Mesh> mesh)
+        {
+            mesh.Remove();
+        }
+
+        /// <summary>
+        /// Removes a mesh from the render engine
+        /// </summary>
+        /// <param name="mesh"> <see cref="Mesh"/> to remove </param>
+        public void RemoveMesh(Mesh mesh)
+        {
+            ListNode<Mesh> node = meshListNodeDict[mesh];
+
+            if (node != null)
+                node.Remove();
         }
 
         /// <summary>
@@ -213,10 +253,23 @@ namespace JModelling.JModelling
             Matrix matView = Matrix.PointAt(camera.loc, target, new Vec4(0, 1, 0));
             matView.QuickInverse();
 
-            Light[] activeLights = (turnOnLights) ? lights : new Light[] { }; 
+            Light[] activeLights = (turnOnLights) ? lights : new Light[] { };
 
-            foreach (Mesh mesh in meshes)
+            ListNode<Mesh> meshNode = meshList.list; 
+            while (meshNode != null)
             {
+                Mesh mesh = meshNode.dat;
+                meshNode = meshNode.next; 
+                
+                if (mesh == null)
+                {
+                    continue; 
+                }
+                if (mesh.Triangles == null)
+                {
+                    continue; 
+                }
+
                 DrawTrianglesToPainterCanvas(painter, depthBuffer, GetDrawableTrianglesFromMesh(mesh, hue, activeLights, matView, lightDirection, shadow)); 
             }
 
@@ -256,14 +309,14 @@ namespace JModelling.JModelling
 
         private List<Triangle> GetDrawableTrianglesFromMesh(Mesh mesh, Hue hue, Light[] activeLights, Matrix matView, Vec4 lightDirection, float shadow)
         {
-            List<Triangle> unclippedTriangles = new List<Triangle>();
-
-            Random random = new Random(); 
+            Queue<Triangle> triangles = new Queue<Triangle>();
+            int triIndex = 0; 
+            
             foreach (Triangle original in mesh.Triangles)
             {
                 // Get ray from triangle to camera
                 Vec4 cameraRay = original.Points[0] - camera.loc;
-
+                
                 // If ray is aligned with normal, then triangle is visible
                 if (Vec4.DotProduct(original.Normal, cameraRay) < 0)
                 {
@@ -379,18 +432,19 @@ namespace JModelling.JModelling
                         // float alpha = Math.Max(0, (float)(1 - Dist(camera.loc, tri.Points[0]) / 160));
                         clippedTri.Alpha = alpha;
 
-                        unclippedTriangles.Add(clippedTri);
+                        triangles.Enqueue(clippedTri);
+                        triIndex++; 
                     }
                 }
             }
 
-            List<Triangle> drawableTriangles = new List<Triangle>();
-            foreach (Triangle triangle in unclippedTriangles)
+            List<Triangle> drawableTriangles = new List<Triangle>(); 
+            while (triangles.Count > 0)
             {
                 Queue<Triangle> listTriangles = new Queue<Triangle>();
                 int nNewTriangles = 1;
 
-                listTriangles.Enqueue(triangle);
+                listTriangles.Enqueue(triangles.Dequeue());
                 for (int p = 0; p < 4; p++)
                 {
                     while (nNewTriangles > 0)

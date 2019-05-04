@@ -73,6 +73,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BiomeThing.cs" />
+    <Compile Include="Chunk\BiomeRegistry.cs" />
+    <Compile Include="Chunk\Biomes.cs" />
+    <Compile Include="Chunk\Chunk.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="GraphicsEngine\ImageReference.cs" />
     <Compile Include="GraphicsEngine\Painter.cs" />
@@ -84,7 +87,6 @@
     <Compile Include="JModelling\JManager.cs" />
     <Compile Include="JModelling\Light.cs" />
     <Compile Include="JModelling\Load.cs" />
-    <Compile Include="JModelling\Map.cs" />
     <Compile Include="JModelling\MathExtensions.cs" />
     <Compile Include="JModelling\Matrix.cs" />
     <Compile Include="JModelling\Mesh.cs" />

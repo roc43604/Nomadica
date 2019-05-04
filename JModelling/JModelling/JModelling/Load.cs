@@ -22,8 +22,8 @@ namespace JModelling.JModelling
         private static Vec4 Up;
 
         private const float NormalRange = 0.78539f;
-        private static readonly Color StoneColor = new Color(181, 181, 181), 
-                                      GrassColor = new Color(112, 149, 43);
+        //private static readonly Color StoneColor = new Color(181, 181, 181), 
+        //                              GrassColor = new Color(112, 149, 43);
         
         /// <summary>
         /// Initializes the Load class, allowing it to perform its methods. 
@@ -52,8 +52,8 @@ namespace JModelling.JModelling
         public static Mesh Mesh(string fileName, float scale, float locX, float locY, float locZ)
         {
             // Loads the images the mesh will use.
-            Color[,] grass = TwoDimImage(@"Images/grass");
-            Color[,] stone = TwoDimImage(@"Images/stone"); 
+            //Color[,] grass = TwoDimImage(@"Images/grass");
+            //Color[,] stone = TwoDimImage(@"Images/stone"); 
 
             // Creates the system that will be reading the file. 
             StreamReader reader = null;
@@ -109,20 +109,20 @@ namespace JModelling.JModelling
                 normal.Normalize();
                 triangle.Normal = normal;
 
-                float angle = GetAngle(normal, Up) - PIOverTwo;
-                if (angle < 0) angle += 180;
-                triangle.Angle = angle;
+                //float angle = GetAngle(normal, Up) - PIOverTwo;
+                //if (angle < 0) angle += 180;
+                //triangle.Angle = angle;
 
-                if (angle > NormalRange)
-                {
-                    triangle.Color = GrassColor;
-                    triangle.Image = grass; 
-                }
-                else
-                {
-                    triangle.Color = StoneColor;
-                    triangle.Image = stone; 
-                }
+                //if (angle > NormalRange)
+                //{
+                //    triangle.Color = GrassColor;
+                //    triangle.Image = grass; 
+                //}
+                //else
+                //{
+                //    triangle.Color = StoneColor;
+                //    triangle.Image = stone; 
+                //}
 
                 triangles[k / 3] = triangle;                
             }
