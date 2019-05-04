@@ -8,7 +8,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\Images\fire.xnb</Output>
-      <Time>2019-05-04T16:56:53.3950407-05:00</Time>
+      <Time>2019-05-04T17:29:00.0693552-05:00</Time>
     </Item>
     <Item>
       <Source>Images\grass.jpg</Source>
@@ -26,7 +26,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\Images\moon.xnb</Output>
-      <Time>2019-05-04T16:56:53.4159854-05:00</Time>
+      <Time>2019-05-04T17:29:00.0888158-05:00</Time>
     </Item>
     <Item>
       <Source>Images\night.jpg</Source>
@@ -35,7 +35,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\Images\night.xnb</Output>
-      <Time>2019-05-04T16:56:53.4189797-05:00</Time>
+      <Time>2019-05-04T17:29:00.0913107-05:00</Time>
     </Item>
     <Item>
       <Source>Images\skybox.png</Source>
@@ -44,7 +44,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\Images\skybox.xnb</Output>
-      <Time>2019-05-04T16:56:53.4264684-05:00</Time>
+      <Time>2019-05-04T17:29:00.0978022-05:00</Time>
     </Item>
     <Item>
       <Source>Images\stone.jpg</Source>
@@ -62,7 +62,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\Images\sun.xnb</Output>
-      <Time>2019-05-04T16:56:53.4329535-05:00</Time>
+      <Time>2019-05-04T17:29:00.1037886-05:00</Time>
     </Item>
     <BuildSuccessful>true</BuildSuccessful>
     <Settings>
