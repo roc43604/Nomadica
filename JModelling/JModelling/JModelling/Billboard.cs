@@ -44,8 +44,8 @@ namespace JModelling.JModelling
         }
 
         public void DrawToCanvas(
-            Camera camera, Painter painter, float[,] depthBuffer, 
-            Matrix matView, Matrix matProj, 
+            Camera camera, Painter painter, float[,] depthBuffer,
+            Matrix matView, Matrix matProj,
             int drawWidth, int drawHeight)
         {
             float dist = (float)MathExtensions.Dist(camera.loc, Loc);
@@ -53,7 +53,7 @@ namespace JModelling.JModelling
             {
                 float viewHeight = Height / dist * 0.1f * 300f;
                 float viewWidth = Width / dist * 0.1f * 300f;
-                
+
                 Vec4 worldView = matView * Loc;
 
                 if (Vec4.VecClipAgainstPlane(
@@ -71,11 +71,11 @@ namespace JModelling.JModelling
                     scale.X *= 0.5f * drawWidth; scale.Y *= 0.5f * drawHeight;
 
                     painter.DrawImage(
-                        Texture, TextureWidth, TextureHeight, 
+                        Texture, TextureWidth, TextureHeight,
                         new Rectangle(
                             (int)scale.X - (int)viewWidth / 2,
-                            (int)scale.Y - (int)viewHeight / 2, 
-                            (int)viewWidth, (int)viewHeight), 
+                            (int)scale.Y - (int)viewHeight / 2,
+                            (int)viewWidth, (int)viewHeight),
                         depthBuffer, 1f / dist);
                 }
             }

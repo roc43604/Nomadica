@@ -20,7 +20,7 @@ namespace JModelling.JModelling
         /// How fast the camera will move when the user is
         /// accelerating it. 
         /// </summary>
-        public const float FastSpeed = 0.5f;
+        public const float FastSpeed = NormalSpeed * 3f;
 
         /// <summary>
         /// The current speed this is moving. 

@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using GraphicsEngine;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -86,7 +87,44 @@ namespace JModelling.JModelling
         /// </summary>
         private static Vec4 CalcLoc(float dist, Vec4 centerPoint, float angle)
         {
-            return new Vec4((float)Math.Cos(angle) * dist + centerPoint.X, (float)Math.Sin(angle) * dist, centerPoint.Z);
+            return new Vec4((float)Math.Cos(angle) * dist + centerPoint.X, (float)Math.Sin(angle) * dist + centerPoint.Y, centerPoint.Z);
+        }
+
+        public void DrawToCanvas(
+            Camera camera, Painter painter,
+            Matrix matView, Matrix matProj,
+            int drawWidth, int drawHeight)
+        {
+            float dist = (float)MathExtensions.Dist(camera.loc, Loc);
+            if (dist > 0.1f)
+            {
+                float viewHeight = Height / dist * 0.1f * 300f;
+                float viewWidth = Width / dist * 0.1f * 300f;
+
+                Vec4 worldView = matView * Loc;
+
+                if (Vec4.VecClipAgainstPlane(
+                        new Vec4(0, 0, 0.1f),
+                        new Vec4(0, 0, 1),
+                        worldView))
+                {
+                    Vec4 twoD = worldView * matProj;
+
+                    Vec4 scale = twoD / twoD.W;
+                    scale.X *= -1;
+                    scale.Y *= -1;
+                    Vec4 offsetView = new Vec4(1, 1, 0);
+                    scale = scale + offsetView;
+                    scale.X *= 0.5f * drawWidth; scale.Y *= 0.5f * drawHeight;
+
+                    painter.DrawImage(
+                        Texture, TextureWidth, TextureHeight,
+                        new Rectangle(
+                            (int)scale.X - (int)viewWidth / 2,
+                            (int)scale.Y - (int)viewHeight / 2,
+                            (int)viewWidth, (int)viewHeight));
+                }
+            }
         }
     }
 }

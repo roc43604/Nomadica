@@ -255,6 +255,14 @@ namespace JModelling.JModelling
 
             Light[] activeLights = (turnOnLights) ? lights : new Light[] { };
 
+            foreach (Satellite satellite in satellites)
+            {
+                satellite.DrawToCanvas(
+                    camera, painter,
+                    matView, matProj,
+                    DrawWidth, DrawHeight);
+            }
+
             ListNode<Mesh> meshNode = meshList.list; 
             while (meshNode != null)
             {
@@ -271,14 +279,6 @@ namespace JModelling.JModelling
                 }
 
                 DrawTrianglesToPainterCanvas(painter, depthBuffer, GetDrawableTrianglesFromMesh(mesh, hue, activeLights, matView, lightDirection, shadow)); 
-            }
-
-            foreach (Satellite satellite in satellites)
-            {
-                satellite.DrawToCanvas(
-                    camera, painter, depthBuffer,
-                    matView, matProj,
-                    DrawWidth, DrawHeight); 
             }
 
             lastTexture = painter.GetCanvas();
