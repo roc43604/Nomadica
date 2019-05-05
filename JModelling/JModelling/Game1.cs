@@ -68,11 +68,10 @@ namespace JModelling
 
             // TODO: use this.Content to load your game content here
             Load.Init(Services);
-            manager = new JManager(this, Width, Height, graphics, spriteBatch);
-
-            cube = Load.Mesh(@"Content/Models/cube.obj");
 
             generator = new ChunkGenerator(43545544, 20, 20, 2, manager, Load.Mesh(@"Content/Models/cube.obj"));
+
+            cube = Load.Mesh(@"Content/Models/cube.obj");
 
 
             Triangle a = new Triangle(
@@ -94,7 +93,11 @@ namespace JModelling
             cube.SetColor(Color.Yellow);
             cube.Scale(20f, 20f, 20f);
 
+            manager = new JManager(this, Width, Height, graphics, generator, spriteBatch);
             manager.AddMesh(cube);
+
+            generator.manager = manager; 
+
             //manager.AddMesh(meshWater);
         }
 
@@ -128,7 +131,7 @@ namespace JModelling
                 this.Exit();
 
             // TODO: Add your update logic here
-            Vec4 pos = manager.camera.loc;
+            Vec4 pos = manager.player.Camera.loc;
             //Vec4 sizeWater = meshWater.Size;
 
             // cube.MoveTo(pos.X - 50, generator.GetHeightAt(pos.X - 50, pos.Z), pos.Z);
@@ -136,7 +139,7 @@ namespace JModelling
             //Console.WriteLine("[" + pos.X + ":" + pos.Z + "] , [" + generator.GetHeightAt(pos.X - 100, pos.Z) + "]");
 
             // meshWater.MoveTo(pos.X, 1, pos.Z);
-            manager.camera.loc.Y = generator.GetHeightAt(pos.X, pos.Z) + 100;
+            // manager.player.Camera.loc.Y = generator.GetHeightAt(pos.X, pos.Z) + 100;
 
 
             int chunkIndexX = generator.GetIndexX((int)pos.X);
@@ -170,7 +173,7 @@ namespace JModelling
             GraphicsDevice.Clear(Color.Green); 
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone);
             {
-                spriteBatch.Draw(manager.GetSkyboxTexture(), new Rectangle(0, 0, Width, Height), Color.White);
+                spriteBatch.Draw(manager.GetSkyboxTexture(manager.player.Camera), new Rectangle(0, 0, Width, Height), Color.White);
                 spriteBatch.Draw(manager.GetWorldTexture(), new Rectangle(0, 0, Width, Height), Color.White);
             }
             spriteBatch.End();

@@ -76,6 +76,9 @@
     <Compile Include="Chunk\BiomeRegistry.cs" />
     <Compile Include="Chunk\Biomes.cs" />
     <Compile Include="Chunk\Chunk.cs" />
+    <Compile Include="Creature\Creature.cs" />
+    <Compile Include="Creature\MeleeAttacker.cs" />
+    <Compile Include="Creature\Player.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="GraphicsEngine\ImageReference.cs" />
     <Compile Include="GraphicsEngine\Painter.cs" />

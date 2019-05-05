@@ -6,6 +6,8 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework;
+using JModelling.Creature;
+using JModelling.JModelling.Chunk;
 
 namespace JModelling.JModelling
 {
@@ -55,9 +57,15 @@ namespace JModelling.JModelling
         private Painter painter;
 
         /// <summary>
-        /// The thing the user will be seeing through. 
+        /// The thing generating the terrain. Used for collision detection. 
         /// </summary>
-        public Camera camera;
+        private ChunkGenerator cg; 
+
+        /// <summary>
+        /// Represents the player character. Contains a reference to the 
+        /// camera, the thing the player is seeing through. 
+        /// </summary>
+        public Player player;
 
         /// <summary>
         /// The last known location of the mouse. 
@@ -107,13 +115,18 @@ namespace JModelling.JModelling
         public Texture2D lastTexture;
 
         public Light[] lights;
-        private bool turnOnLights; 
+        private bool turnOnLights;
+
+        /// <summary>
+        /// Monster test. 
+        /// </summary>
+        public MeleeAttacker monster; 
 
         /// <summary>
         /// Creates a manager that will construct necessary fields for use
         /// with the methods. 
         /// </summary>
-        public JManager(Game host, int width, int height, GraphicsDeviceManager graphicsDeviceManager, SpriteBatch spriteBatch)
+        public JManager(Game host, int width, int height, GraphicsDeviceManager graphicsDeviceManager, ChunkGenerator cg, SpriteBatch spriteBatch)
         {
             // Assigns the last keyboard state
             lastKb = Keyboard.GetState(); 
@@ -130,6 +143,8 @@ namespace JModelling.JModelling
 
             centerX = width / 2;
             centerY = height / 2;
+
+            this.cg = cg; 
 
             painter = new Painter(width, height, graphicsDeviceManager.GraphicsDevice, spriteBatch);
 
@@ -155,17 +170,15 @@ namespace JModelling.JModelling
             // Projection matrix
             matProj = Matrix.MakeProjection(FOV, (float)height / width, 0.1f, 1000);
 
-            // Create the camera
-            camera = new Camera(0, 0, 0);
+            // Create the player and their camera 
+            Camera camera = new Camera(0, 0, 0);
             camera.yaw = 0;
             camera.pitch = 0;
+            player = new Player(camera); 
 
             // Set the last mouse's position. 
             lastMouseX = -1;
             lastMouseY = -1;
-
-            // Create the billboard test. 
-            billboard = new Billboard(Load.OneDimImage("Images/fire"), 64, 92);
 
             // Create the satellite test.
             satellites = new Satellite[2]; 
@@ -174,7 +187,10 @@ namespace JModelling.JModelling
 
             lights = new Light[1];
             lights[0] = new Light(100f, null);
-            turnOnLights = false;  
+            turnOnLights = false;
+
+            monster = new MeleeAttacker(Load.Mesh(@"Content/Models/cube.obj", 100, 0, 0, 0), camera.loc, 5, 5, 100, 100);
+            //AddMesh(monster.Mesh); 
         }
 
         /// <summary>
@@ -230,10 +246,16 @@ namespace JModelling.JModelling
             Hue hue = GetHue(satellites[0]);
 
             Vec4 lightDirection = satellites[0].Loc;
-            lightDirection.Normalize(); 
+            lightDirection.Normalize();
+
+            // Store camera value for quick accessing
+            Camera camera = player.Camera; 
 
             UpdateInputs();
             skybox.Update(camera.loc);
+
+            // Update monster's movements and actions
+            monster.Update(player, cg); 
 
             // Set light to player's location
             lights[0].Loc = camera.loc; 
@@ -281,6 +303,9 @@ namespace JModelling.JModelling
                 DrawTrianglesToPainterCanvas(painter, depthBuffer, GetDrawableTrianglesFromMesh(mesh, hue, activeLights, matView, lightDirection, shadow)); 
             }
 
+            monster.Mesh.MoveTo(monster.Loc.X, monster.Loc.Y, monster.Loc.Z); 
+            DrawTrianglesToPainterCanvas(painter, depthBuffer, GetDrawableTrianglesFromMesh(monster.Mesh, hue, activeLights, matView, lightDirection, shadow)); 
+
             lastTexture = painter.GetCanvas();
             lastKb = Keyboard.GetState(); 
         }
@@ -290,7 +315,7 @@ namespace JModelling.JModelling
             return lastTexture; 
         }
 
-        public Texture2D GetSkyboxTexture()
+        public Texture2D GetSkyboxTexture(Camera camera)
         {
             painter.CreateCanvas(DrawWidth, DrawHeight);
 
@@ -315,7 +340,7 @@ namespace JModelling.JModelling
             foreach (Triangle original in mesh.Triangles)
             {
                 // Get ray from triangle to camera
-                Vec4 cameraRay = original.Points[0] - camera.loc;
+                Vec4 cameraRay = original.Points[0] - player.Camera.loc;
                 
                 // If ray is aligned with normal, then triangle is visible
                 if (Vec4.DotProduct(original.Normal, cameraRay) < 0)
@@ -1013,7 +1038,7 @@ namespace JModelling.JModelling
                 // If shift is pressed, camera moves quicker.
                 float speed = (kb.IsKeyDown(Controls.Sprint)) ? Camera.FastSpeed : Camera.NormalSpeed;
 
-                camera.Move(speed, moveDir);
+                player.Camera.Move(speed, moveDir);
             }
 
             // If the mouse is focused and has moved since the last frame...
@@ -1109,16 +1134,16 @@ namespace JModelling.JModelling
             x /= Controls.MouseSensitivity;
             y /= Controls.MouseSensitivity;
 
-            camera.yaw += x;
-            camera.pitch += y; 
+            player.Camera.yaw += x;
+            player.Camera.pitch += y; 
 
-            if (camera.yaw > PITimesTwo)
+            if (player.Camera.yaw > PITimesTwo)
             {
-                camera.yaw = 0; 
+                player.Camera.yaw = 0; 
             }
-            else if (camera.yaw < 0)
+            else if (player.Camera.yaw < 0)
             {
-                camera.yaw = PITimesTwo; 
+                player.Camera.yaw = PITimesTwo; 
             }
 
             Mouse.SetPosition(centerX, centerY); 

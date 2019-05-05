@@ -47,7 +47,7 @@ namespace JModelling.JModelling.Chunk
         }
     }
 
-    class ChunkGenerator
+    public class ChunkGenerator
     {
         private const int CHUNK_DEFAULT_X = 200;
         private const int CHUNK_DEFAULT_Z = 200;
@@ -67,7 +67,7 @@ namespace JModelling.JModelling.Chunk
         private int viewDist;
         private Mesh[,] chunkMesh;
         private Mesh cow;
-        private JManager manager;
+        public JManager manager;
 
         private bool generated;
 
