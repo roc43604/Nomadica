@@ -42,9 +42,9 @@ namespace JModelling.JModelling
         /// <summary>
         /// The location of the center of the screen. 
         /// </summary>
-        private int centerX, centerY;
+        public static int centerX, centerY;
 
-        private bool isMouseFocused = true;
+        public bool isMouseFocused = true;
 
         /// <summary>
         /// The extent of the observable game world that is seen on display. 
@@ -59,18 +59,13 @@ namespace JModelling.JModelling
         /// <summary>
         /// The thing generating the terrain. Used for collision detection. 
         /// </summary>
-        private ChunkGenerator cg; 
+        public ChunkGenerator cg; 
 
         /// <summary>
         /// Represents the player character. Contains a reference to the 
         /// camera, the thing the player is seeing through. 
         /// </summary>
         public Player player;
-
-        /// <summary>
-        /// The last known location of the mouse. 
-        /// </summary>
-        private int lastMouseX, lastMouseY;
 
         /// <summary>
         /// All of the meshes/models being used in this scene currently. 
@@ -174,11 +169,7 @@ namespace JModelling.JModelling
             Camera camera = new Camera(0, 0, 0);
             camera.yaw = 0;
             camera.pitch = 0;
-            player = new Player(camera); 
-
-            // Set the last mouse's position. 
-            lastMouseX = -1;
-            lastMouseY = -1;
+            player = new Player(this, camera);
 
             // Create the satellite test.
             satellites = new Satellite[2]; 
@@ -1029,28 +1020,7 @@ namespace JModelling.JModelling
             // Perform any special actions with any special keys. 
             ProcessSpecialKeyInputs(kb);
 
-            // Get where the player should move 
-            Vec4 moveDir = GetMoveDirectionFromKeyboard(kb);
-
-            // If the player has actually moved, then move them
-            if (moveDir != Vec4.Zero) 
-            {
-                // If shift is pressed, camera moves quicker.
-                float speed = (kb.IsKeyDown(Controls.Sprint)) ? Camera.FastSpeed : Camera.NormalSpeed;
-
-                player.Camera.Move(speed, moveDir);
-            }
-
-            // If the mouse is focused and has moved since the last frame...
-            if (isMouseFocused && (ms.X != lastMouseX || ms.Y != lastMouseY))
-            {
-                // Update last known positions.
-                lastMouseX = ms.X;
-                lastMouseY = ms.Y;
-
-                // Process the mouse. 
-                ProcessMouseLoc(ms.X, ms.Y); 
-            }
+            player.Update(kb, ms);
         }
 
         /// <summary>
@@ -1078,75 +1048,6 @@ namespace JModelling.JModelling
             {
                 turnOnLights = !turnOnLights; 
             }
-        }
-
-        /// <summary>
-        /// Gets where the player will be moving, as well as how fast they
-        /// will move, from the keyboard. 
-        /// </summary>
-        private Vec4 GetMoveDirectionFromKeyboard(KeyboardState kb)
-        {
-            // Will add each movement vector to this base vector if the 
-            // associated movement key is pressed. 
-            Vec4 direction = new Vec4(); 
-
-            // Forward/Backwards
-            if (kb.IsKeyDown(Controls.Forward))
-            {
-                direction += new Vec4(0, 0, 1); 
-            }    
-            if (kb.IsKeyDown(Controls.Backwards))
-            {
-                direction += new Vec4(0, 0, -1); 
-            }
-            
-            // Left/Right
-            if (kb.IsKeyDown(Controls.Left))
-            {
-                direction += new Vec4(1, 0, 0); 
-            }
-            if (kb.IsKeyDown(Controls.Right))
-            {
-                direction += new Vec4(-1, 0, 0); 
-            }
-
-            // Up/Down
-            if (kb.IsKeyDown(Controls.Up))
-            {
-                direction += new Vec4(0, 1, 0); 
-            }
-            if (kb.IsKeyDown(Controls.Down))
-            {
-                direction += new Vec4(0, -1, 0);
-            }
-
-            return direction; 
-        }
-
-        public void ProcessMouseLoc(int xLoc, int yLoc)
-        {
-            float x = (float)xLoc;
-            float y = (float)yLoc; 
-
-            x -= centerX;
-            y -= centerY; 
-
-            x /= Controls.MouseSensitivity;
-            y /= Controls.MouseSensitivity;
-
-            player.Camera.yaw += x;
-            player.Camera.pitch += y; 
-
-            if (player.Camera.yaw > PITimesTwo)
-            {
-                player.Camera.yaw = 0; 
-            }
-            else if (player.Camera.yaw < 0)
-            {
-                player.Camera.yaw = PITimesTwo; 
-            }
-
-            Mouse.SetPosition(centerX, centerY); 
         }
     }
 }

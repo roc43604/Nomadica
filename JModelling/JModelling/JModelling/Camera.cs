@@ -55,7 +55,12 @@ namespace JModelling.JModelling
 
         public void Move(float speed, Vec4 direction)
         {
-            loc = loc + GetLookDir(direction) * speed; 
+            Vec4 lookDir = GetLookDir(direction);
+            lookDir.X *= speed;
+            lookDir.Z *= speed;
+            lookDir.Y *= NormalSpeed; // Should always be normal speed. Holding sprint won't
+                                      // make you fall any quicker. 
+            loc = loc + lookDir; 
         }
 
         public Vec4 GetLookDir(Vec4 direction)
