@@ -28,6 +28,12 @@ namespace JModelling.JModelling
         public Vec4 Size;
 
         /// <summary>
+        /// A box defined around this model that denotes the
+        /// area the player can hit. 
+        /// </summary>
+        public BoundingBox bounds; 
+
+        /// <summary>
         /// A list of all of the triangles that connect the 
         /// points together. 
         /// </summary>
@@ -83,6 +89,9 @@ namespace JModelling.JModelling
                     Points[i] = points[i];
                 }
 
+                bounds = new BoundingBox(new Vector3(minX, minY, minZ), new Vector3(maxX, maxY, maxZ));
+                Console.WriteLine(bounds); 
+
                 maxX = Math.Abs(maxX);
                 maxY = Math.Abs(maxY);
                 maxZ = Math.Abs(maxZ);
@@ -98,7 +107,6 @@ namespace JModelling.JModelling
             }
         }
 
-
         /// <summary>
         /// Clones this <see cref="Mesh"/> 
         /// </summary>
@@ -113,8 +121,6 @@ namespace JModelling.JModelling
 
             return new Mesh(tris);
         }
-
-
 
         /// <summary>
         /// Scales a mesh 
@@ -195,8 +201,6 @@ namespace JModelling.JModelling
 
         }
 
-
-
         public void SetColor(Color color)
         {
             for (int i = 0; i < Triangles.Length; i++)
@@ -204,9 +208,6 @@ namespace JModelling.JModelling
                 Triangles[i].Color = color;
             }
         }
-
-
-
 
         /// <returns>A printable statement of what this mesh is
         /// represented by (which is each of its triangles's 

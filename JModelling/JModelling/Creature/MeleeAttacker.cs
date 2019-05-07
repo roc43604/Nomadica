@@ -14,6 +14,11 @@ namespace JModelling.Creature
     /// </summary>
     public class MeleeAttacker : Creature
     {
+        /// <summary>
+        /// The angle this creature makes to the player. 
+        /// </summary>
+        public float AngleToPlayer; 
+
         public MeleeAttacker(Mesh mesh, Vec4 Location, float Speed, int Damage, int Health, int NoticeDistance) 
             : base(mesh, Location, Speed, Damage, Health, NoticeDistance)
         { }
@@ -27,13 +32,20 @@ namespace JModelling.Creature
             // Move forward towards player
             float deltaX = Loc.X - player.Camera.loc.X;
             float deltaZ = Loc.Z - player.Camera.loc.Z;
-            float angle = (float)Math.Atan2(deltaZ, deltaX);
+            AngleToPlayer = (float)Math.Atan2(deltaZ, deltaX) + (float)Math.PI;
 
-            Loc.X -= (float)Math.Cos(angle) * Speed;
-            Loc.Z -= (float)Math.Sin(angle) * Speed;
+            Loc.X += (float)Math.Cos(AngleToPlayer) * Speed;
+            Loc.Z += (float)Math.Sin(AngleToPlayer) * Speed;
 
             // Monster should be on floor, not floating
-            Loc.Y = cg.GetHeightAt(Loc.X, Loc.Z) + 60;
+            Loc.Y = cg.GetHeightAt(Loc.X, Loc.Z) + (Mesh.bounds.Max.Y - Mesh.bounds.Min.Y) / 2;
+
+            // If collides with player, let them know
+            float dist = MathExtensions.Dist(Loc, player.Camera.loc); 
+            if (!player.tookDamage && dist < (Mesh.bounds.Max.X - Mesh.bounds.Min.X))
+            {
+                player.TookDamage(this);
+            }
         }
     }
 }

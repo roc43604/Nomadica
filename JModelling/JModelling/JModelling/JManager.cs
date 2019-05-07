@@ -102,7 +102,6 @@ namespace JModelling.JModelling
         /// A test for the skybox. 
         /// </summary>
         private SkyBox skybox;
-        private Mesh skyboxMesh;
 
         private float NormalShadowImportance = 0.25f;
         private float SunShadowImportance = 0.75f;
@@ -173,14 +172,14 @@ namespace JModelling.JModelling
 
             // Create the satellite test.
             satellites = new Satellite[2]; 
-            satellites[0] = new Satellite((float)(Math.PI / 60 / 10), Load.OneDimImage(@"Images/sun"), 2000, 2000, 0f, 500, 500, 300);
-            satellites[1] = new Satellite((float)(Math.PI / 60 / 10), Load.OneDimImage(@"Images/moon"), 1859, 1897, (float)(Math.PI), 500, 500, 800);
+            satellites[0] = new Satellite((float)(Math.PI / 60 / 1000), Load.OneDimImage(@"Images/sun"), 2000, 2000, (float)(Math.PI/2d), 500, 500, 300);
+            satellites[1] = new Satellite((float)(Math.PI / 60 / 1000), Load.OneDimImage(@"Images/moon"), 1859, 1897, (float)(Math.PI/2d*3d), 500, 500, 800);
 
             lights = new Light[1];
             lights[0] = new Light(100f, null);
             turnOnLights = false;
 
-            monster = new MeleeAttacker(Load.Mesh(@"Content/Models/cube.obj", 100, 0, 0, 0), camera.loc, 5, 5, 100, 100);
+            monster = new MeleeAttacker(Load.Mesh(@"Content/Models/cube.obj", 25, 0, 0, 0), camera.loc, Camera.NormalSpeed * 0.666f, 5, 100, 100);
             //AddMesh(monster.Mesh); 
         }
 

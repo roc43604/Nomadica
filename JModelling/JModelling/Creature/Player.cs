@@ -22,7 +22,7 @@ namespace JModelling.Creature
         /// How tall the player model is, from the ground to where
         /// their eyes are. 
         /// </summary>
-        private const int Height = 60;
+        private const int Height = 20;
 
         /// <summary>
         /// The last known location of the mouse. 
@@ -48,7 +48,18 @@ namespace JModelling.Creature
         /// The last velocity vector the player had. Will update
         /// each frame. 
         /// </summary>
-        private Vec4 lastVelocity; 
+        private Vec4 lastVelocity;
+
+        /// <summary>
+        /// Whether or not the player is on the ground. 
+        /// </summary>
+        private bool isOnGround;
+
+        /// <summary>
+        /// Whether or not the player has taken damage in an amount
+        /// of time. 
+        /// </summary>
+        public bool tookDamage; 
 
         public Player(JManager manager, Camera Camera)
         {
@@ -59,7 +70,20 @@ namespace JModelling.Creature
             this.Camera = Camera;
             Health = 100;
 
-            lastVelocity = Vec4.Zero; 
+            lastVelocity = Vec4.Zero;
+            isOnGround = false;
+            tookDamage = false; 
+        }
+
+        /// <summary>
+        /// Contains the actions taken after some creature attacks the player. 
+        /// </summary>
+        public void TookDamage(Creature attacker)
+        {
+            Health -= attacker.Damage;
+            tookDamage = true;
+            isOnGround = false; 
+            lastVelocity.Y += 1;  
         }
 
         /// <summary>
@@ -71,13 +95,8 @@ namespace JModelling.Creature
             // Get where the player should move 
             Vec4 moveDir = GetMoveDirectionFromKeyboard(kb);
 
-            // If the player jumped
-            if (moveDir.Y != 0)
-            {
-                
-            }
-            // Otherwise, add gravity
-            else
+            // If the player is in the air
+            if (!isOnGround)
             {
                 moveDir.Y = lastVelocity.Y - Gravity;
             }
@@ -93,6 +112,12 @@ namespace JModelling.Creature
             {
                 Camera.loc.Y = ground + Height;
                 moveDir.Y = 0;
+                isOnGround = true;
+                tookDamage = false; 
+            }
+            else
+            {
+                isOnGround = false; 
             }
 
             // If the mouse is focused and has moved since the last frame...
@@ -140,13 +165,9 @@ namespace JModelling.Creature
             }
 
             // Up/Down
-            if (kb.IsKeyDown(Controls.Up))
+            if (kb.IsKeyDown(Controls.Up) && isOnGround)
             {
                 direction.Y += 1; 
-            }
-            if (kb.IsKeyDown(Controls.Down))
-            {
-                direction.Y -= 1; 
             }
 
             return direction;
