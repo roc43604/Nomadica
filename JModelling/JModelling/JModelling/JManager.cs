@@ -114,7 +114,7 @@ namespace JModelling.JModelling
         /// <summary>
         /// Monster test. 
         /// </summary>
-        public MeleeAttacker monster; 
+        public static MeleeAttacker monster; 
 
         /// <summary>
         /// Creates a manager that will construct necessary fields for use

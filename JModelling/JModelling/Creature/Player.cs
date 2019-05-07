@@ -16,7 +16,12 @@ namespace JModelling.Creature
         /// <summary>
         /// How fast the player will fall downwards each frame. 
         /// </summary>
-        private const float Gravity = 0.04f;
+        public const float Gravity = 0.04f;
+
+        /// <summary>
+        /// How far the player can attack with their weapon. 
+        /// </summary>
+        private const int WeaponDist = 60; 
 
         /// <summary>
         /// How tall the player model is, from the ground to where
@@ -87,6 +92,32 @@ namespace JModelling.Creature
         }
 
         /// <summary>
+        /// Contains the actions taken after the player attacks with their weapon. 
+        /// </summary>
+        private void Attacked()
+        {
+            // If weaponLoc is within the monster's range, they take damage.
+            if (Math.Abs((Camera.yaw + JManager.PITimesTwo) - (MathExtensions.Wrap(JManager.monster.AngleToPlayer + (float)Math.PI / 2f) + JManager.PITimesTwo)) < (Math.PI / 7)
+                )
+            {
+                if (MathExtensions.Dist(Camera.loc, JManager.monster.Loc) < WeaponDist)
+                {
+                    JManager.monster.TookDamage(this);
+                }
+                //Console.WriteLine("Yes!!!\t\t" + (Camera.yaw - MathExtensions.Wrap(JManager.monster.AngleToPlayer + (float)Math.PI / 2f)));
+                
+            }
+            else
+            {
+                //Console.WriteLine("No!!!\t\t" + ((Camera.yaw + JManager.PITimesTwo) - (MathExtensions.Wrap(JManager.monster.AngleToPlayer + (float)Math.PI / 2f) + JManager.PITimesTwo)));
+            }
+
+            //Console.WriteLine(MathExtensions.Wrap(JManager.monster.AngleToPlayer + (float)Math.PI / 2f));
+            //Console.WriteLine(Camera.yaw);
+            //Console.WriteLine(); 
+        }
+
+        /// <summary>
         /// Updates the location of the player, as well as any 
         /// variables set to show what the player is doing. 
         /// </summary>
@@ -131,6 +162,12 @@ namespace JModelling.Creature
                 ProcessMouseLoc(ms.X, ms.Y);
             }
             
+            // If user clicked, process an attack. 
+            if (ms.LeftButton == ButtonState.Pressed)
+            {
+                Attacked();
+            }
+
             lastVelocity = moveDir; 
         }
 

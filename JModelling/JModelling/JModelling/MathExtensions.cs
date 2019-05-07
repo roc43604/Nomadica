@@ -30,5 +30,33 @@ namespace JModelling.JModelling
             normal.Normalize();
             triangle.Normal = normal;
         }
+
+        public static float Clamp(float num, float min, float max)
+        {
+            if (num < min)
+            {
+                return min; 
+            }
+            else if (num > max)
+            {
+                return max; 
+            }
+            else
+            {
+                return num; 
+            }
+        }
+
+        public static float Wrap(float num)
+        {
+            float val = num % JManager.PITimesTwo;
+            
+            if (val < 0)
+            {
+                val += JManager.PITimesTwo; 
+            }
+
+            return val; 
+        }
     }
 }
