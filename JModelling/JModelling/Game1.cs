@@ -99,7 +99,7 @@ namespace JModelling
 
             cube = Load.Mesh(@"Content/Models/cube.obj");
             
-            generator = new ChunkGenerator(43545544, 10, 10, 8, manager, Load.Mesh(@"Content/Models/cube.obj"));
+            generator = new ChunkGenerator(43545544, 10, 10, 4, manager, Load.Mesh(@"Content/Models/cube.obj"));
 
 
             Triangle a = new Triangle(
@@ -170,10 +170,18 @@ namespace JModelling
 
             Vec4 pos = manager.camera.loc;
 
+            manager.UpdateInputs();
+            float heightAt = generator.GetHeightAt(pos.X, pos.Z) + 20;
             switch (movementMode)
             {
                 case MovementMode.Normal:
-                    manager.camera.loc.Y = generator.GetHeightAt(pos.X, pos.Z) + 100;
+                    manager.camera.loc.Y = heightAt;
+                    break;
+                case MovementMode.Fly:
+                    if (manager.camera.loc.Y < heightAt)
+                    {
+                        manager.camera.loc.Y = heightAt;
+                    }
                     break;
             }
 
@@ -210,13 +218,11 @@ namespace JModelling
             oldKeyState = keyState;
 
 
-
-            Thread.Sleep(1);
             //////////////////////////////////////////////////////////////////////////////////
             stopWatch.Stop();
             if (gameTime.TotalGameTime.TotalMilliseconds - debug_LastUpdate > debugUpdateInterval)
             {
-                debug_UPS = 1000 / stopWatch.ElapsedMilliseconds;
+                debug_UPS = 1000 / (stopWatch.ElapsedMilliseconds+1);
 
 
                 debug_LastUpdate = gameTime.TotalGameTime.TotalMilliseconds;
@@ -239,13 +245,13 @@ namespace JModelling
 
 
             manager.Update();
+            
 
-            Thread.Sleep(1);
             //////////////////////////////////////////////////////////////////////////////////
             stopWatch.Stop();
             if (gameTime.TotalGameTime.TotalMilliseconds - debug_LastUpdate > debugUpdateInterval)
             {
-                debug_FPS = (1000) / (stopWatch.ElapsedMilliseconds);
+                debug_FPS = (1000) / (stopWatch.ElapsedMilliseconds+1);
                
             }
 

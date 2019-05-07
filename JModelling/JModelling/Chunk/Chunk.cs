@@ -97,14 +97,19 @@ namespace JModelling.JModelling.Chunk
 
         public float GetHeightAt(float posX, float posZ)
         {
-            //  float posXn = posX/zoom / (triSizeX);
+            Biome biome = BiomeRegistry.GetBiomeFor(
+                colorNoise.Noise(
+                    GetIndexX((int)posX),
+                    GetIndexZ((int)posZ),
+                    0.5
+                )
+            );
 
-            //  return (float)chunkNoise.Noise(
-            //      posX / zoom / (triSizeX),
-            //      posZ / zoom / (triSizeZ),
-            //      modi
-            //  ) * amp;
-            return 0;
+            return (float)chunkNoise.CreateNoiseHeight(
+                posX / biome.zoom / (triSizeX),
+                posZ / biome.zoom / (triSizeZ),
+                biome.thatMagicNumber
+            ) * biome.amp;
         }
 
         public Biome BiomeAt(Vec4 pos)
@@ -126,36 +131,57 @@ namespace JModelling.JModelling.Chunk
                 for (int cz = 0; cz<viewDist * 2; cz++)
                 {
                     int increment = 1;
-                    //int distFromMid = Math.Abs(viewDist - cx);
-                    //if (distFromMid > 2)
-                   // {
-                    //    increment = 2;
-                    //}
+                    int distFromMid = Math.Abs(viewDist - cx);
+                    if (distFromMid > 2)
+                    {
+                       increment = 2;
+                    }
 
-                    Triangle[] tris = new Triangle[chunkSizeX * chunkSizeZ * 2];
+                    Triangle[] tris = new Triangle[(chunkSizeX * chunkSizeZ * 2)/increment];
 
                     //Create tris
                     int idx = 0;
-                    for (int x = 0; x < chunkSizeX; x+=increment)
-                    {
-                        for (int z = 0; z < chunkSizeZ; z+=increment)
-                        {
-                            int xF = (x + (indexX - viewDist + cx) * chunkSizeX);
-                            int zF = (z + (indexZ - viewDist + cz) * chunkSizeZ);
 
-                            Biome chunkBiome = BiomeRegistry.GetBiomeFor(
+                    Biome chunkBiome = BiomeRegistry.GetBiomeFor(
+                        colorNoise.Noise(
+                            cx,//(indexX + cx),
+                            cz,//(indexZ + cz),
+                            0.5
+                        )
+                    );
+
+                    for (int x = 0; x < chunkSizeX; x++)
+                    {
+                        if (idx >= tris.Length)
+                        {
+                            continue;
+                        }
+                        for (int z = 0; z < chunkSizeZ; z++)
+                        {
+                            if (idx >= tris.Length)
+                            {
+                                continue;
+                            }
+
+                            int xF = (x + (indexX - viewDist + cx) * chunkSizeX)*increment;
+                            int zF = (z + (indexZ - viewDist + cz) * chunkSizeZ)*increment;
+                            
+
+                            /*Biome chunkBiome = BiomeRegistry.GetBiomeFor(
                                 colorNoise.Noise(
                                     xF,//(indexX + cx),
                                     zF,//(indexZ + cz),
                                     0.5
                                 )
                             );
-
+                            */
 
                             float amp = chunkBiome.amp;
                             float zoom = chunkBiome.zoom;
                             float modi = chunkBiome.thatMagicNumber;
 
+                            //amp *= increment;
+                            //zoom *= increment;
                             // double amp = 700;
                             // double zoom = 15;
 
@@ -187,14 +213,14 @@ namespace JModelling.JModelling.Chunk
                             //Top Right, Bottom Left, Top Left
                             Triangle nA = new Triangle(new Vec4[] {
                                 new Vec4(
-                                    basePX + triSizeX,
+                                    basePX + triSizeX*increment,
                                     (float)tR,
                                     basePZ
                                 ),
                                 new Vec4(
                                     basePX,
                                     (float)bL,
-                                    basePZ + triSizeZ
+                                    basePZ + triSizeZ*increment
                                 ),
                                 new Vec4(
                                     basePX,
@@ -213,19 +239,19 @@ namespace JModelling.JModelling.Chunk
                             //Bottom Left, Bottom Right, Top Right
                             Triangle nB = new Triangle(new Vec4[] {
                                 new Vec4(
-                                    basePX + triSizeX,
+                                    basePX + triSizeX*increment,
                                     (float)bR,
-                                    basePZ + triSizeZ
+                                    basePZ + triSizeZ*increment
                                 ),
                                 new Vec4(
-                                    basePX + triSizeX,
+                                    basePX + triSizeX*increment,
                                     (float)tR,
                                     basePZ
                                 ),
                                 new Vec4(
                                     basePX,
                                     (float)bL,
-                                    basePZ + triSizeZ
+                                    basePZ + triSizeZ*increment
                                 )
                             });
                             nB.Normal = Vec4.CrossProduct(
@@ -261,12 +287,14 @@ namespace JModelling.JModelling.Chunk
 
                             nB.Color = curColor;
                             nA.Color = curColor;
+
                             
-                            if (MathHelper.ToDegrees((float)Math.Sin(nA.Normal.Y)) < 40)
+                             if (MathHelper.ToDegrees((float)Math.Sin(nA.Normal.Y)) < 40)
                             {
                                 nA.Color = Color.Gray;
                             }
-                            if (MathHelper.ToDegrees((float)Math.Sin(nB.Normal.Y)) < 40)
+                            
+                             if (MathHelper.ToDegrees((float)Math.Sin(nB.Normal.Y)) < 40)
                             {
                                 nB.Color = Color.Gray;
                             }

@@ -111,8 +111,8 @@ namespace JModelling.JModelling
             Width = width;
             Height = height;
 
-            DrawWidth = (int)(width / 4);
-            DrawHeight = (int)(height / 4);
+            DrawWidth = (int)(width / 2);
+            DrawHeight = (int)(height / 2);
 
             centerX = width / 2;
             centerY = height / 2;
@@ -206,8 +206,7 @@ namespace JModelling.JModelling
 
             Vec4 lightDirection = sun.Loc;
             lightDirection.Normalize(); 
-
-            UpdateInputs();
+            
             //skybox.Update(camera.loc);
 
             sun.Step(camera.loc);

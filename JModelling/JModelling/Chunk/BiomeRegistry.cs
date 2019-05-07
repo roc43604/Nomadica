@@ -10,8 +10,8 @@ namespace JModelling.Chunk
     {
 
         private readonly static Biome[] BIOMES = new Biome[]{
-            new Biome("Nomral", new Color[] {Color.LawnGreen}, new Color[] { }, 4000, 75, 0.5f),
-            //new Biome("Desert", new Color[] {Color.Tan, Color.Red, Color.Black}, new Color[] { }, 4000, 55, 0.5f)
+            new Biome("Mountain", new Color[] {Color.LawnGreen}, new Color[] { }, 4000, 100, 100f),
+            //new Biome("Desert", new Color[] {Color.Tan, Color.Red, Color.Black}, new Color[] { }, 2000, 100, 0f)
         };
 
 
@@ -39,7 +39,6 @@ namespace JModelling.Chunk
             for (int i=0; i<leftover; i++)
             {
                 biomeReg[leftover + i - 1] = BIOMES[BIOMES.Length-1];
-                //biomeIndex = (biomeIndex + 1) % BIOMES.Length;
             }
             
         }
