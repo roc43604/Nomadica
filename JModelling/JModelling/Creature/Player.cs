@@ -87,8 +87,10 @@ namespace JModelling.Creature
         {
             Health -= attacker.Damage;
             tookDamage = true;
-            isOnGround = false; 
-            lastVelocity.Y += 1;  
+            isOnGround = false;
+
+            lastVelocity = ((MeleeAttacker)attacker).TravelVector;
+            lastVelocity.Y = 1; 
         }
 
         /// <summary>
@@ -97,8 +99,7 @@ namespace JModelling.Creature
         private void Attacked()
         {
             // If weaponLoc is within the monster's range, they take damage.
-            if (Math.Abs((Camera.yaw + JManager.PITimesTwo) - (MathExtensions.Wrap(JManager.monster.AngleToPlayer + (float)Math.PI / 2f) + JManager.PITimesTwo)) < (Math.PI / 7)
-                )
+            if (Math.Abs((Camera.yaw + JManager.PITimesTwo) - (MathExtensions.Wrap(JManager.monster.AngleToPlayer + (float)Math.PI / 2f) + JManager.PITimesTwo)) < (Math.PI / 7))
             {
                 if (MathExtensions.Dist(Camera.loc, JManager.monster.Loc) < WeaponDist)
                 {
@@ -124,7 +125,11 @@ namespace JModelling.Creature
         public void Update(KeyboardState kb, MouseState ms)
         {
             // Get where the player should move 
-            Vec4 moveDir = GetMoveDirectionFromKeyboard(kb);
+            Vec4 moveDir = lastVelocity.Clone(); 
+            if (!tookDamage)
+            {
+                moveDir = GetMoveDirectionFromKeyboard(kb);
+            }
 
             // If the player is in the air
             if (!isOnGround)
@@ -135,7 +140,14 @@ namespace JModelling.Creature
             // Move the player. If the sprint key is pressed, move their x/z velocity quicker. 
             float speed = (kb.IsKeyDown(Controls.Sprint)) ? Camera.FastSpeed : Camera.NormalSpeed;
 
-            Camera.Move(speed, moveDir);
+            if (tookDamage)
+            {
+                Camera.MoveWorldSpace(Camera.NormalSpeed, lastVelocity); 
+            }
+            else
+            {
+                Camera.MoveViewSpace(speed, moveDir);
+            }
 
             // If player is below ground, set them on the ground. 
             float ground = manager.cg.GetHeightAt(Camera.loc.X, Camera.loc.Z);

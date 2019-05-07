@@ -26,14 +26,16 @@ namespace JModelling.Creature
 
         private bool tookDamage;
 
-        private Vec4 gravityVelocity; 
+        private Vec4 gravityVelocity;
+        public Vec4 TravelVector; 
 
         public MeleeAttacker(Mesh mesh, Vec4 Location, float Speed, int Damage, int Health, int NoticeDistance) 
             : base(mesh, Location, Speed, Damage, Health, NoticeDistance)
         {
             Height = (Mesh.bounds.Max.Y - Mesh.bounds.Min.Y) / 2;
             tookDamage = false;
-            gravityVelocity = Vec4.Zero; 
+            gravityVelocity = Vec4.Zero;
+            TravelVector = Vec4.Zero; 
         }
 
         /// <summary>
@@ -53,8 +55,9 @@ namespace JModelling.Creature
                 float deltaZ = Loc.Z - player.Camera.loc.Z;
                 AngleToPlayer = (float)Math.Atan2(deltaZ, deltaX) + (float)Math.PI;
 
-                Loc.X += (float)Math.Cos(AngleToPlayer) * Speed;
-                Loc.Z += (float)Math.Sin(AngleToPlayer) * Speed;
+                TravelVector = new Vec4((float)Math.Cos(AngleToPlayer), 0, (float)Math.Sin(AngleToPlayer)); 
+                Loc.X += TravelVector.X * Speed;
+                Loc.Z += TravelVector.Z * Speed;
             }
 
             // Monster should be on floor, not floating

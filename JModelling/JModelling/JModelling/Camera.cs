@@ -53,14 +53,26 @@ namespace JModelling.JModelling
             loc = new Vec4(x, y, z);
         }
 
-        public void Move(float speed, Vec4 direction)
+        /// <summary>
+        /// Moves the player in view-space, orienting movement around
+        /// key inputs. For example, Controls.Back will move player 
+        /// backwards from where they're facing. 
+        /// </summary>
+        public void MoveViewSpace(float speed, Vec4 direction)
         {
-            Vec4 lookDir = GetLookDir(direction);
-            lookDir.X *= speed;
-            lookDir.Z *= speed;
-            lookDir.Y *= NormalSpeed; // Should always be normal speed. Holding sprint won't
-                                      // make you fall any quicker. 
-            loc = loc + lookDir; 
+            MoveWorldSpace(speed, GetLookDir(direction));
+        }
+
+        /// <summary>
+        /// Moves the player in world-space, not view space. 
+        /// </summary>
+        public void MoveWorldSpace(float speed, Vec4 direction)
+        {
+            direction.X *= speed;
+            direction.Z *= speed;
+            direction.Y *= NormalSpeed; // Should always be normal speed. Holding sprint won't
+                                        // make you fall any quicker. 
+            loc = loc + direction; 
         }
 
         public Vec4 GetLookDir(Vec4 direction)
