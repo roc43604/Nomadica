@@ -70,7 +70,7 @@ namespace JModelling.JModelling
         /// <summary>
         /// All of the meshes/models being used in this scene currently. 
         /// </summary>
-        private Mesh[] meshes;
+        // private Mesh[] meshes;
         private ListUtil<Mesh> meshList;
         private Dictionary<Mesh, ListNode<Mesh>> meshListNodeDict;
 
@@ -1046,6 +1046,12 @@ namespace JModelling.JModelling
             else if (kb.IsKeyDown(Controls.LightButton) && lastKb.IsKeyUp(Controls.LightButton))
             {
                 turnOnLights = !turnOnLights; 
+            }
+
+            // If DebugButton is pressed, toggle debug menu. 
+            else if (kb.IsKeyDown(Controls.DebugButton) && lastKb.IsKeyUp(Controls.DebugButton))
+            {
+                Game1.DebugEnabled = !Game1.DebugEnabled; 
             }
         }
     }

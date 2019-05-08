@@ -21,7 +21,12 @@ namespace JModelling.JModelling
         /// Will tell the program whether or not it should read mouse inputs
         /// and reset mouse position. 
         /// </summary>
-        public const Keys FocusOrUnfocusMouse = Keys.Tab; 
+        public const Keys FocusOrUnfocusMouse = Keys.Tab;
+
+        /// <summary>
+        /// Whether or not the debug menu should be showing. 
+        /// </summary>
+        public const Keys DebugButton = Keys.F3; 
 
         /// <summary>
         /// Movement keys that move the player in a certain direction. 

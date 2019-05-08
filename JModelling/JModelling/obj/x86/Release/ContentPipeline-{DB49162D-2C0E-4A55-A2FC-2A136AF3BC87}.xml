@@ -64,6 +64,15 @@
       <Output>C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\Images\sun.xnb</Output>
       <Time>2019-05-07T19:14:55.3295258-05:00</Time>
     </Item>
+    <Item>
+      <Source>DebugFont.spritefont</Source>
+      <Name>DebugFont</Name>
+      <Importer>FontDescriptionImporter</Importer>
+      <Processor>FontDescriptionProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\DebugFont.xnb</Output>
+      <Time>2019-05-07T20:33:49.7579392-05:00</Time>
+    </Item>
     <BuildSuccessful>true</BuildSuccessful>
     <Settings>
       <ContentProjectGUID>{DB49162D-2C0E-4A55-A2FC-2A136AF3BC87}</ContentProjectGUID>

@@ -11,6 +11,7 @@ using Microsoft.Xna.Framework.Media;
 using JModelling.JModelling;
 using GraphicsEngine;
 using JModelling.JModelling.Chunk;
+using System.Diagnostics;
 
 namespace JModelling
 {
@@ -31,8 +32,12 @@ namespace JModelling
         int curChunkX = -1;
         int curChunkZ = -1;
 
-        private Mesh cube;
-        private Mesh meshWater;
+        private SpriteFont debugFont;
+        public static bool DebugEnabled;
+        private int debugUpdateInterval = 250;
+        private double debugLastUpdate;
+        private double debugFPS;
+        private double debugUPS; 
 
         public Game1()
         {
@@ -53,6 +58,7 @@ namespace JModelling
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
+            DebugEnabled = false; 
 
             base.Initialize();
         }
@@ -68,37 +74,13 @@ namespace JModelling
 
             // TODO: use this.Content to load your game content here
             Load.Init(Services);
+            debugFont = Content.Load<SpriteFont>("DebugFont"); 
 
             generator = new ChunkGenerator(43545544, 20, 20, 2, manager, Load.Mesh(@"Content/Models/cube.obj"));
 
-            cube = Load.Mesh(@"Content/Models/cube.obj");
-
-
-            Triangle a = new Triangle(
-                new Vec4(1, 0, 1), new Vec4(0, 0, 1), new Vec4(1, 0, 0)
-            );
-            a.Normal = new Vec4(0, 1, 0);
-            a.NormalLength = 1;
-            Triangle b = new Triangle(
-                  new Vec4(0, 0, 0), new Vec4(0, 0, 1), new Vec4(1, 0, 0)
-             );
-            b.Normal = new Vec4(0, 1, 0);
-            b.NormalLength = 1;
-
-            meshWater = new Mesh(new Triangle[] { a, b });
-            meshWater.Scale(1000f, 1000f, 1000f);
-            meshWater.Translate(0, 1, 0);
-            meshWater.SetColor(Color.LightSteelBlue);
-
-            cube.SetColor(Color.Yellow);
-            cube.Scale(20f, 20f, 20f);
-
             manager = new JManager(this, Width, Height, graphics, generator, spriteBatch);
-            manager.AddMesh(cube);
 
-            generator.manager = manager; 
-
-            //manager.AddMesh(meshWater);
+            generator.manager = manager;
         }
 
         /// <summary>
@@ -131,16 +113,11 @@ namespace JModelling
                 this.Exit();
 
             // TODO: Add your update logic here
+            Stopwatch stopWatch = Stopwatch.StartNew();
+            stopWatch.Start(); 
+
+            ////////////////////////////////////////////////////////////////////////////////////
             Vec4 pos = manager.player.Camera.loc;
-            //Vec4 sizeWater = meshWater.Size;
-
-            // cube.MoveTo(pos.X - 50, generator.GetHeightAt(pos.X - 50, pos.Z), pos.Z);
-
-            //Console.WriteLine("[" + pos.X + ":" + pos.Z + "] , [" + generator.GetHeightAt(pos.X - 100, pos.Z) + "]");
-
-            // meshWater.MoveTo(pos.X, 1, pos.Z);
-            // manager.player.Camera.loc.Y = generator.GetHeightAt(pos.X, pos.Z) + 100;
-
 
             int chunkIndexX = generator.GetIndexX((int)pos.X);
             int chunkIndexZ = generator.GetIndexZ((int)pos.Z);
@@ -155,10 +132,15 @@ namespace JModelling
 
                 curChunkX = chunkIndexX;
                 curChunkZ = chunkIndexZ;
-
             }
-
-            manager.Update(); 
+            manager.Update();
+            ////////////////////////////////////////////////////////////////////////////////////
+            stopWatch.Stop(); 
+            if (gameTime.TotalGameTime.TotalMilliseconds - debugLastUpdate > debugUpdateInterval)
+            {
+                debugUPS = 1000 / (stopWatch.ElapsedMilliseconds + 1);
+                debugLastUpdate = gameTime.TotalGameTime.TotalMilliseconds; 
+            }
 
             base.Update(gameTime);
         }
@@ -170,15 +152,57 @@ namespace JModelling
         protected override void Draw(GameTime gameTime)
         {
             // TODO: Add your drawing code here
+            Stopwatch stopWatch = Stopwatch.StartNew();
+            stopWatch.Start();
+
+            ////////////////////////////////////////////////////////////////////////////////////
             GraphicsDevice.Clear(Color.Green); 
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone);
+            spriteBatch.Draw(manager.GetSkyboxTexture(manager.player.Camera), new Rectangle(0, 0, Width, Height), Color.White);
+            spriteBatch.Draw(manager.GetWorldTexture(), new Rectangle(0, 0, Width, Height), Color.White);
+            ////////////////////////////////////////////////////////////////////////////////////
+            stopWatch.Stop(); 
+            if (gameTime.TotalGameTime.TotalMilliseconds - debugLastUpdate > debugUpdateInterval)
             {
-                spriteBatch.Draw(manager.GetSkyboxTexture(manager.player.Camera), new Rectangle(0, 0, Width, Height), Color.White);
-                spriteBatch.Draw(manager.GetWorldTexture(), new Rectangle(0, 0, Width, Height), Color.White);
+                debugFPS = (1000) / (stopWatch.ElapsedMilliseconds + 1); 
             }
-            spriteBatch.End();
 
-            //Console.WriteLine(1f / (float)(gameTime.ElapsedGameTime.TotalSeconds)); 
+            if (DebugEnabled)
+            {
+                spriteBatch.DrawString(
+                debugFont,
+                "FPS   : " + debugFPS,
+                new Vector2(5, 5),
+                Color.Black
+            );
+                spriteBatch.DrawString(
+                    debugFont,
+                    "UPS   : " + debugUPS,
+                    new Vector2(5, debugFont.LineSpacing + 5),
+                    Color.Black
+                );
+                //spriteBatch.DrawString(
+                //    debugFont,
+                //    "Mode  : " + movementMode,
+                //    new Vector2(5, debugFont.LineSpacing * 2 + 5),
+                //    Color.White
+                //);
+                spriteBatch.DrawString(
+                    debugFont,
+                    "Biome : " + generator.BiomeAt(manager.player.Camera.loc).ToString(),
+                    new Vector2(5, debugFont.LineSpacing * 3 + 5),
+                    Color.Black
+                );
+
+                spriteBatch.DrawString(
+                    debugFont,
+                    "Pos : " + manager.player.Camera.loc.ToString(),
+                    new Vector2(5, debugFont.LineSpacing * 5 + 5),
+                    Color.Black
+                );
+            }
+
+            spriteBatch.End();
 
             base.Draw(gameTime);
         }

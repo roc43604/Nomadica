@@ -90,7 +90,6 @@ namespace JModelling.JModelling
                 }
 
                 bounds = new BoundingBox(new Vector3(minX, minY, minZ), new Vector3(maxX, maxY, maxZ));
-                Console.WriteLine(bounds); 
 
                 maxX = Math.Abs(maxX);
                 maxY = Math.Abs(maxY);
