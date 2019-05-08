@@ -24,7 +24,7 @@ namespace JModelling.Creature
         /// </summary>
         public float AngleToPlayer;
 
-        private bool tookDamage;
+        public bool tookDamage;
 
         private Vec4 gravityVelocity;
         public Vec4 TravelVector; 
@@ -58,6 +58,16 @@ namespace JModelling.Creature
                 TravelVector = new Vec4((float)Math.Cos(AngleToPlayer), 0, (float)Math.Sin(AngleToPlayer)); 
                 Loc.X += TravelVector.X * Speed;
                 Loc.Z += TravelVector.Z * Speed;
+            }
+            else
+            {
+                float deltaX = Loc.X - player.Camera.loc.X;
+                float deltaZ = Loc.Z - player.Camera.loc.Z;
+                AngleToPlayer = (float)Math.Atan2(deltaZ, deltaX) + (float)Math.PI;
+
+                TravelVector = new Vec4((float)Math.Cos(AngleToPlayer), 0, (float)Math.Sin(AngleToPlayer));
+                Loc.X -= TravelVector.X * Speed;
+                Loc.Z -= TravelVector.Z * Speed;
             }
 
             // Monster should be on floor, not floating
