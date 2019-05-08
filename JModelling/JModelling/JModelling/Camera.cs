@@ -14,13 +14,13 @@ namespace JModelling.JModelling
         /// <summary>
         /// How fast the camera will normally move.
         /// </summary>
-        public const float NormalSpeed = 10f;
+        public const float NormalSpeed = 1.5f;
 
         /// <summary>
         /// How fast the camera will move when the user is
         /// accelerating it. 
         /// </summary>
-        public const float FastSpeed = NormalSpeed * 3f;
+        public const float FastSpeed = NormalSpeed * 1.5f;
 
         /// <summary>
         /// The current speed this is moving. 
@@ -53,9 +53,26 @@ namespace JModelling.JModelling
             loc = new Vec4(x, y, z);
         }
 
-        public void Move(float speed, Vec4 direction)
+        /// <summary>
+        /// Moves the player in view-space, orienting movement around
+        /// key inputs. For example, Controls.Back will move player 
+        /// backwards from where they're facing. 
+        /// </summary>
+        public void MoveViewSpace(float speed, Vec4 direction)
         {
-            loc = loc + GetLookDir(direction) * speed; 
+            MoveWorldSpace(speed, GetLookDir(direction));
+        }
+
+        /// <summary>
+        /// Moves the player in world-space, not view space. 
+        /// </summary>
+        public void MoveWorldSpace(float speed, Vec4 direction)
+        {
+            direction.X *= speed;
+            direction.Z *= speed;
+            direction.Y *= NormalSpeed; // Should always be normal speed. Holding sprint won't
+                                        // make you fall any quicker. 
+            loc = loc + direction; 
         }
 
         public Vec4 GetLookDir(Vec4 direction)

@@ -138,7 +138,8 @@ namespace GraphicsEngine
             }
 
             // These represent how many image pixels pass for every screen pixel. 
-            float mx = (float)imageWidth / (float)location.Width, my = (float)imageHeight / (float)location.Height;
+            float mx = (float)imageWidth / (float)location.Width,
+                  my = (float)imageHeight / (float)location.Height;
 
             // Goes through each pixel we would draw to, and finds out what texture
             // color we would place there.

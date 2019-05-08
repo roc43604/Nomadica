@@ -9,12 +9,16 @@ namespace JModelling.JModelling
     /// An entity that has a mesh. It is able to be represented in
     /// 3D space. 
     /// </summary>
-    public abstract class ThreeDim : Entity
+    public class ThreeDim : Entity
     {
         /// <summary>
         /// The model used to represent this in 3D space. 
         /// </summary>
         public Mesh Mesh; 
+
+        public ThreeDim(Mesh mesh)
+            : this (Vec4.Zero, mesh)
+        { }
 
         public ThreeDim(Vec4 Loc, Mesh Mesh)
             : base(Loc)

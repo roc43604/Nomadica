@@ -67,6 +67,11 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DebugFont.spritefont">
+      <Name>DebugFont</Name>
+      <Importer>FontDescriptionImporter</Importer>
+      <Processor>FontDescriptionProcessor</Processor>
+    </Compile>
     <None Include="Models\cow.obj">
       <Name>cow</Name>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

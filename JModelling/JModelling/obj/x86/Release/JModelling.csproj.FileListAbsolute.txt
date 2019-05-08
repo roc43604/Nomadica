@@ -98,3 +98,4 @@ C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\obj\x86\Release\
 C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\obj\x86\Release\Microsoft.Xna.Framework.RuntimeProfile.txt
 C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\obj\x86\Release\JModelling.exe
 C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\obj\x86\Release\JModelling.pdb
+C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\DebugFont.xnb

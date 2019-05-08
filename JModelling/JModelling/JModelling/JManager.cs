@@ -6,6 +6,8 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework;
+using JModelling.Creature;
+using JModelling.JModelling.Chunk;
 
 namespace JModelling.JModelling
 {
@@ -40,9 +42,9 @@ namespace JModelling.JModelling
         /// <summary>
         /// The location of the center of the screen. 
         /// </summary>
-        private int centerX, centerY;
+        public static int centerX, centerY;
 
-        private bool isMouseFocused = true;
+        public bool isMouseFocused = true;
 
         /// <summary>
         /// The extent of the observable game world that is seen on display. 
@@ -55,19 +57,20 @@ namespace JModelling.JModelling
         private Painter painter;
 
         /// <summary>
-        /// The thing the user will be seeing through. 
+        /// The thing generating the terrain. Used for collision detection. 
         /// </summary>
-        public Camera camera;
+        public ChunkGenerator cg; 
 
         /// <summary>
-        /// The last known location of the mouse. 
+        /// Represents the player character. Contains a reference to the 
+        /// camera, the thing the player is seeing through. 
         /// </summary>
-        private int lastMouseX, lastMouseY;
+        public Player player;
 
         /// <summary>
         /// All of the meshes/models being used in this scene currently. 
         /// </summary>
-        private Mesh[] meshes;
+        // private Mesh[] meshes;
         private ListUtil<Mesh> meshList;
         private Dictionary<Mesh, ListNode<Mesh>> meshListNodeDict;
 
@@ -99,7 +102,6 @@ namespace JModelling.JModelling
         /// A test for the skybox. 
         /// </summary>
         private SkyBox skybox;
-        private Mesh skyboxMesh;
 
         private float NormalShadowImportance = 0.25f;
         private float SunShadowImportance = 0.75f;
@@ -107,13 +109,18 @@ namespace JModelling.JModelling
         public Texture2D lastTexture;
 
         public Light[] lights;
-        private bool turnOnLights; 
+        private bool turnOnLights;
+
+        /// <summary>
+        /// Monster test. 
+        /// </summary>
+        public static MeleeAttacker monster; 
 
         /// <summary>
         /// Creates a manager that will construct necessary fields for use
         /// with the methods. 
         /// </summary>
-        public JManager(Game host, int width, int height, GraphicsDeviceManager graphicsDeviceManager, SpriteBatch spriteBatch)
+        public JManager(Game host, int width, int height, GraphicsDeviceManager graphicsDeviceManager, ChunkGenerator cg, SpriteBatch spriteBatch)
         {
             // Assigns the last keyboard state
             lastKb = Keyboard.GetState(); 
@@ -130,6 +137,8 @@ namespace JModelling.JModelling
 
             centerX = width / 2;
             centerY = height / 2;
+
+            this.cg = cg; 
 
             painter = new Painter(width, height, graphicsDeviceManager.GraphicsDevice, spriteBatch);
 
@@ -155,26 +164,23 @@ namespace JModelling.JModelling
             // Projection matrix
             matProj = Matrix.MakeProjection(FOV, (float)height / width, 0.1f, 1000);
 
-            // Create the camera
-            camera = new Camera(0, 0, 0);
+            // Create the player and their camera 
+            Camera camera = new Camera(0, 0, 0);
             camera.yaw = 0;
             camera.pitch = 0;
-
-            // Set the last mouse's position. 
-            lastMouseX = -1;
-            lastMouseY = -1;
-
-            // Create the billboard test. 
-            billboard = new Billboard(Load.OneDimImage("Images/fire"), 64, 92);
+            player = new Player(this, camera);
 
             // Create the satellite test.
             satellites = new Satellite[2]; 
-            satellites[0] = new Satellite((float)(Math.PI / 60 / 10), Load.OneDimImage(@"Images/sun"), 2000, 2000, 0f, 500, 500, 300);
-            satellites[1] = new Satellite((float)(Math.PI / 60 / 10), Load.OneDimImage(@"Images/moon"), 1859, 1897, (float)(Math.PI), 500, 500, 800);
+            satellites[0] = new Satellite((float)(Math.PI / 60 / 10), Load.OneDimImage(@"Images/sun"), 2000, 2000, (float)(Math.PI/2d), 500, 500, 300);
+            satellites[1] = new Satellite((float)(Math.PI / 60 / 10), Load.OneDimImage(@"Images/moon"), 1859, 1897, (float)(Math.PI/2d*3d), 500, 500, 800);
 
             lights = new Light[1];
             lights[0] = new Light(100f, null);
-            turnOnLights = false;  
+            turnOnLights = false;
+
+            monster = new MeleeAttacker(Load.Mesh(@"Content/Models/cube.obj", 25, 0, 0, 0), camera.loc, Camera.NormalSpeed * 0.666f, 5, 100, 100);
+            //AddMesh(monster.Mesh); 
         }
 
         /// <summary>
@@ -230,10 +236,16 @@ namespace JModelling.JModelling
             Hue hue = GetHue(satellites[0]);
 
             Vec4 lightDirection = satellites[0].Loc;
-            lightDirection.Normalize(); 
+            lightDirection.Normalize();
+
+            // Store camera value for quick accessing
+            Camera camera = player.Camera; 
 
             UpdateInputs();
             skybox.Update(camera.loc);
+
+            // Update monster's movements and actions
+            monster.Update(player, cg); 
 
             // Set light to player's location
             lights[0].Loc = camera.loc; 
@@ -281,6 +293,9 @@ namespace JModelling.JModelling
                 DrawTrianglesToPainterCanvas(painter, depthBuffer, GetDrawableTrianglesFromMesh(mesh, hue, activeLights, matView, lightDirection, shadow)); 
             }
 
+            monster.Mesh.MoveTo(monster.Loc.X, monster.Loc.Y, monster.Loc.Z); 
+            DrawTrianglesToPainterCanvas(painter, depthBuffer, GetDrawableTrianglesFromMesh(monster.Mesh, hue, activeLights, matView, lightDirection, shadow)); 
+
             lastTexture = painter.GetCanvas();
             lastKb = Keyboard.GetState(); 
         }
@@ -290,7 +305,7 @@ namespace JModelling.JModelling
             return lastTexture; 
         }
 
-        public Texture2D GetSkyboxTexture()
+        public Texture2D GetSkyboxTexture(Camera camera)
         {
             painter.CreateCanvas(DrawWidth, DrawHeight);
 
@@ -315,7 +330,7 @@ namespace JModelling.JModelling
             foreach (Triangle original in mesh.Triangles)
             {
                 // Get ray from triangle to camera
-                Vec4 cameraRay = original.Points[0] - camera.loc;
+                Vec4 cameraRay = original.Points[0] - player.Camera.loc;
                 
                 // If ray is aligned with normal, then triangle is visible
                 if (Vec4.DotProduct(original.Normal, cameraRay) < 0)
@@ -1004,28 +1019,7 @@ namespace JModelling.JModelling
             // Perform any special actions with any special keys. 
             ProcessSpecialKeyInputs(kb);
 
-            // Get where the player should move 
-            Vec4 moveDir = GetMoveDirectionFromKeyboard(kb);
-
-            // If the player has actually moved, then move them
-            if (moveDir != Vec4.Zero) 
-            {
-                // If shift is pressed, camera moves quicker.
-                float speed = (kb.IsKeyDown(Controls.Sprint)) ? Camera.FastSpeed : Camera.NormalSpeed;
-
-                camera.Move(speed, moveDir);
-            }
-
-            // If the mouse is focused and has moved since the last frame...
-            if (isMouseFocused && (ms.X != lastMouseX || ms.Y != lastMouseY))
-            {
-                // Update last known positions.
-                lastMouseX = ms.X;
-                lastMouseY = ms.Y;
-
-                // Process the mouse. 
-                ProcessMouseLoc(ms.X, ms.Y); 
-            }
+            player.Update(kb, ms);
         }
 
         /// <summary>
@@ -1053,75 +1047,12 @@ namespace JModelling.JModelling
             {
                 turnOnLights = !turnOnLights; 
             }
-        }
 
-        /// <summary>
-        /// Gets where the player will be moving, as well as how fast they
-        /// will move, from the keyboard. 
-        /// </summary>
-        private Vec4 GetMoveDirectionFromKeyboard(KeyboardState kb)
-        {
-            // Will add each movement vector to this base vector if the 
-            // associated movement key is pressed. 
-            Vec4 direction = new Vec4(); 
-
-            // Forward/Backwards
-            if (kb.IsKeyDown(Controls.Forward))
+            // If DebugButton is pressed, toggle debug menu. 
+            else if (kb.IsKeyDown(Controls.DebugButton) && lastKb.IsKeyUp(Controls.DebugButton))
             {
-                direction += new Vec4(0, 0, 1); 
-            }    
-            if (kb.IsKeyDown(Controls.Backwards))
-            {
-                direction += new Vec4(0, 0, -1); 
+                Game1.DebugEnabled = !Game1.DebugEnabled; 
             }
-            
-            // Left/Right
-            if (kb.IsKeyDown(Controls.Left))
-            {
-                direction += new Vec4(1, 0, 0); 
-            }
-            if (kb.IsKeyDown(Controls.Right))
-            {
-                direction += new Vec4(-1, 0, 0); 
-            }
-
-            // Up/Down
-            if (kb.IsKeyDown(Controls.Up))
-            {
-                direction += new Vec4(0, 1, 0); 
-            }
-            if (kb.IsKeyDown(Controls.Down))
-            {
-                direction += new Vec4(0, -1, 0);
-            }
-
-            return direction; 
-        }
-
-        public void ProcessMouseLoc(int xLoc, int yLoc)
-        {
-            float x = (float)xLoc;
-            float y = (float)yLoc; 
-
-            x -= centerX;
-            y -= centerY; 
-
-            x /= Controls.MouseSensitivity;
-            y /= Controls.MouseSensitivity;
-
-            camera.yaw += x;
-            camera.pitch += y; 
-
-            if (camera.yaw > PITimesTwo)
-            {
-                camera.yaw = 0; 
-            }
-            else if (camera.yaw < 0)
-            {
-                camera.yaw = PITimesTwo; 
-            }
-
-            Mouse.SetPosition(centerX, centerY); 
         }
     }
 }
