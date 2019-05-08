@@ -73,6 +73,33 @@
       <Output>C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\DebugFont.xnb</Output>
       <Time>2019-05-07T20:42:35.5640745-05:00</Time>
     </Item>
+    <Item>
+      <Source>Images\Inventory\item.png</Source>
+      <Name>Images\Inventory\item</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\Images\Inventory\item.xnb</Output>
+      <Time>2019-05-07T22:38:06.6547604-05:00</Time>
+    </Item>
+    <Item>
+      <Source>Images\Inventory\white.png</Source>
+      <Name>Images\Inventory\white</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\Images\Inventory\white.xnb</Output>
+      <Time>2019-05-07T22:23:32.5030189-05:00</Time>
+    </Item>
+    <Item>
+      <Source>Images\Inventory\gray box.jpg</Source>
+      <Name>Images\Inventory\gray box</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\Images\Inventory\gray box.xnb</Output>
+      <Time>2019-05-07T22:23:44.5204694-05:00</Time>
+    </Item>
     <BuildSuccessful>true</BuildSuccessful>
     <Settings>
       <ContentProjectGUID>{DB49162D-2C0E-4A55-A2FC-2A136AF3BC87}</ContentProjectGUID>

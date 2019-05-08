@@ -6,6 +6,9 @@ Content\Images\skybox.xnb
 Content\Images\stone.xnb
 Content\Images\sun.xnb
 Content\DebugFont.xnb
+Content\Images\Inventory\item.xnb
+Content\Images\Inventory\white.xnb
+Content\Images\Inventory\gray box.xnb
 Content\Models\cow.obj
 Content\Models\cube.obj
 Content\Models\mountains.obj

@@ -82,6 +82,9 @@
     <Compile Include="Game1.cs" />
     <Compile Include="GraphicsEngine\ImageReference.cs" />
     <Compile Include="GraphicsEngine\Painter.cs" />
+    <Compile Include="Inventory\Inventory.cs" />
+    <Compile Include="Inventory\InventoryMenu.cs" />
+    <Compile Include="Inventory\Item.cs" />
     <Compile Include="JModelling\Billboard.cs" />
     <Compile Include="JModelling\Camera.cs" />
     <Compile Include="JModelling\Controls.cs" />
