@@ -108,8 +108,8 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Images\Inventory\gray box.jpg">
-      <Name>gray box</Name>
+    <Compile Include="Images\Inventory\round box.png">
+      <Name>round box</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>

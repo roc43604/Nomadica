@@ -5,12 +5,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace JModelling.Inventory
+namespace JModelling.InventorySpace
 {
     /// <summary>
     /// A collection of the items on the player. 
     /// </summary>
-    class Inventory
+    public class Inventory
     {
         /// <summary>
         /// The size of the player's inventory, in the format (x, y).
@@ -22,7 +22,7 @@ namespace JModelling.Inventory
         /// </summary>
         public Item[,] Items;
 
-        public Inventory(int screenWidth, int screenHeight)
+        public Inventory()
         {
             Items = new Item[(int)Size.X, (int)Size.Y]; 
         }
@@ -34,9 +34,9 @@ namespace JModelling.Inventory
         /// </summary>
         public bool Add(Item item)
         {
-            for (int x = 0; x < Items.GetLength(0); x++)
+            for (int y = 0; y < Items.GetLength(1); y++)
             {
-                for (int y = 0; y < Items.GetLength(1); y++)
+                for (int x = 0; x < Items.GetLength(0); x++)
                 {
                     if (Items[x, y] == null)
                     {

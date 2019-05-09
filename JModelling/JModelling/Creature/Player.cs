@@ -45,6 +45,11 @@ namespace JModelling.Creature
         public Camera Camera;
 
         /// <summary>
+        /// The items the player has on them. 
+        /// </summary>
+        public InventorySpace.Inventory Inventory;
+
+        /// <summary>
         /// How much health the player has before dying. 
         /// </summary>
         public int Health;
@@ -64,8 +69,8 @@ namespace JModelling.Creature
         /// Whether or not the player has taken damage in an amount
         /// of time. 
         /// </summary>
-        public bool tookDamage; 
-
+        public bool tookDamage;
+        
         public Player(JManager manager, Camera Camera)
         {
             lastMouseX = -1;
@@ -77,7 +82,9 @@ namespace JModelling.Creature
 
             lastVelocity = Vec4.Zero;
             isOnGround = false;
-            tookDamage = false; 
+            tookDamage = false;
+
+            Inventory = new InventorySpace.Inventory(); 
         }
 
         /// <summary>
@@ -185,6 +192,16 @@ namespace JModelling.Creature
             }
 
             lastVelocity = moveDir; 
+        }
+
+        /// <summary>
+        /// Used when updating screens when one screen has a visible mouse and the 
+        /// new one doesn't. This prevents the screen from jumping around. 
+        /// </summary>
+        public void UpdateLastMouse(int newMouseX, int newMouseY)
+        {
+            lastMouseX = newMouseX;
+            lastMouseY = newMouseY; 
         }
 
         /// <summary>

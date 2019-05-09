@@ -12,6 +12,7 @@ using JModelling.JModelling;
 using GraphicsEngine;
 using JModelling.JModelling.Chunk;
 using System.Diagnostics;
+using JModelling.InventorySpace; 
 
 namespace JModelling
 {
@@ -74,9 +75,10 @@ namespace JModelling
 
             // TODO: use this.Content to load your game content here
             Load.Init(Services);
-            debugFont = Content.Load<SpriteFont>("DebugFont"); 
+            debugFont = Content.Load<SpriteFont>("DebugFont");
+            InventoryMenu.LoadImages(Content); 
 
-            generator = new ChunkGenerator(43545544, 20, 20, 2, manager, Load.Mesh(@"Content/Models/cube.obj"));
+            generator = new ChunkGenerator(43545544, 10, 10, 4, manager, Load.Mesh(@"Content/Models/cube.obj"));
 
             manager = new JManager(this, Width, Height, graphics, generator, spriteBatch);
 
@@ -133,6 +135,7 @@ namespace JModelling
                 curChunkX = chunkIndexX;
                 curChunkZ = chunkIndexZ;
             }
+
             manager.Update();
             ////////////////////////////////////////////////////////////////////////////////////
             stopWatch.Stop(); 
@@ -158,8 +161,7 @@ namespace JModelling
             ////////////////////////////////////////////////////////////////////////////////////
             GraphicsDevice.Clear(Color.Green); 
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone);
-            spriteBatch.Draw(manager.GetSkyboxTexture(manager.player.Camera), new Rectangle(0, 0, Width, Height), Color.White);
-            spriteBatch.Draw(manager.GetWorldTexture(), new Rectangle(0, 0, Width, Height), Color.White);
+            manager.Draw(spriteBatch); 
             ////////////////////////////////////////////////////////////////////////////////////
             stopWatch.Stop(); 
             if (gameTime.TotalGameTime.TotalMilliseconds - debugLastUpdate > debugUpdateInterval)

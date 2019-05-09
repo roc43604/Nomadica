@@ -51,6 +51,12 @@ namespace JModelling.JModelling
         /// <summary>
         /// Whether or not the player is using a light. 
         /// </summary>
-        public const Keys LightButton = Keys.L; 
+        public const Keys LightButton = Keys.L;
+
+        /// <summary>
+        /// Opens the player's inventory, displaying the items they have
+        /// in their possession. 
+        /// </summary>
+        public const Keys Inventory = Keys.E; 
     }
 }
