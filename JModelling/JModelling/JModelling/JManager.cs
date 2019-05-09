@@ -244,7 +244,6 @@ namespace JModelling.JModelling
 
                 foreach (Triangle original in mesh.Triangles)
                 {
-                    // Get ray from triangle to camera
                     Vec4 cameraRay = original.Points[0] - camera.loc;
 
                     if (original.Visible == false)

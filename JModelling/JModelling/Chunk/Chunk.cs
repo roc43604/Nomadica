@@ -48,6 +48,18 @@ namespace JModelling.JModelling.Chunk
         }
     }
 
+
+    class ChunkContainer
+    {
+        public Triangle[] tris;
+
+        public ChunkContainer(Triangle[] tris)
+        {
+            this.tris = tris;
+        }
+          
+    }
+
     class ChunkGenerator
     {
         private const int CHUNK_DEFAULT_X = 200;
@@ -68,6 +80,7 @@ namespace JModelling.JModelling.Chunk
         private int viewDist;
         private Mesh[,] chunkMesh;
         private Mesh cow;
+        private ChunkContainer[,] chunkCache;
         private JManager manager;
 
         private bool generated;
@@ -89,6 +102,8 @@ namespace JModelling.JModelling.Chunk
                     chunkMesh[x, z] = new Mesh(null);
 
             this.manager = manager;
+
+            this.chunkCache = new ChunkContainer[viewDist*2*2, viewDist*2*2];
 
             this.chunkNoise = new PerlinNoise(seed);
             this.colorNoise = new PerlinNoise(seed/2 * 345 - 1000 - 1233);
@@ -117,6 +132,7 @@ namespace JModelling.JModelling.Chunk
             return BiomeRegistry.GetBiomeFor(0.5);
         }
 
+
         /// <summary>
         /// <see cref=""/>
         /// </summary>
@@ -130,42 +146,48 @@ namespace JModelling.JModelling.Chunk
             {
                 for (int cz = 0; cz<viewDist * 2; cz++)
                 {
-                    int increment = 1;
-                    int distFromMid = Math.Abs(viewDist - cx);
-                    if (distFromMid > 2)
-                    {
-                       increment = 2;
-                    }
-
-                    Triangle[] tris = new Triangle[(chunkSizeX * chunkSizeZ * 2)/increment];
-
-                    //Create tris
-                    int idx = 0;
-
-                    Biome chunkBiome = BiomeRegistry.GetBiomeFor(
-                        colorNoise.Noise(
-                            cx,//(indexX + cx),
-                            cz,//(indexZ + cz),
-                            0.5
-                        )
-                    );
-
-                    for (int x = 0; x < chunkSizeX; x++)
-                    {
-                        if (idx >= tris.Length)
+                    
+                        int increment = 1;
+                        int distFromMid = Math.Abs(viewDist - cx);
+                        if (distFromMid > 2)
                         {
-                            continue;
+                            increment = 2;
                         }
-                        for (int z = 0; z < chunkSizeZ; z++)
+
+                        Triangle[] tris = new Triangle[(chunkSizeX * chunkSizeZ) / increment];
+
+                        //Create tris
+                        int idx = 0;
+
+                        Biome chunkBiome = BiomeRegistry.GetBiomeFor(
+                            colorNoise.Noise(
+                                cx,//(indexX + cx),
+                                cz,//(indexZ + cz),
+                                0.5
+                            )
+                        );
+
+                        for (int x = 0; x < chunkSizeX; x++)
                         {
                             if (idx >= tris.Length)
                             {
                                 continue;
                             }
+                            for (int z = 0; z < chunkSizeZ; z++)
+                            {
+                                if (idx >= tris.Length)
+                                {
+                                    continue;
+                                }
 
-                            int xF = (x + (indexX - viewDist + cx) * chunkSizeX)*increment;
-                            int zF = (z + (indexZ - viewDist + cz) * chunkSizeZ)*increment;
-                            
+                                int xF = (x + (indexX - viewDist + cx) * chunkSizeX);
+                                int zF = (z + (indexZ - viewDist + cz) * chunkSizeZ);
+
+                                int triSizeXc = triSizeX * increment;
+                                int triSizeZc = triSizeZ * increment;
+                                
+                                int basePX = xF * triSizeXc;// - (chunkSizeX * triSizeX)/2;
+                                int basePZ = zF * triSizeZc;// - (chunkSizeZ * triSizeZ)/2;
 
                             /*Biome chunkBiome = BiomeRegistry.GetBiomeFor(
                                 colorNoise.Noise(
@@ -177,140 +199,138 @@ namespace JModelling.JModelling.Chunk
                             */
 
                             float amp = chunkBiome.amp;
-                            float zoom = chunkBiome.zoom;
-                            float modi = chunkBiome.thatMagicNumber;
+                                float zoom = chunkBiome.zoom;
+                                float modi = chunkBiome.thatMagicNumber;
 
-                            //amp *= increment;
-                            //zoom *= increment;
-                            // double amp = 700;
-                            // double zoom = 15;
+                                //amp *= increment;
+                                //zoom *= increment;
+                                // double amp = 700;
+                                // double zoom = 15;
 
-                            double tL = chunkNoise.CreateNoiseHeight(
-                                xF / zoom,
-                                zF / zoom,
-                                modi
-                            ) * amp;
+                                double tL = chunkNoise.CreateNoiseHeight(
+                                    xF / zoom,
+                                    zF / zoom,
+                                    modi
+                                ) * amp;
 
-                            double tR = chunkNoise.CreateNoiseHeight(
-                                (xF + 1) / zoom,
-                                zF / zoom,
-                                modi
-                            ) * amp;
-                            double bL = chunkNoise.CreateNoiseHeight(
-                                xF / zoom,
-                                (zF + 1) / zoom,
-                                modi
-                            ) * amp;
-                            double bR = chunkNoise.CreateNoiseHeight(
-                                (xF + 1) / zoom,
-                                (zF + 1) / zoom,
-                                modi
-                            ) * amp;
+                                double tR = chunkNoise.CreateNoiseHeight(
+                                    (xF + 1) / zoom,
+                                    zF / zoom,
+                                    modi
+                                ) * amp;
+                                double bL = chunkNoise.CreateNoiseHeight(
+                                    xF / zoom,
+                                    (zF + 1) / zoom,
+                                    modi
+                                ) * amp;
+                                double bR = chunkNoise.CreateNoiseHeight(
+                                    (xF + 1) / zoom,
+                                    (zF + 1) / zoom,
+                                    modi
+                                ) * amp;
 
-                            int basePX = x * triSizeX + (indexX - viewDist + cx) * chunkSizeX * triSizeX;// - (chunkSizeX * triSizeX)/2;
-                            int basePZ = z * triSizeZ + (indexZ - viewDist + cz) * chunkSizeZ * triSizeZ;// - (chunkSizeZ * triSizeZ)/2;
 
-                            //Top Right, Bottom Left, Top Left
-                            Triangle nA = new Triangle(new Vec4[] {
+                                //Top Right, Bottom Left, Top Left
+                                Triangle nA = new Triangle(new Vec4[] {
+                                    new Vec4(
+                                        basePX + triSizeXc,
+                                        (float)tR,
+                                        basePZ
+                                    ),
+                                    new Vec4(
+                                        basePX,
+                                        (float)bL,
+                                        basePZ + triSizeZc
+                                    ),
+                                    new Vec4(
+                                        basePX,
+                                        (float)tL,
+                                        basePZ
+                                    )
+                                });
+                                nA.Normal = Vec4.CrossProduct(
+                                    nA.Points[1] - nA.Points[0],
+                                    nA.Points[2] - nA.Points[0]
+                                );
+                                nA.Normal.Normalize();
+                                nA.Normal *= -1;
+
+
+                                //Bottom Left, Bottom Right, Top Right
+                                Triangle nB = new Triangle(new Vec4[] {
                                 new Vec4(
-                                    basePX + triSizeX*increment,
-                                    (float)tR,
-                                    basePZ
-                                ),
-                                new Vec4(
-                                    basePX,
-                                    (float)bL,
-                                    basePZ + triSizeZ*increment
-                                ),
-                                new Vec4(
-                                    basePX,
-                                    (float)tL,
-                                    basePZ
-                                )
-                            });
-                            nA.Normal = Vec4.CrossProduct(
-                                nA.Points[1] - nA.Points[0],
-                                nA.Points[2] - nA.Points[0]
-                            );
-                            nA.Normal.Normalize();
-                            nA.Normal *= -1;
-
-
-                            //Bottom Left, Bottom Right, Top Right
-                            Triangle nB = new Triangle(new Vec4[] {
-                                new Vec4(
-                                    basePX + triSizeX*increment,
+                                    basePX + triSizeXc,
                                     (float)bR,
-                                    basePZ + triSizeZ*increment
+                                    basePZ + triSizeZc
                                 ),
                                 new Vec4(
-                                    basePX + triSizeX*increment,
+                                    basePX + triSizeXc,
                                     (float)tR,
                                     basePZ
                                 ),
                                 new Vec4(
                                     basePX,
                                     (float)bL,
-                                    basePZ + triSizeZ*increment
+                                    basePZ + triSizeZc
                                 )
                             });
-                            nB.Normal = Vec4.CrossProduct(
-                                nB.Points[1] - nB.Points[0],
-                                nB.Points[2] - nB.Points[0]
-                            );
-                            nB.Normal.Normalize();
+                                nB.Normal = Vec4.CrossProduct(
+                                    nB.Points[1] - nB.Points[0],
+                                    nB.Points[2] - nB.Points[0]
+                                );
+                                nB.Normal.Normalize();
 
-                            tris[idx] = nA;
-                            idx++;
-                            tris[idx] = nB;
-                            idx++;
-
-
-
-                            //Colors
-                            double clrNoise = colorNoise.Noise(
-                                (xF / zoom) * 5,
-                                (zF / zoom) * 5,
-                                0.5
-                            );
-                            double shadeModifier = 20;
-
-                            Color biomeColor = chunkBiome.GetEstimatedColorY(clrNoise);
-                            double txtrVari = clrNoise * 2 - 1;
-
-                            Color curColor = new Color(
-                                (int)(biomeColor.R + shadeModifier * txtrVari),
-                                (int)(biomeColor.G + shadeModifier * txtrVari),
-                                (int)(biomeColor.B + shadeModifier * txtrVari)
-                            );
+                                tris[idx] = nA;
+                                idx++;
+                                tris[idx] = nB;
+                                idx++;
 
 
-                            nB.Color = curColor;
-                            nA.Color = curColor;
 
-                            
-                             if (MathHelper.ToDegrees((float)Math.Sin(nA.Normal.Y)) < 40)
-                            {
-                                nA.Color = Color.Gray;
+                                //Colors
+                                double clrNoise = colorNoise.Noise(
+                                    (xF / zoom) * 5,
+                                    (zF / zoom) * 5,
+                                    0.5
+                                );
+                                double shadeModifier = 20;
+
+                                Color biomeColor = chunkBiome.GetEstimatedColorY(clrNoise);
+                                double txtrVari = clrNoise * 2 - 1;
+
+                                Color curColor = new Color(
+                                    (int)(biomeColor.R + shadeModifier * txtrVari),
+                                    (int)(biomeColor.G + shadeModifier * txtrVari),
+                                    (int)(biomeColor.B + shadeModifier * txtrVari)
+                                );
+
+
+                                nB.Color = curColor;
+                                nA.Color = curColor;
+
+
+                                if (MathHelper.ToDegrees((float)Math.Sin(nA.Normal.Y)) < 40)
+                                {
+                                    nA.Color = Color.Gray;
+                                }
+
+                                if (MathHelper.ToDegrees((float)Math.Sin(nB.Normal.Y)) < 40)
+                                {
+                                    nB.Color = Color.Gray;
+                                }
+
+
+                                //Object Placement
+
+                                /*
+                                  Ned sum code hear
+                                */
+
                             }
-                            
-                             if (MathHelper.ToDegrees((float)Math.Sin(nB.Normal.Y)) < 40)
-                            {
-                                nB.Color = Color.Gray;
-                            }
-
-
-                            //Object Placement
-
-                            /*
-                              Ned sum code hear
-                            */
-
                         }
-                    }
 
-                    chunkMesh[cx, cz].Triangles = tris;
-                    
+                       chunkMesh[cx, cz].Triangles = tris;
+                      
                 }
             }
 
