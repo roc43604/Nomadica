@@ -54,27 +54,39 @@ namespace JModelling.JModelling
                 float viewHeight = Height / dist * 0.1f * 300f;
                 float viewWidth = Width / dist * 0.1f * 300f;
 
-                Vec4 worldView = matView * Loc;
+                // Have a copy to translate. 
+                Vec4 point = Loc.Clone();
+
+                // Convert World Space to View Space
+                point.TimesEquals(matView);
 
                 if (Vec4.VecClipAgainstPlane(
                         new Vec4(0, 0, 0.1f),
                         new Vec4(0, 0, 1),
-                        worldView))
+                        point))
                 {
-                    Vec4 twoD = worldView * matProj;
+                    // Project triangle from 3D to 2D
+                    point.TimesEquals(matProj);
 
-                    Vec4 scale = twoD / twoD.W;
-                    scale.X *= -1;
-                    scale.Y *= -1;
+                    // Scale into view
+                    point.DivideEquals(point.W);
+
+                    // X/Y are inverted so put them back 
+                    point.X *= -1;
+                    point.Y *= -1;
+
+                    // Offset verts into visible normalized space 
                     Vec4 offsetView = new Vec4(1, 1, 0);
-                    scale = scale + offsetView;
-                    scale.X *= 0.5f * drawWidth; scale.Y *= 0.5f * drawHeight;
+                    point.PlusEquals(offsetView);
+
+                    point.X *= 0.5f * drawWidth;
+                    point.Y *= 0.5f * drawHeight;
 
                     painter.DrawImage(
                         Texture, TextureWidth, TextureHeight,
                         new Rectangle(
-                            (int)scale.X - (int)viewWidth / 2,
-                            (int)scale.Y - (int)viewHeight / 2,
+                            (int)point.X - (int)viewWidth / 2,
+                            (int)point.Y - (int)viewHeight / 2,
                             (int)viewWidth, (int)viewHeight),
                         depthBuffer, 1f / dist);
                 }

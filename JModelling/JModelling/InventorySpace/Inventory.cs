@@ -22,9 +22,15 @@ namespace JModelling.InventorySpace
         /// </summary>
         public Item[,] Items;
 
+        /// <summary>
+        /// How many items are in the player's inventory. 
+        /// </summary>
+        public int NumItems; 
+
         public Inventory()
         {
-            Items = new Item[(int)Size.X, (int)Size.Y]; 
+            Items = new Item[(int)Size.X, (int)Size.Y];
+            NumItems = 0; 
         }
 
         /// <summary>
@@ -34,6 +40,7 @@ namespace JModelling.InventorySpace
         /// </summary>
         public bool Add(Item item)
         {
+            NumItems++;
             for (int y = 0; y < Items.GetLength(1); y++)
             {
                 for (int x = 0; x < Items.GetLength(0); x++)
@@ -41,7 +48,7 @@ namespace JModelling.InventorySpace
                     if (Items[x, y] == null)
                     {
                         Items[x, y] = item;
-                        return true; 
+                        return true;
                     }
                 }
             }

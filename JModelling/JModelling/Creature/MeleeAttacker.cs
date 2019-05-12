@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using JModelling.JModelling;
 using JModelling.JModelling.Chunk;
+using JModelling.InventorySpace; 
 
 namespace JModelling.Creature
 {
@@ -29,8 +30,8 @@ namespace JModelling.Creature
         private Vec4 gravityVelocity;
         public Vec4 TravelVector; 
 
-        public MeleeAttacker(Mesh mesh, Vec4 Location, float Speed, int Damage, int Health, int NoticeDistance) 
-            : base(mesh, Location, Speed, Damage, Health, NoticeDistance)
+        public MeleeAttacker(Mesh mesh, Vec4 Location, float Speed, int Damage, int Health, int NoticeDistance, ChunkGenerator cg) 
+            : base(mesh, Location, Speed, Damage, Health, NoticeDistance, new List<Item>(new Item[] { new CubeItem(Vec4.Zero, cg) }))
         {
             Height = (Mesh.bounds.Max.Y - Mesh.bounds.Min.Y) / 2;
             tookDamage = false;
@@ -89,6 +90,7 @@ namespace JModelling.Creature
 
         public void TookDamage(Player player)
         {
+            Health -= player.Damage;             
             tookDamage = true;
             gravityVelocity = new Vec4(0, 1, 0); 
         }

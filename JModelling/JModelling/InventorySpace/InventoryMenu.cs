@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using GraphicsEngine;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -27,6 +28,11 @@ namespace JModelling.InventorySpace
         /// Used for drawing a border on images to the screen. 
         /// </summary>
         private static Texture2D RoundBox;
+
+        /// <summary>
+        /// The thing that's drawing the images to the screen. 
+        /// </summary>
+        private Painter painter; 
 
         /// <summary>
         /// The bounds of the entire viewing rectangle. 
@@ -58,8 +64,9 @@ namespace JModelling.InventorySpace
         /// </summary>
         private int itemSize; 
 
-        public InventoryMenu(Inventory inventory, int screenWidth, int screenHeight, Texture2D World, Texture2D Sky)
+        public InventoryMenu(Painter painter, Inventory inventory, int screenWidth, int screenHeight, Texture2D World, Texture2D Sky)
         {
+            this.painter = painter; 
             this.inventory = inventory;
             this.World = World;
             this.Sky = Sky; 
@@ -110,19 +117,22 @@ namespace JModelling.InventorySpace
                             (menuBounds.Y + y * itemSize + y * ItemBuffer),
                             itemSize,
                             itemSize
-                    ); 
-
-                    // Background
-                    spriteBatch.Draw(WhiteTexture, loc, Color.LightGray);
-
-                    // Item image
-                    if (inventory.Items[x, y] != null)
-                    {
-                        spriteBatch.Draw(inventory.Items[x, y].ImageInInventory, loc, Color.White);
-                    }
+                    );
 
                     // Border
-                    spriteBatch.Draw(RoundBox, loc, Color.Black); 
+                    spriteBatch.Draw(RoundBox, loc, Color.White);
+
+                    Rectangle itemLoc = new Rectangle(loc.X + 5, loc.Y + 5, loc.Width - 10, loc.Height - 10);
+
+                    // Item image
+                    Item item = inventory.Items[x, y]; 
+                    if (item != null)
+                    {
+                        Texture2D tex = new Texture2D(painter.graphicsDevice, item.TextureWidth, item.TextureHeight);
+                        tex.SetData<Color>(item.Texture);
+                        spriteBatch.Draw(tex, itemLoc, Color.White); 
+                        //painter.DrawImage(item.Texture, item.TextureWidth, item.TextureHeight, loc); 
+                    }
                 }
             }
         }

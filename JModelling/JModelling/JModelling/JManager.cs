@@ -123,7 +123,13 @@ namespace JModelling.JModelling
         /// <summary>
         /// Monster test. 
         /// </summary>
-        public static MeleeAttacker monster; 
+        public static MeleeAttacker monster;
+
+        /// <summary>
+        /// A list of all of the items to draw in world-space. If they are
+        /// picked up, they are removed from this list. 
+        /// </summary>
+        private LinkedList<Item> itemsInWorld; 
 
         /// <summary>
         /// Creates a manager that will construct necessary fields for use
@@ -183,15 +189,27 @@ namespace JModelling.JModelling
 
             // Create the satellite test.
             satellites = new Satellite[2]; 
-            satellites[0] = new Satellite((float)(Math.PI / 60 / 10), Load.OneDimImage(@"Images/sun"), 2000, 2000, (float)(Math.PI/2d), 500, 500, 300);
-            satellites[1] = new Satellite((float)(Math.PI / 60 / 10), Load.OneDimImage(@"Images/moon"), 1859, 1897, (float)(Math.PI/2d*3d), 500, 500, 800);
+            satellites[0] = new Satellite((float)(Math.PI / 60 / 60), Load.OneDimImage(@"Images/sun"), 2000, 2000, (float)(Math.PI/2d), 500, 500, 300);
+            satellites[1] = new Satellite((float)(Math.PI / 60 / 60), Load.OneDimImage(@"Images/moon"), 1859, 1897, (float)(Math.PI/2d*3d), 500, 500, 800);
 
             lights = new Light[1];
             lights[0] = new Light(100f, null);
             turnOnLights = false;
 
-            monster = new MeleeAttacker(Load.Mesh(@"Content/Models/cube.obj", 25, 0, 0, 0), camera.loc, Camera.NormalSpeed * 0.666f, 5, 100, 100);
-            //AddMesh(monster.Mesh); 
+            Vec4 monsterLoc = camera.loc.Clone();
+            monsterLoc.X += 200; 
+            monsterLoc.Z += 200;
+            monster = new MeleeAttacker(Load.Mesh(@"Content/Models/cube.obj", 25, 0, 0, 0), monsterLoc, Camera.NormalSpeed * 0.666f, 5, 100, 100, cg);
+            AddMesh(monster.Mesh); 
+
+            itemsInWorld = new LinkedList<Item>();
+            Vec4 itemLoc = player.Camera.loc.Clone();
+            itemLoc.X += 100; 
+            itemsInWorld.AddLast(new DefaultItem(itemLoc, cg));
+
+            //float h = cg.GetHeightAt(itemLoc.X, itemLoc.Z); 
+            //cube = Load.Mesh(@"Content/Models/cube.obj", 25, itemLoc.X, h, itemLoc.Z);
+            //AddMesh(cube); 
         }
 
         /// <summary>
@@ -271,8 +289,41 @@ namespace JModelling.JModelling
             UpdatePlayingInputs();
             skybox.Update(camera.loc);
 
-            // Update monster's movements and actions
-            monster.Update(player, cg);
+            if (monster != null)
+            {
+                // If creature died, remove them and drop their items
+                if (monster.Health <= 0)
+                {
+                    Vec4 itemLoc = monster.Loc;
+                    itemLoc.Y = cg.GetHeightAt(itemLoc.X, itemLoc.Z) + 10; 
+                    foreach (Item item in monster.DroppedItems)
+                    {
+                        item.SetInWorldSpace(itemLoc);                        
+                        itemsInWorld.AddLast(item);
+                    }
+                    RemoveMesh(monster.Mesh); 
+                    monster = null;
+                }
+                else // Update monster's movements and actions
+                {
+                    monster.Update(player, cg);
+                }
+            }            
+
+            // Update items to bob up and down
+            LinkedList<Item> itemsToRemove = new LinkedList<Item>(); 
+            foreach (Item item in itemsInWorld)
+            {
+                // If it's true, the player picked it up
+                if (item.Update(player))
+                {
+                    itemsToRemove.AddLast(item); 
+                }
+            }
+            foreach (Item item in itemsToRemove)
+            {
+                itemsInWorld.Remove(item); 
+            }
 
             // Set light to player's location
             lights[0].Loc = camera.loc;
@@ -320,8 +371,16 @@ namespace JModelling.JModelling
                 DrawTrianglesToPainterCanvas(painter, depthBuffer, GetDrawableTrianglesFromMesh(mesh, hue, activeLights, matView, lightDirection, shadow));
             }
 
-            monster.Mesh.MoveTo(monster.Loc.X, monster.Loc.Y, monster.Loc.Z);
-            DrawTrianglesToPainterCanvas(painter, depthBuffer, GetDrawableTrianglesFromMesh(monster.Mesh, hue, activeLights, matView, lightDirection, shadow));
+            foreach (Item item in itemsInWorld)
+            {
+                item.DrawToCanvas(camera, painter, depthBuffer, matView, matProj, DrawWidth, DrawHeight);
+            }
+
+            if (monster != null)
+            {
+                monster.Mesh.MoveTo(monster.Loc.X, monster.Loc.Y, monster.Loc.Z);
+                DrawTrianglesToPainterCanvas(painter, depthBuffer, GetDrawableTrianglesFromMesh(monster.Mesh, hue, activeLights, matView, lightDirection, shadow));
+            }
 
             lastWorldTexture = painter.GetCanvas();
         }
@@ -1112,8 +1171,8 @@ namespace JModelling.JModelling
             // If inventory is pressed, toggle inventory menu.
             else if (kb.IsKeyDown(Controls.Inventory) && lastKb.IsKeyUp(Controls.Inventory))
             {
-                gameState = GameState.Inventory; 
-                inventoryMenu = new InventoryMenu(player.Inventory, Width, Height, lastWorldTexture, lastSkyTexture);
+                gameState = GameState.Inventory;
+                inventoryMenu = new InventoryMenu(painter, player.Inventory, Width, Height, lastWorldTexture, lastSkyTexture);
                 isMouseFocused = false;
                 host.IsMouseVisible = true; 
             }
@@ -1144,7 +1203,7 @@ namespace JModelling.JModelling
 
                 isMouseFocused = true; 
                 host.IsMouseVisible = false;
-                player.UpdateLastMouse(centerX, centerY); 
+                Mouse.SetPosition(centerX, centerY); 
             }
         }
     }

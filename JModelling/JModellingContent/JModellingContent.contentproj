@@ -94,13 +94,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Images\Inventory\item.png">
-      <Name>item</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="Images\Inventory\white.png">
       <Name>white</Name>
       <Importer>TextureImporter</Importer>
@@ -110,6 +103,20 @@
   <ItemGroup>
     <Compile Include="Images\Inventory\round box.png">
       <Name>round box</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Images\Inventory\item.png">
+      <Name>item</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Images\Inventory\cube.png">
+      <Name>cube</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>

@@ -55,6 +55,11 @@ namespace JModelling.Creature
         public int Health;
 
         /// <summary>
+        /// How much damage the player will deal when they hit something.
+        /// </summary>
+        public int Damage; 
+
+        /// <summary>
         /// The last velocity vector the player had. Will update
         /// each frame. 
         /// </summary>
@@ -79,6 +84,7 @@ namespace JModelling.Creature
             this.manager = manager; 
             this.Camera = Camera;
             Health = 100;
+            Damage = 20; 
 
             lastVelocity = Vec4.Zero;
             isOnGround = false;
@@ -106,21 +112,24 @@ namespace JModelling.Creature
         private void Attacked()
         {
             // If the monster is off the attack cool-down timer
-            if (!JManager.monster.tookDamage)
+            if (JManager.monster != null)
             {
-                // If weaponLoc is within the monster's range, they take damage.
-                if (Math.Abs((Camera.yaw + JManager.PITimesTwo) - (MathExtensions.Wrap(JManager.monster.AngleToPlayer + (float)Math.PI / 2f) + JManager.PITimesTwo)) < (Math.PI / 7))
+                if (!JManager.monster.tookDamage)
                 {
-                    if (MathExtensions.Dist(Camera.loc, JManager.monster.Loc) < WeaponDist)
+                    // If weaponLoc is within the monster's range, they take damage.
+                    if (Math.Abs((Camera.yaw + JManager.PITimesTwo) - (MathExtensions.Wrap(JManager.monster.AngleToPlayer + (float)Math.PI / 2f) + JManager.PITimesTwo)) < (Math.PI / 7))
                     {
-                        JManager.monster.TookDamage(this);
-                    }
-                    //Console.WriteLine("Yes!!!\t\t" + (Camera.yaw - MathExtensions.Wrap(JManager.monster.AngleToPlayer + (float)Math.PI / 2f)));
+                        if (MathExtensions.Dist(Camera.loc, JManager.monster.Loc) < WeaponDist)
+                        {
+                            JManager.monster.TookDamage(this);
+                        }
+                        //Console.WriteLine("Yes!!!\t\t" + (Camera.yaw - MathExtensions.Wrap(JManager.monster.AngleToPlayer + (float)Math.PI / 2f)));
 
-                }
-                else
-                {
-                    //Console.WriteLine("No!!!\t\t" + ((Camera.yaw + JManager.PITimesTwo) - (MathExtensions.Wrap(JManager.monster.AngleToPlayer + (float)Math.PI / 2f) + JManager.PITimesTwo)));
+                    }
+                    else
+                    {
+                        //Console.WriteLine("No!!!\t\t" + ((Camera.yaw + JManager.PITimesTwo) - (MathExtensions.Wrap(JManager.monster.AngleToPlayer + (float)Math.PI / 2f) + JManager.PITimesTwo)));
+                    }
                 }
             }
 
@@ -192,16 +201,6 @@ namespace JModelling.Creature
             }
 
             lastVelocity = moveDir; 
-        }
-
-        /// <summary>
-        /// Used when updating screens when one screen has a visible mouse and the 
-        /// new one doesn't. This prevents the screen from jumping around. 
-        /// </summary>
-        public void UpdateLastMouse(int newMouseX, int newMouseY)
-        {
-            lastMouseX = newMouseX;
-            lastMouseY = newMouseY; 
         }
 
         /// <summary>
