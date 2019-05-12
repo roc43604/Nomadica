@@ -99,3 +99,11 @@ C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\obj\x86\Release\
 C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\obj\x86\Release\JModelling.exe
 C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\obj\x86\Release\JModelling.pdb
 C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\DebugFont.xnb
+C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\Images\Inventory\item.xnb
+C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\Images\Inventory\white.xnb
+\\Fisd-student1\hs\lhs\122341\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\Images\Inventory\item.xnb
+\\Fisd-student1\hs\lhs\122341\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\Images\Inventory\white.xnb
+\\Fisd-student1\hs\lhs\122341\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\DebugFont.xnb
+\\Fisd-student1\hs\lhs\122341\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\Images\Inventory\round box.xnb
+C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\Images\Inventory\round box.xnb
+C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\Images\Inventory\cube.xnb

@@ -36,7 +36,7 @@ namespace GraphicsEngine
         /// We use it to create Texture2D's, which the SpriteBatch can 
         /// draw. 
         /// </summary>
-        private GraphicsDevice graphicsDevice;
+        public GraphicsDevice graphicsDevice;
 
         /// <summary>
         /// What we're drawing to. This class essentially creates images
@@ -346,6 +346,10 @@ namespace GraphicsEngine
             if (color.A != 255 && canvas[index] != null)
             {
                 canvas[index] = Color.Lerp(canvas[index], color, color.A / 255f);
+                //canvas[index].R = (byte)(canvas[index].R + (color.R - canvas[index].R));
+                //canvas[index].G = (byte)(canvas[index].G + (color.G - canvas[index].G));
+                //canvas[index].B = (byte)(canvas[index].B + (color.B - canvas[index].B));
+                //canvas[index].A = (byte)(canvas[index].A + (color.A - canvas[index].A) * x);
             }
             else
             {

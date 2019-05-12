@@ -95,33 +95,35 @@ namespace JModelling.JModelling
             Matrix matView, Matrix matProj,
             int drawWidth, int drawHeight)
         {
+            Vec4 point = Loc.Clone(); 
+
             float dist = (float)MathExtensions.Dist(camera.loc, Loc);
             if (dist > 0.1f)
             {
                 float viewHeight = Height / dist * 0.1f * 300f;
                 float viewWidth = Width / dist * 0.1f * 300f;
 
-                Vec4 worldView = matView * Loc;
+                point.TimesEquals(matView); 
 
                 if (Vec4.VecClipAgainstPlane(
                         new Vec4(0, 0, 0.1f),
                         new Vec4(0, 0, 1),
-                        worldView))
+                        point))
                 {
-                    Vec4 twoD = worldView * matProj;
+                    point.TimesEquals(matProj);
 
-                    Vec4 scale = twoD / twoD.W;
-                    scale.X *= -1;
-                    scale.Y *= -1;
+                    point.DivideEquals(point.W);
+                    point.X *= -1;
+                    point.Y *= -1;
                     Vec4 offsetView = new Vec4(1, 1, 0);
-                    scale = scale + offsetView;
-                    scale.X *= 0.5f * drawWidth; scale.Y *= 0.5f * drawHeight;
+                    point.PlusEquals(offsetView); 
+                    point.X *= 0.5f * drawWidth; point.Y *= 0.5f * drawHeight;
 
                     painter.DrawImage(
                         Texture, TextureWidth, TextureHeight,
                         new Rectangle(
-                            (int)scale.X - (int)viewWidth / 2,
-                            (int)scale.Y - (int)viewHeight / 2,
+                            (int)point.X - (int)viewWidth / 2,
+                            (int)point.Y - (int)viewHeight / 2,
                             (int)viewWidth, (int)viewHeight));
                 }
             }

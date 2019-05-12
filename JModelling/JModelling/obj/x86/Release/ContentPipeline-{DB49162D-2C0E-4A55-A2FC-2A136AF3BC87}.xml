@@ -65,6 +65,33 @@
       <Time>2019-05-07T19:14:55.3295258-05:00</Time>
     </Item>
     <Item>
+      <Source>Images\Inventory\item.png</Source>
+      <Name>Images\Inventory\item</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\Images\Inventory\item.xnb</Output>
+      <Time>2019-05-11T22:58:04.3005465-05:00</Time>
+    </Item>
+    <Item>
+      <Source>Images\Inventory\white.png</Source>
+      <Name>Images\Inventory\white</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\Images\Inventory\white.xnb</Output>
+      <Time>2019-05-11T13:25:42.8454867-05:00</Time>
+    </Item>
+    <Item>
+      <Source>Images\Inventory\round box.png</Source>
+      <Name>Images\Inventory\round box</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\Images\Inventory\round box.xnb</Output>
+      <Time>2019-05-11T22:54:13.7248389-05:00</Time>
+    </Item>
+    <Item>
       <Source>DebugFont.spritefont</Source>
       <Name>DebugFont</Name>
       <Importer>FontDescriptionImporter</Importer>
@@ -72,6 +99,15 @@
       <Options>None</Options>
       <Output>C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\DebugFont.xnb</Output>
       <Time>2019-05-07T20:42:35.5640745-05:00</Time>
+    </Item>
+    <Item>
+      <Source>Images\Inventory\cube.png</Source>
+      <Name>Images\Inventory\cube</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\Images\Inventory\cube.xnb</Output>
+      <Time>2019-05-11T23:19:18.103935-05:00</Time>
     </Item>
     <BuildSuccessful>true</BuildSuccessful>
     <Settings>

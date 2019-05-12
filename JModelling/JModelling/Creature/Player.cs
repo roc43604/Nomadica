@@ -45,9 +45,19 @@ namespace JModelling.Creature
         public Camera Camera;
 
         /// <summary>
+        /// The items the player has on them. 
+        /// </summary>
+        public InventorySpace.Inventory Inventory;
+
+        /// <summary>
         /// How much health the player has before dying. 
         /// </summary>
         public int Health;
+
+        /// <summary>
+        /// How much damage the player will deal when they hit something.
+        /// </summary>
+        public int Damage; 
 
         /// <summary>
         /// The last velocity vector the player had. Will update
@@ -64,8 +74,8 @@ namespace JModelling.Creature
         /// Whether or not the player has taken damage in an amount
         /// of time. 
         /// </summary>
-        public bool tookDamage; 
-
+        public bool tookDamage;
+        
         public Player(JManager manager, Camera Camera)
         {
             lastMouseX = -1;
@@ -74,10 +84,13 @@ namespace JModelling.Creature
             this.manager = manager; 
             this.Camera = Camera;
             Health = 100;
+            Damage = 20; 
 
             lastVelocity = Vec4.Zero;
             isOnGround = false;
-            tookDamage = false; 
+            tookDamage = false;
+
+            Inventory = new InventorySpace.Inventory(); 
         }
 
         /// <summary>
@@ -99,21 +112,24 @@ namespace JModelling.Creature
         private void Attacked()
         {
             // If the monster is off the attack cool-down timer
-            if (!JManager.monster.tookDamage)
+            if (JManager.monster != null)
             {
-                // If weaponLoc is within the monster's range, they take damage.
-                if (Math.Abs((Camera.yaw + JManager.PITimesTwo) - (MathExtensions.Wrap(JManager.monster.AngleToPlayer + (float)Math.PI / 2f) + JManager.PITimesTwo)) < (Math.PI / 7))
+                if (!JManager.monster.tookDamage)
                 {
-                    if (MathExtensions.Dist(Camera.loc, JManager.monster.Loc) < WeaponDist)
+                    // If weaponLoc is within the monster's range, they take damage.
+                    if (Math.Abs((Camera.yaw + JManager.PITimesTwo) - (MathExtensions.Wrap(JManager.monster.AngleToPlayer + (float)Math.PI / 2f) + JManager.PITimesTwo)) < (Math.PI / 7))
                     {
-                        JManager.monster.TookDamage(this);
-                    }
-                    //Console.WriteLine("Yes!!!\t\t" + (Camera.yaw - MathExtensions.Wrap(JManager.monster.AngleToPlayer + (float)Math.PI / 2f)));
+                        if (MathExtensions.Dist(Camera.loc, JManager.monster.Loc) < WeaponDist)
+                        {
+                            JManager.monster.TookDamage(this);
+                        }
+                        //Console.WriteLine("Yes!!!\t\t" + (Camera.yaw - MathExtensions.Wrap(JManager.monster.AngleToPlayer + (float)Math.PI / 2f)));
 
-                }
-                else
-                {
-                    //Console.WriteLine("No!!!\t\t" + ((Camera.yaw + JManager.PITimesTwo) - (MathExtensions.Wrap(JManager.monster.AngleToPlayer + (float)Math.PI / 2f) + JManager.PITimesTwo)));
+                    }
+                    else
+                    {
+                        //Console.WriteLine("No!!!\t\t" + ((Camera.yaw + JManager.PITimesTwo) - (MathExtensions.Wrap(JManager.monster.AngleToPlayer + (float)Math.PI / 2f) + JManager.PITimesTwo)));
+                    }
                 }
             }
 

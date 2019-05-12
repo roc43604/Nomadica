@@ -82,10 +82,16 @@
     <Compile Include="Game1.cs" />
     <Compile Include="GraphicsEngine\ImageReference.cs" />
     <Compile Include="GraphicsEngine\Painter.cs" />
+    <Compile Include="InventorySpace\CubeItem.cs" />
+    <Compile Include="InventorySpace\DefaultItem.cs" />
+    <Compile Include="InventorySpace\Inventory.cs" />
+    <Compile Include="InventorySpace\InventoryMenu.cs" />
+    <Compile Include="InventorySpace\Item.cs" />
     <Compile Include="JModelling\Billboard.cs" />
     <Compile Include="JModelling\Camera.cs" />
     <Compile Include="JModelling\Controls.cs" />
     <Compile Include="JModelling\Entity.cs" />
+    <Compile Include="JModelling\GameState.cs" />
     <Compile Include="JModelling\Hue.cs" />
     <Compile Include="JModelling\JManager.cs" />
     <Compile Include="JModelling\Light.cs" />

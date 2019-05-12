@@ -5,7 +5,11 @@ Content\Images\night.xnb
 Content\Images\skybox.xnb
 Content\Images\stone.xnb
 Content\Images\sun.xnb
+Content\Images\Inventory\item.xnb
+Content\Images\Inventory\white.xnb
+Content\Images\Inventory\round box.xnb
 Content\DebugFont.xnb
+Content\Images\Inventory\cube.xnb
 Content\Models\cow.obj
 Content\Models\cube.obj
 Content\Models\mountains.obj

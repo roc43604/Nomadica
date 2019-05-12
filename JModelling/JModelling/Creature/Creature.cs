@@ -1,4 +1,5 @@
-﻿using JModelling.JModelling;
+﻿using JModelling.InventorySpace;
+using JModelling.JModelling;
 using JModelling.JModelling.Chunk;
 using System;
 using System.Collections.Generic;
@@ -45,16 +46,22 @@ namespace JModelling.Creature
         /// How far the player needs to be before it takes notice to
         /// them. 
         /// </summary>
-        public int NoticeDistance; 
+        public int NoticeDistance;
 
-        public Creature(Mesh mesh, Vec4 location, float Speed, int Damage, int Health, int NoticeDistance)
+        /// <summary>
+        /// The items this creature drops when killed. 
+        /// </summary>
+        public List<Item> DroppedItems; 
+
+        public Creature(Mesh mesh, Vec4 location, float Speed, int Damage, int Health, int NoticeDistance, List<Item> DroppedItems)
             : base(location, mesh)
         {
             IsHostile = false;
             this.Speed = Speed;
             this.Damage = Damage;
             this.Health = Health;
-            this.NoticeDistance = NoticeDistance; 
+            this.NoticeDistance = NoticeDistance;
+            this.DroppedItems = DroppedItems;
         }
 
         /// <summary>

@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework;
 using JModelling.Creature;
 using JModelling.JModelling.Chunk;
+using JModelling.InventorySpace;
 
 namespace JModelling.JModelling
 {
@@ -52,6 +53,16 @@ namespace JModelling.JModelling
         private const float FOV = (float)(Math.PI / 2d);
 
         /// <summary>
+        /// What the current state of the game is. 
+        /// </summary>
+        private GameState gameState;
+
+        /// <summary>
+        /// Used for displaying the player's inventory. 
+        /// </summary>
+        private InventoryMenu inventoryMenu; 
+
+        /// <summary>
         /// What will be dealing with drawing to the screen. 
         /// </summary>
         private Painter painter;
@@ -91,8 +102,6 @@ namespace JModelling.JModelling
         /// </summary>
         private Matrix matProj;
 
-        private Billboard billboard;
-
         /// <summary>
         /// A test for day/night cycles. Represents the sun and the moon. 
         /// </summary>
@@ -106,7 +115,7 @@ namespace JModelling.JModelling
         private float NormalShadowImportance = 0.25f;
         private float SunShadowImportance = 0.75f;
 
-        public Texture2D lastTexture;
+        public Texture2D lastWorldTexture, lastSkyTexture;
 
         public Light[] lights;
         private bool turnOnLights;
@@ -114,7 +123,13 @@ namespace JModelling.JModelling
         /// <summary>
         /// Monster test. 
         /// </summary>
-        public static MeleeAttacker monster; 
+        public static MeleeAttacker monster;
+
+        /// <summary>
+        /// A list of all of the items to draw in world-space. If they are
+        /// picked up, they are removed from this list. 
+        /// </summary>
+        private LinkedList<Item> itemsInWorld; 
 
         /// <summary>
         /// Creates a manager that will construct necessary fields for use
@@ -138,7 +153,9 @@ namespace JModelling.JModelling
             centerX = width / 2;
             centerY = height / 2;
 
-            this.cg = cg; 
+            this.cg = cg;
+
+            gameState = GameState.Playing; 
 
             painter = new Painter(width, height, graphicsDeviceManager.GraphicsDevice, spriteBatch);
 
@@ -172,15 +189,27 @@ namespace JModelling.JModelling
 
             // Create the satellite test.
             satellites = new Satellite[2]; 
-            satellites[0] = new Satellite((float)(Math.PI / 60 / 10), Load.OneDimImage(@"Images/sun"), 2000, 2000, (float)(Math.PI/2d), 500, 500, 300);
-            satellites[1] = new Satellite((float)(Math.PI / 60 / 10), Load.OneDimImage(@"Images/moon"), 1859, 1897, (float)(Math.PI/2d*3d), 500, 500, 800);
+            satellites[0] = new Satellite((float)(Math.PI / 60 / 60), Load.OneDimImage(@"Images/sun"), 2000, 2000, (float)(Math.PI/2d), 500, 500, 300);
+            satellites[1] = new Satellite((float)(Math.PI / 60 / 60), Load.OneDimImage(@"Images/moon"), 1859, 1897, (float)(Math.PI/2d*3d), 500, 500, 800);
 
             lights = new Light[1];
             lights[0] = new Light(100f, null);
             turnOnLights = false;
 
-            monster = new MeleeAttacker(Load.Mesh(@"Content/Models/cube.obj", 25, 0, 0, 0), camera.loc, Camera.NormalSpeed * 0.666f, 5, 100, 100);
-            //AddMesh(monster.Mesh); 
+            Vec4 monsterLoc = camera.loc.Clone();
+            monsterLoc.X += 200; 
+            monsterLoc.Z += 200;
+            monster = new MeleeAttacker(Load.Mesh(@"Content/Models/cube.obj", 25, 0, 0, 0), monsterLoc, Camera.NormalSpeed * 0.666f, 5, 100, 100, cg);
+            AddMesh(monster.Mesh); 
+
+            itemsInWorld = new LinkedList<Item>();
+            Vec4 itemLoc = player.Camera.loc.Clone();
+            itemLoc.X += 100; 
+            itemsInWorld.AddLast(new DefaultItem(itemLoc, cg));
+
+            //float h = cg.GetHeightAt(itemLoc.X, itemLoc.Z); 
+            //cube = Load.Mesh(@"Content/Models/cube.obj", 25, itemLoc.X, h, itemLoc.Z);
+            //AddMesh(cube); 
         }
 
         /// <summary>
@@ -227,6 +256,22 @@ namespace JModelling.JModelling
         /// </summary>
         public void Update()
         {
+            switch (gameState)
+            {
+                case GameState.Playing:
+                    UpdatePlaying();
+                    break;
+
+                case GameState.Inventory:
+                    UpdateInventory();
+                    break;
+            }
+            
+            lastKb = Keyboard.GetState(); 
+        }
+
+        private void UpdatePlaying()
+        {
             // TEST ILLUMINATION
             float shadow = -0.347f * (satellites[0].Angle * satellites[0].Angle) + 1.091f * satellites[0].Angle - 0.028f;
             if (shadow < 0) shadow = 0;
@@ -239,16 +284,49 @@ namespace JModelling.JModelling
             lightDirection.Normalize();
 
             // Store camera value for quick accessing
-            Camera camera = player.Camera; 
+            Camera camera = player.Camera;
 
-            UpdateInputs();
+            UpdatePlayingInputs();
             skybox.Update(camera.loc);
 
-            // Update monster's movements and actions
-            monster.Update(player, cg); 
+            if (monster != null)
+            {
+                // If creature died, remove them and drop their items
+                if (monster.Health <= 0)
+                {
+                    Vec4 itemLoc = monster.Loc;
+                    itemLoc.Y = cg.GetHeightAt(itemLoc.X, itemLoc.Z) + 10; 
+                    foreach (Item item in monster.DroppedItems)
+                    {
+                        item.SetInWorldSpace(itemLoc);                        
+                        itemsInWorld.AddLast(item);
+                    }
+                    RemoveMesh(monster.Mesh); 
+                    monster = null;
+                }
+                else // Update monster's movements and actions
+                {
+                    monster.Update(player, cg);
+                }
+            }            
+
+            // Update items to bob up and down
+            LinkedList<Item> itemsToRemove = new LinkedList<Item>(); 
+            foreach (Item item in itemsInWorld)
+            {
+                // If it's true, the player picked it up
+                if (item.Update(player))
+                {
+                    itemsToRemove.AddLast(item); 
+                }
+            }
+            foreach (Item item in itemsToRemove)
+            {
+                itemsInWorld.Remove(item); 
+            }
 
             // Set light to player's location
-            lights[0].Loc = camera.loc; 
+            lights[0].Loc = camera.loc;
 
             satellites[0].Step(camera.loc);
             satellites[1].Step(camera.loc);
@@ -275,34 +353,69 @@ namespace JModelling.JModelling
                     DrawWidth, DrawHeight);
             }
 
-            ListNode<Mesh> meshNode = meshList.list; 
+            ListNode<Mesh> meshNode = meshList.list;
             while (meshNode != null)
             {
                 Mesh mesh = meshNode.dat;
-                meshNode = meshNode.next; 
-                
+                meshNode = meshNode.next;
+
                 if (mesh == null)
                 {
-                    continue; 
+                    continue;
                 }
                 if (mesh.Triangles == null)
                 {
-                    continue; 
+                    continue;
                 }
 
-                DrawTrianglesToPainterCanvas(painter, depthBuffer, GetDrawableTrianglesFromMesh(mesh, hue, activeLights, matView, lightDirection, shadow)); 
+                DrawTrianglesToPainterCanvas(painter, depthBuffer, GetDrawableTrianglesFromMesh(mesh, hue, activeLights, matView, lightDirection, shadow));
             }
 
-            monster.Mesh.MoveTo(monster.Loc.X, monster.Loc.Y, monster.Loc.Z); 
-            DrawTrianglesToPainterCanvas(painter, depthBuffer, GetDrawableTrianglesFromMesh(monster.Mesh, hue, activeLights, matView, lightDirection, shadow)); 
+            foreach (Item item in itemsInWorld)
+            {
+                item.DrawToCanvas(camera, painter, depthBuffer, matView, matProj, DrawWidth, DrawHeight);
+            }
 
-            lastTexture = painter.GetCanvas();
-            lastKb = Keyboard.GetState(); 
+            if (monster != null)
+            {
+                monster.Mesh.MoveTo(monster.Loc.X, monster.Loc.Y, monster.Loc.Z);
+                DrawTrianglesToPainterCanvas(painter, depthBuffer, GetDrawableTrianglesFromMesh(monster.Mesh, hue, activeLights, matView, lightDirection, shadow));
+            }
+
+            lastWorldTexture = painter.GetCanvas();
+        }
+
+        private void UpdateInventory()
+        {
+            UpdateInventoryInputs();    
+        }
+
+        /// <summary>
+        /// Draws what the JManager has loaded to the screen. 
+        /// </summary>
+        public void Draw(SpriteBatch spriteBatch)
+        {
+            switch (gameState)
+            {
+                case GameState.Playing:
+                    DrawPlaying(spriteBatch);
+                    break;
+
+                case GameState.Inventory:
+                    inventoryMenu.Draw(spriteBatch);
+                    break; 
+            }
+        }
+
+        private void DrawPlaying(SpriteBatch spriteBatch)
+        {
+            spriteBatch.Draw(GetSkyboxTexture(player.Camera), new Rectangle(0, 0, Width, Height), Color.White);
+            spriteBatch.Draw(GetWorldTexture(), new Rectangle(0, 0, Width, Height), Color.White);
         }
 
         public Texture2D GetWorldTexture()
         {
-            return lastTexture; 
+            return lastWorldTexture; 
         }
 
         public Texture2D GetSkyboxTexture(Camera camera)
@@ -317,9 +430,10 @@ namespace JModelling.JModelling
             Matrix matView = Matrix.PointAt(camera.loc, target, new Vec4(0, 1, 0));
             matView.QuickInverse();
 
-            skybox.DrawToCanvas(painter, camera, matView, matProj, DrawWidth, DrawHeight, GetHue(satellites[0])); 
-            
-            return painter.GetCanvas(); 
+            skybox.DrawToCanvas(painter, camera, matView, matProj, DrawWidth, DrawHeight, GetHue(satellites[0]));
+
+            lastSkyTexture = painter.GetCanvas(); 
+            return lastSkyTexture; 
         }
 
         private List<Triangle> GetDrawableTrianglesFromMesh(Mesh mesh, Hue hue, Light[] activeLights, Matrix matView, Vec4 lightDirection, float shadow)
@@ -1010,14 +1124,14 @@ namespace JModelling.JModelling
         /// Runs through the processes of collecting keyboard/mouse inputs
         /// and dealing with them. 
         /// </summary>
-        public void UpdateInputs()
+        public void UpdatePlayingInputs()
         {
             // Get the current state of the keyboard and mouse. 
             KeyboardState kb = Keyboard.GetState();
             MouseState ms = Mouse.GetState();
 
             // Perform any special actions with any special keys. 
-            ProcessSpecialKeyInputs(kb);
+            ProcessSpecialPlayingKeyInputs(kb);
 
             player.Update(kb, ms);
         }
@@ -1027,7 +1141,7 @@ namespace JModelling.JModelling
         /// example, if ESC is pressed, then the program will do something
         /// like pause or close). 
         /// </summary>
-        private void ProcessSpecialKeyInputs(KeyboardState kb)
+        private void ProcessSpecialPlayingKeyInputs(KeyboardState kb)
         {
             // If Escape is pressed, close the program. 
             if (kb.IsKeyDown(Controls.QuitProgram))
@@ -1052,6 +1166,44 @@ namespace JModelling.JModelling
             else if (kb.IsKeyDown(Controls.DebugButton) && lastKb.IsKeyUp(Controls.DebugButton))
             {
                 Game1.DebugEnabled = !Game1.DebugEnabled; 
+            }
+
+            // If inventory is pressed, toggle inventory menu.
+            else if (kb.IsKeyDown(Controls.Inventory) && lastKb.IsKeyUp(Controls.Inventory))
+            {
+                gameState = GameState.Inventory;
+                inventoryMenu = new InventoryMenu(painter, player.Inventory, Width, Height, lastWorldTexture, lastSkyTexture);
+                isMouseFocused = false;
+                host.IsMouseVisible = true; 
+            }
+        }
+
+        /// <summary>
+        /// Updates the inputs coming specifically from the inventory screen. 
+        /// </summary>
+        private void UpdateInventoryInputs()
+        {
+            // Gets the keyboard and mouse inputs/location 
+            KeyboardState kb = Keyboard.GetState();
+            MouseState ms = Mouse.GetState();
+
+            ProcessSpecialInventoryKeyInputs(kb); 
+        }
+
+        /// <summary>
+        /// Processes any special keys the user presses while on the Inventory 
+        /// screen. 
+        /// </summary>
+        private void ProcessSpecialInventoryKeyInputs(KeyboardState kb)
+        {
+            // If the inventory button is down, return player to Playing state 
+            if (kb.IsKeyDown(Controls.Inventory) && lastKb.IsKeyUp(Controls.Inventory))
+            {
+                gameState = GameState.Playing;
+
+                isMouseFocused = true; 
+                host.IsMouseVisible = false;
+                Mouse.SetPosition(centerX, centerY); 
             }
         }
     }
