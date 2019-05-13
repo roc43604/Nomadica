@@ -99,7 +99,7 @@ namespace JModelling
 
             cube = Load.Mesh(@"Content/Models/cube.obj");
             
-            generator = new ChunkGenerator(43545544, 10, 10, 4, manager, Load.Mesh(@"Content/Models/cube.obj"));
+            generator = new ChunkGenerator(43545544, 10, 10, 6, manager, Load.Mesh(@"Content/Models/cube.obj"));
 
 
             Triangle a = new Triangle(
@@ -180,7 +180,7 @@ namespace JModelling
                 case MovementMode.Fly:
                     if (manager.camera.loc.Y < heightAt)
                     {
-                        manager.camera.loc.Y = heightAt;
+                 //       manager.camera.loc.Y = heightAt;
                     }
                     break;
             }
@@ -214,6 +214,13 @@ namespace JModelling
                     movementMode = MovementMode.Fly;
                 }
             }
+
+            if (keyState.IsKeyDown(Keys.I) && oldKeyState.IsKeyUp(Keys.I))
+            {
+                manager.EnableMouse = !manager.EnableMouse;
+            }
+
+            
 
             oldKeyState = keyState;
 

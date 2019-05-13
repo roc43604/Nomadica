@@ -96,7 +96,9 @@ namespace JModelling.JModelling
         /// <summary>
         /// A test for the skybox. 
         /// </summary>
-        private SkyBox skybox; 
+        private SkyBox skybox;
+
+        public bool EnableMouse = false;
 
         /// <summary>
         /// Creates a manager that will construct necessary fields for use
@@ -105,7 +107,9 @@ namespace JModelling.JModelling
         public JManager(Game host, int width, int height, GraphicsDeviceManager graphicsDeviceManager, SpriteBatch spriteBatch)
         {
             // Assigns the host
-            this.host = host; 
+            this.host = host;
+
+            EnableMouse = true;
 
             // Set the correct dimensions of the screen.
             Width = width;
@@ -114,8 +118,10 @@ namespace JModelling.JModelling
             DrawWidth = (int)(width / 2);
             DrawHeight = (int)(height / 2);
 
-            centerX = width / 2;
-            centerY = height / 2;
+            centerX = width / 3;
+            centerY = height / 3;
+
+            Mouse.SetPosition(centerX, centerY);
 
             painter = new Painter(width, height, graphicsDeviceManager.GraphicsDevice, spriteBatch);
 
@@ -942,28 +948,32 @@ namespace JModelling.JModelling
 
         public void ProcessMouseLoc(int xLoc, int yLoc)
         {
-            float x = (float)xLoc;
-            float y = (float)yLoc; 
 
-            x -= centerX;
-            y -= centerY; 
-
-            x /= Controls.MouseSensitivity;
-            y /= Controls.MouseSensitivity;
-
-            camera.yaw += x;
-            camera.pitch += y; 
-
-            if (camera.yaw > PITimesTwo)
+            if (EnableMouse)
             {
-                camera.yaw = 0; 
-            }
-            else if (camera.yaw < 0)
-            {
-                camera.yaw = PITimesTwo; 
-            }
+                float x = (float)xLoc;
+                float y = (float)yLoc;
 
-            Mouse.SetPosition(centerX, centerY); 
+                x -= centerX;
+                y -= centerY;
+
+                x /= Controls.MouseSensitivity;
+                y /= Controls.MouseSensitivity;
+
+                camera.yaw += x;
+                camera.pitch += y;
+
+                if (camera.yaw > PITimesTwo)
+                {
+                    camera.yaw = 0;
+                }
+                else if (camera.yaw < 0)
+                {
+                    camera.yaw = PITimesTwo;
+                }
+
+                Mouse.SetPosition(centerX, centerY);
+            }
         }
     }
 }

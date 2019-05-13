@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using JModelling.JModelling;
+using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,7 @@ namespace JModelling.Chunk
         public string Name;
         public Color[] clrYRange;
         public Color[] clrVariation;
+        public Mesh[] adornments;
         public float amp;
         public float zoom;
         public float thatMagicNumber;

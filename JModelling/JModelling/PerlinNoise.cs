@@ -84,12 +84,13 @@ namespace JModelling
 
         public float CreateNoiseHeight(float x, float y, float z)
         {
-            return (float)(Noise(x, y, z)
+            float res = (float)(Noise(x, y, z)
                 + 0.5 * Noise(x * 2, y * 2, z * 2)
                 + 0.25 * Noise(x * 4, y * 4, z * 4)
                 + 0.125 * Noise(x * 8, y * 8, z * 8)
-                + 0.0625 * Noise(x * 14, y * 14, z * 14)
             );
+
+            return res;
         }
 
         private void InitGradients()
