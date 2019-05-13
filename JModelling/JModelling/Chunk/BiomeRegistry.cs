@@ -15,13 +15,13 @@ namespace JModelling.Chunk
                     "Red",
                     new Color[] {Color.Red},
                     new Color[] { },
-                    4000, 100, 0.5f
+                    5000, 50, 0.5f
                 ),
                 new Biome(
                     "Pink",
                     new Color[] {Color.Pink},
                     new Color[] { },
-                    4000, 100, 0.5f
+                    4000, 75, 0.5f
                 ),
             },
             {
@@ -35,7 +35,7 @@ namespace JModelling.Chunk
                     "Desert",
                     new Color[] {Color.Tan},
                     new Color[] { },
-                    4000, 75, 100f
+                    4000, 75, 0.5f
                 )
             }
         };
