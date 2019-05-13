@@ -13,7 +13,7 @@ namespace JModelling.Chunk
         public string Name;
         public Color[] clrYRange;
         public Color[] clrVariation;
-        public Mesh[] adornments;
+        public Dictionary<Mesh, float> adornments;
         public float amp;
         public float zoom;
         public float thatMagicNumber;
@@ -22,6 +22,7 @@ namespace JModelling.Chunk
             string Name, 
             Color[] colorHeights, Color[] colorVariation,
             float amp, float zoom, float thatMagicNumber
+           // Dictionary<Mesh, float> adornments
         )
         {
             this.Name = Name;
@@ -30,8 +31,14 @@ namespace JModelling.Chunk
             this.amp = amp;
             this.zoom = zoom;
             this.thatMagicNumber = thatMagicNumber;
+         //   this.adornments = adornments;
         }
 
+        /// <summary>
+        /// Gets the estimated color for the given height (0-1)
+        /// </summary>
+        /// <param name="y">The height 0-1</param>
+        /// <returns>The biome color based off of the given height</returns>
         public Color GetEstimatedColorY(double y)
         {
             if (y > 1)

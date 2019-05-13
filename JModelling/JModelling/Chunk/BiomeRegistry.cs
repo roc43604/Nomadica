@@ -29,13 +29,13 @@ namespace JModelling.Chunk
                     "Mountain",
                     new Color[] {Color.LawnGreen},
                     new Color[] { },
-                    4000, 75, 0.5f
+                    10000, 75, 0.5f
                 ),
                 new Biome(
                     "Desert",
                     new Color[] {Color.Tan},
                     new Color[] { },
-                    4000, 75, 0.5f
+                    4000, 200, 0.5f
                 )
             }
         };
@@ -70,8 +70,6 @@ namespace JModelling.Chunk
             }
             */
         }
-
-
 
         public static Biome GetBiomeFor(double x, double z)
         {

@@ -14,7 +14,7 @@ namespace JModelling.JModelling
         /// <summary>
         /// How fast the camera will normally move.
         /// </summary>
-        public const float NormalSpeed = 50f;
+        public const float NormalSpeed = 5f;
 
         /// <summary>
         /// How fast the camera will move when the user is
