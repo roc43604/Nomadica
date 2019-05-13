@@ -107,3 +107,4 @@ C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\
 \\Fisd-student1\hs\lhs\122341\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\Images\Inventory\round box.xnb
 C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\Images\Inventory\round box.xnb
 C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\Images\Inventory\cube.xnb
+\\Fisd-student1\hs\lhs\122341\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\Images\Inventory\cube.xnb

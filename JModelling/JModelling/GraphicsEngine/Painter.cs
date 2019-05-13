@@ -345,11 +345,17 @@ namespace GraphicsEngine
         {
             if (color.A != 255 && canvas[index] != null)
             {
-                canvas[index] = Color.Lerp(canvas[index], color, color.A / 255f);
-                //canvas[index].R = (byte)(canvas[index].R + (color.R - canvas[index].R));
-                //canvas[index].G = (byte)(canvas[index].G + (color.G - canvas[index].G));
-                //canvas[index].B = (byte)(canvas[index].B + (color.B - canvas[index].B));
-                //canvas[index].A = (byte)(canvas[index].A + (color.A - canvas[index].A) * x);
+                if (color.A < 25)
+                {
+                    canvas[index] = Color.Lerp(canvas[index], color, color.A / 255f);
+                }
+                else
+                {
+                    canvas[index].R = (byte)(canvas[index].R + (color.R - canvas[index].R));
+                    canvas[index].G = (byte)(canvas[index].G + (color.G - canvas[index].G));
+                    canvas[index].B = (byte)(canvas[index].B + (color.B - canvas[index].B));
+                    canvas[index].A = (byte)(canvas[index].A + (color.A - canvas[index].A) * color.A / 255f);
+                }
             }
             else
             {

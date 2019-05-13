@@ -78,7 +78,7 @@ namespace JModelling
             debugFont = Content.Load<SpriteFont>("DebugFont");
             InventoryMenu.LoadImages(Content); 
 
-            generator = new ChunkGenerator(43545544, 10, 10, 4, manager, Load.Mesh(@"Content/Models/cube.obj"));
+            generator = new ChunkGenerator(43545544, 10, 10, 3, manager, Load.Mesh(@"Content/Models/cube.obj"));
 
             manager = new JManager(this, Width, Height, graphics, generator, spriteBatch);
 
