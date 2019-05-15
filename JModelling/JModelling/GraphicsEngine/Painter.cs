@@ -115,11 +115,11 @@ namespace GraphicsEngine
                 startRow = 0;
             }
 
-            if (endRow > height-1)
+            if (endRow > drawHeight-1)
             {
-                float diff = 100f / (float)location.Height * (endRow - height);
+                float diff = 100f / (float)location.Height * (endRow - drawHeight);
                 imageY = imageHeight / 100 * diff;
-                endRow = height-1;
+                endRow = drawHeight-1;
             }
 
             int startCol = location.X;
@@ -130,11 +130,11 @@ namespace GraphicsEngine
                 startCol = 0;
             }
 
-            if (endCol > width-1)
+            if (endCol > drawWidth-1)
             {
-                float diff = 100f / (float)location.Width * (endCol - width);
+                float diff = 100f / (float)location.Width * (endCol - drawWidth);
                 imageStartX = imageWidth / 100 * diff;
-                endCol = width-1;
+                endCol = drawWidth-1;
             }
 
             // These represent how many image pixels pass for every screen pixel. 
@@ -151,13 +151,8 @@ namespace GraphicsEngine
                 {
                     int canvasIndex = row * drawWidth + col;
                     int dataIndex = (int)imageY * imageWidth + (int)imageX; 
-
-                    // If the indices are in bounds, we can set the pixels. 
-                    if (canvasIndex >= 0 && canvasIndex < canvas.Length && 
-                        dataIndex >= 0 && dataIndex < data.Length)
-                    {
-                        SetPixel(canvasIndex, data[dataIndex]);
-                    }
+                    
+                    SetPixel(canvasIndex, data[dataIndex]);
                     
                     imageX += mx;
                 }
@@ -187,11 +182,11 @@ namespace GraphicsEngine
                 startRow = 0;
             }
 
-            if (endRow > height - 1)
+            if (endRow > drawHeight - 1)
             {
-                float diff = 100f / (float)location.Height * (endRow - height);
+                float diff = 100f / (float)location.Height * (endRow - drawHeight);
                 imageY = imageHeight / 100 * diff;
-                endRow = height - 1;
+                endRow = drawHeight - 1;
             }
 
             int startCol = location.X;
@@ -202,11 +197,13 @@ namespace GraphicsEngine
                 startCol = 0;
             }
 
-            if (endCol > width - 1)
+            Console.WriteLine(endCol); 
+
+            if (endCol > drawWidth - 1)
             {
-                float diff = 100f / (float)location.Width * (endCol - width);
+                float diff = 100f / (float)location.Width * (endCol - drawWidth);
                 imageStartX = imageWidth / 100 * diff;
-                endCol = width - 1;
+                endCol = drawWidth - 1;
             }
 
             // These represent how many image pixels pass for every screen pixel. 
@@ -224,17 +221,11 @@ namespace GraphicsEngine
                     int dataIndex = (int)imageY * imageWidth + (int)imageX;
 
                     // If the indices are in bounds, we can set the pixels. 
-                    if (canvasIndex >= 0 && canvasIndex < canvas.Length &&
-                        dataIndex >= 0 && dataIndex < data.Length &&
-                        col >= 0 && col < depthBuffer.GetLength(0) &&
-                        row >= 0 && row < depthBuffer.GetLength(1))
+                    // Checks if the depth makes this pixel visible
+                    if (depth > depthBuffer[col, row])
                     {
-                        // Checks if the depth makes this pixel visible
-                        if (depth > depthBuffer[col, row])
-                        {
-                            SetPixel(canvasIndex, data[dataIndex]);
-                            depthBuffer[col, row] = depth;
-                        }
+                        SetPixel(canvasIndex, data[dataIndex]);
+                        depthBuffer[col, row] = depth;
                     }
 
                     imageX += mx;

@@ -118,7 +118,7 @@ namespace JModelling.JModelling
                     Vec4 offsetView = new Vec4(1, 1, 0);
                     point.PlusEquals(offsetView); 
                     point.X *= 0.5f * drawWidth; point.Y *= 0.5f * drawHeight;
-
+                    
                     painter.DrawImage(
                         Texture, TextureWidth, TextureHeight,
                         new Rectangle(

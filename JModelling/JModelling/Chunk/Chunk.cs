@@ -325,8 +325,6 @@ namespace JModelling.JModelling.Chunk
                 }
                 generated = true;
             }
-
-
         }
 
         public int GetIndexX(int posX)
