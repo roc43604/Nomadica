@@ -108,6 +108,7 @@
     <Compile Include="JModelling\Vec4.cs" />
     <Compile Include="JModelling\WeatherAndTime.cs" />
     <Compile Include="ListUtil.cs" />
+    <Compile Include="Minimap.cs" />
     <Compile Include="PerlinNoise.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
