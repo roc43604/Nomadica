@@ -146,34 +146,19 @@ namespace JModelling.JModelling.Chunk
 
             //Top row
             for (int x = 0; x < sl; x++)
-                points[x, 0] = p10 - f1020 * x;
+                points[x, 0] = p10 + f1020 * x;
             //Bottom
             for (int x = 0; x < sl; x++)
-                points[x, sl-1] = p11 + f1121 * x;
+                points[x, sl-1] = p11 - f1121 * x;
 
             //Side
-            for (int y = 0; y < sl; y++)
-                points[0, y] = p10 - f1020 * y;
+            // for (int y = 0; y < sl; y++)
+            //   points[0, y] = p10 - f1020 * y;
             //Bottom
-            for (int y = 0; y < sl; y++)
-                points[sl - 1, y] = p20 + f1121 * y;
+            //for (int y = 0; y < sl; y++)
+            //   points[sl - 1, y] = p20 + f1121 * y;
 
             //Calculate points Top to Bottom
-            for (int x = 0; x < sl; x++)
-            {
-                float top = points[x, 0];
-                float bot = points[x, sl - 1];
-
-                float dist = bot - top;
-                float scle = dist / (sl-1);
-
-                //1 and -1 because top and bottom already calculated
-                for (int y = 1; y < sl-1; y++) 
-                {
-                    points[x, y] = top + scle * y;
-                }
-            }
-
             for (int x = 0; x < sl; x++)
             {
                 float top = points[x, 0];
@@ -183,12 +168,23 @@ namespace JModelling.JModelling.Chunk
                 float scle = dist / (sl - 1);
 
                 //1 and -1 because top and bottom already calculated
-                for (int y = 1; y < sl - 1; y++)
+                for (int y = 1; y < sl-1; y++) 
                 {
                     points[x, y] = top + scle * y;
                 }
             }
 
+            //StringBuilder builder2 = new StringBuilder();
+            //for (int x = 0; x < sl - 1; x++)
+            //{
+            //    for (int y = 0; y < sl - 1; y++)
+            //    {
+            //        builder2.Append((int)points[x, y]).Append(", ");
+            //    }
+            //    builder2.Append("\n");
+            //}
+            //Console.WriteLine(builder2.ToString());
+            //builder2.ToString();
             return points;
         }
 
@@ -315,7 +311,7 @@ namespace JModelling.JModelling.Chunk
                             //Now time to generate the triangles from the interpolation
                             float[,] generatedPoints = lerpHeights(
                                 h10, h20,
-                                h21, h20,
+                                h11, h21,
                                 stepInc+1
                             );
 
@@ -331,10 +327,10 @@ namespace JModelling.JModelling.Chunk
                                     float pX = (x + tx) * triSizeX * increment + (indexX - viewDist + cx) * chunkSizeX * triSizeX;
                                     float pZ = (z + tz) * triSizeZ * increment + (indexZ - viewDist + cz) * chunkSizeZ * triSizeZ;
 
-                                    float tL= generatedPoints[tz, tz];
-                                    float tR = generatedPoints[tz+1, tz];
-                                    float bL = generatedPoints[tz, tz+1];
-                                    float bR = generatedPoints[tz+1, tz+1];
+                                    float tL= generatedPoints[tx+1, tz+1];
+                                    float tR = generatedPoints[tx, tz+1];
+                                    float bL = generatedPoints[tx+1, tz];
+                                    float bR = generatedPoints[tx, tz];
 
 
                                     //Top Right, Bottom Left, Top Left
