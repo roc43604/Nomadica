@@ -136,14 +136,27 @@ namespace JModelling.JModelling.Chunk
             float f1020 = dist1020 / (sl-1);
 
             float dist1121 = p11 - p21;
-            float f1121 = dist1121 / (sl/-1);
-            
+            float f1121 = dist1121 / (sl-1);
+
+            float dist1011 = p10 - p11;
+            float f1011 = dist1011 / (sl-1);
+
+            float dist2021 = p20 - p21;
+            float f2021 = dist2021 / (sl-1);
+
             //Top row
             for (int x = 0; x < sl; x++)
-                points[x, 0] = p10 + f1020 * x;
+                points[x, 0] = p10 - f1020 * x;
             //Bottom
             for (int x = 0; x < sl; x++)
                 points[x, sl-1] = p11 + f1121 * x;
+
+            //Side
+            for (int y = 0; y < sl; y++)
+                points[0, y] = p10 - f1020 * y;
+            //Bottom
+            for (int y = 0; y < sl; y++)
+                points[sl - 1, y] = p20 + f1121 * y;
 
             //Calculate points Top to Bottom
             for (int x = 0; x < sl; x++)
@@ -156,6 +169,21 @@ namespace JModelling.JModelling.Chunk
 
                 //1 and -1 because top and bottom already calculated
                 for (int y = 1; y < sl-1; y++) 
+                {
+                    points[x, y] = top + scle * y;
+                }
+            }
+
+            for (int x = 0; x < sl; x++)
+            {
+                float top = points[x, 0];
+                float bot = points[x, sl - 1];
+
+                float dist = bot - top;
+                float scle = dist / (sl - 1);
+
+                //1 and -1 because top and bottom already calculated
+                for (int y = 1; y < sl - 1; y++)
                 {
                     points[x, y] = top + scle * y;
                 }
@@ -286,10 +314,12 @@ namespace JModelling.JModelling.Chunk
 
                             //Now time to generate the triangles from the interpolation
                             float[,] generatedPoints = lerpHeights(
-                                h10, h11,
-                                h20, h21,
-                                stepInc
+                                h10, h20,
+                                h21, h20,
+                                stepInc+1
                             );
+
+                            float zoom = b10.zoom;
 
                             for (int tx = 0; tx < stepInc; tx++)
                             {
@@ -300,25 +330,29 @@ namespace JModelling.JModelling.Chunk
 
                                     float pX = (x + tx) * triSizeX * increment + (indexX - viewDist + cx) * chunkSizeX * triSizeX;
                                     float pZ = (z + tz) * triSizeZ * increment + (indexZ - viewDist + cz) * chunkSizeZ * triSizeZ;
-                                    float h = generatedPoints[tx, tz];
+
+                                    float tL= generatedPoints[tz, tz];
+                                    float tR = generatedPoints[tz+1, tz];
+                                    float bL = generatedPoints[tz, tz+1];
+                                    float bR = generatedPoints[tz+1, tz+1];
 
 
                                     //Top Right, Bottom Left, Top Left
                                     Triangle nA = new Triangle(new Vec4[] {
                                         new Vec4(
-                                            basePX,
+                                            pX,
                                             (float)tL,
-                                            basePZ
+                                            pZ
                                         ),
                                         new Vec4(
-                                            basePX + triSizeX*increment,
+                                            pX - triSizeX*increment,
                                             (float)tR,
-                                            basePZ
+                                            pZ
                                         ),
                                         new Vec4(
-                                            basePX,
+                                            pX,
                                             (float)bL,
-                                            basePZ + triSizeZ*increment
+                                            pZ - triSizeZ*increment
                                         )
 
                                     });
@@ -332,19 +366,19 @@ namespace JModelling.JModelling.Chunk
                                     //Bottom Left, Bottom Right, Top Right
                                     Triangle nB = new Triangle(new Vec4[] {
                                         new Vec4(
-                                            basePX + triSizeX*increment,
+                                            pX - triSizeX*increment,
                                             (float)bR,
-                                            basePZ + triSizeZ*increment
+                                            pZ - triSizeZ*increment
                                         ),
                                         new Vec4(
-                                            basePX + triSizeX*increment,
+                                            pX - triSizeX*increment,
                                             (float)tR,
-                                            basePZ
+                                            pZ
                                         ),
                                         new Vec4(
-                                            basePX,
+                                            pX,
                                             (float)bL,
-                                            basePZ + triSizeZ*increment
+                                            pZ - triSizeZ*increment
                                         )
                                     });
                                     nB.Normal = Vec4.CrossProduct(
@@ -352,6 +386,36 @@ namespace JModelling.JModelling.Chunk
                                         nB.Points[2] - nB.Points[0]
                                     );
                                     nB.Normal.Normalize();
+
+
+
+
+                                    double clrNoise = colorNoise.Noise(
+                                        (pX / zoom) * 5,
+                                        (pZ / zoom) * 5,
+                                        0.5
+                                    );
+                                    double shadeModifier = 20;
+
+                                    Color biomeColor = b10.GetEstimatedColorY(clrNoise);
+                                    double txtrVari = clrNoise * 2 - 1;
+
+                                    Color curColor = new Color(
+                                        (int)(biomeColor.R + shadeModifier * txtrVari),
+                                        (int)(biomeColor.G + shadeModifier * txtrVari),
+                                        (int)(biomeColor.B + shadeModifier * txtrVari)
+                                    );
+
+
+                                    nB.Color = curColor;
+                                    nA.Color = curColor;
+
+                                    int limit = 35;
+                                    if (MathHelper.ToDegrees((float)Math.Sin(nA.Normal.Y)) < limit || MathHelper.ToDegrees((float)Math.Sin(nB.Normal.Y)) < 35)
+                                    {
+                                        nA.Color = Color.Gray;
+                                        nB.Color = Color.Gray;
+                                    }
 
 
                                     //Add triangles to the triangle array
@@ -366,11 +430,12 @@ namespace JModelling.JModelling.Chunk
 
                         }
                     }
-                    
+
+                    chunkMesh[cx, cz].Triangles = tris;
 
 
-                   
 
+                    /*
 
                     for (int x = 0; x < chunkSizeX; x++)
                     {
@@ -389,9 +454,6 @@ namespace JModelling.JModelling.Chunk
                             float zF = (z*increment + (indexZ - viewDist + cz) * chunkSizeZ);
                             
 
-
-                            int basePX = x * triSizeX * increment + (indexX - viewDist + cx) * chunkSizeX * triSizeX;// - (chunkSizeX * triSizeX)/2;
-                            int basePZ = z * triSizeZ * increment + (indexZ - viewDist + cz) * chunkSizeZ * triSizeZ;// - (chunkSizeZ * triSizeZ)/2;
 
                             
                             float biomeZoom = 200f;
@@ -529,12 +591,13 @@ namespace JModelling.JModelling.Chunk
 
                             /*
                               Ned sum code hear
-                            */
+                            
 
                         }
                     }
-
+            
                     chunkMesh[cx, cz].Triangles = tris;
+                    */
 
                     //Console.WriteLine(builder.ToString());
                 }

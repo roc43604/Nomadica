@@ -99,7 +99,7 @@ namespace JModelling
 
             cube = Load.Mesh(@"Content/Models/cube.obj");
             
-            generator = new ChunkGenerator(43545544, 10, 10, 5, manager, Load.Mesh(@"Content/Models/cube.obj"));
+            generator = new ChunkGenerator(43545544, 4, 4, 4, manager, Load.Mesh(@"Content/Models/cube.obj"));
 
 
             Triangle a = new Triangle(
