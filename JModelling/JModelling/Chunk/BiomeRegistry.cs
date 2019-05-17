@@ -9,18 +9,46 @@ namespace JModelling.Chunk
     public class BiomeRegistry
     {
 
-        private readonly static Biome[] BIOMES = new Biome[]{
-            new Biome("Mountain", new Color[] {Color.LawnGreen}, new Color[] { }, 4000, 100, 100f),
-            //new Biome("Desert", new Color[] {Color.Tan, Color.Red, Color.Black}, new Color[] { }, 2000, 100, 0f)
+        private readonly static Biome[,] BIOMES = new Biome[,]{
+            {
+                new Biome(
+                    "Red",
+                    new Color[] {Color.Red},
+                    new Color[] { },
+                    1500, 100, 0.5f
+                ),
+                new Biome(
+                    "Pink",
+                    new Color[] {Color.Pink},
+                    new Color[] { },
+                    2000, 75, 0.5f
+                ),
+            },
+            {
+                new Biome(
+                    "Mountain",
+                    new Color[] {Color.LawnGreen},
+                    new Color[] { },
+                    2000, 75, 0.5f
+                ),
+                new Biome(
+                    "Desert",
+                    new Color[] {Color.Tan},
+                    new Color[] { },
+                    2000, 85, 0.5f
+                )
+            }
         };
 
 
-        private static Biome[] biomeReg;
+        private static Biome[] biomeRegUpper;
+        private static Biome[] biomeRegLower;
+
 
         static BiomeRegistry()
         {
-            biomeReg = new Biome[50];
-
+            
+            /*
             int biomeInc = biomeReg.Length / BIOMES.Length;
 
             int num = biomeReg.Length;
@@ -36,18 +64,30 @@ namespace JModelling.Chunk
 
             int biomeIndex = 0;
             int leftover = num - count;
-            for (int i = 0; i < leftover; i++)
+            for (int i=0; i<leftover; i++)
             {
-                biomeReg[leftover + i - 1] = BIOMES[BIOMES.Length - 1];
+                biomeReg[leftover + i - 1] = BIOMES[BIOMES.Length-1];
             }
-
+            */
         }
 
-
-        public static Biome GetBiomeFor(double point)
+        public static Biome GetBiomeFor(double x, double z)
         {
-            return biomeReg[(int)(point * biomeReg.Length)];
-        }
+            //Console.WriteLine(x + " : " + (int)(x * BIOMES.GetLength(0)));
+            return BIOMES[
+                (int)(x * BIOMES.GetLength(0)),
+                (int)(z * BIOMES.GetLength(1))
+            ];
+            /*
+            point *= biomeReg.Length;
+            if (point >= biomeReg.Length)
+                point = biomeReg.Length - 1;
+            else if (point < 0)
+                point = 0;
 
+            return biomeReg[(int)(point)];
+            */
+        }
+        
     }
 }
