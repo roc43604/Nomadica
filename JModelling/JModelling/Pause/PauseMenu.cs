@@ -131,15 +131,12 @@ namespace JModelling.Pause
                     
                     if (rec.Contains(ms.X, ms.Y))
                     {
-                        Console.WriteLine("BOOM!"); 
                         currentSubset = index;
                         break; 
                     }
                     index++; 
                 }
                 subsets[currentSubset].Update(ms, lastMs);
-
-                Console.WriteLine(ms.X + " " + ms.Y); 
             }
         }
 

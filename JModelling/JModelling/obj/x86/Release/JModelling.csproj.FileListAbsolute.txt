@@ -100,11 +100,17 @@ C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\obj\x86\Release\
 C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\obj\x86\Release\JModelling.pdb
 C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\DebugFont.xnb
 C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\Images\Inventory\item.xnb
-C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\Images\Inventory\white.xnb
 \\Fisd-student1\hs\lhs\122341\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\Images\Inventory\item.xnb
 \\Fisd-student1\hs\lhs\122341\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\Images\Inventory\white.xnb
 \\Fisd-student1\hs\lhs\122341\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\DebugFont.xnb
 \\Fisd-student1\hs\lhs\122341\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\Images\Inventory\round box.xnb
-C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\Images\Inventory\round box.xnb
 C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\Images\Inventory\cube.xnb
 \\Fisd-student1\hs\lhs\122341\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\Images\Inventory\cube.xnb
+C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\Images\Menu\white.xnb
+C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\Images\Menu\ThinRoundBox.xnb
+C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\Images\Menu\round box.xnb
+C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\Images\Menu\filled round box.xnb
+C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\Images\Menu\ThinFilledRoundBox.xnb
+C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\AnswerFont.xnb
+C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\PauseFont.xnb
+C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\QuestionFont.xnb
