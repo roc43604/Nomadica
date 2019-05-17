@@ -105,7 +105,8 @@ namespace JModelling.Pause
         public void Create(Texture2D world, Texture2D sky)
         {
             this.world = world;
-            this.sky = sky; 
+            this.sky = sky;
+            currentSubset = 0; 
         }
 
         public static void LoadImages(ContentManager content)
