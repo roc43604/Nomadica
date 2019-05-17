@@ -67,6 +67,8 @@ namespace JModelling.JModelling
         //private Mesh[] meshes;
         private ListUtil<Mesh> meshList;
 
+        private int numMeshes;
+
         private Dictionary<Mesh, ListNode<Mesh>> meshListNodeDict;
 
         /// <summary>
@@ -100,14 +102,17 @@ namespace JModelling.JModelling
 
         public bool EnableMouse = false;
 
+        private SpriteBatch meshDrawer;
+
         /// <summary>
         /// Creates a manager that will construct necessary fields for use
         /// with the methods. 
         /// </summary>
-        public JManager(Game host, int width, int height, GraphicsDeviceManager graphicsDeviceManager, SpriteBatch spriteBatch)
+        public JManager(Game host, int width, int height, GraphicsDeviceManager graphicsDeviceManager, SpriteBatch spriteBatch, SpriteBatch meshDrawer)
         {
             // Assigns the host
             this.host = host;
+            this.meshDrawer = meshDrawer;
 
             EnableMouse = true;
 
@@ -115,8 +120,8 @@ namespace JModelling.JModelling
             Width = width;
             Height = height;
 
-            DrawWidth = (int)(width / 2);
-            DrawHeight = (int)(height / 2);
+            DrawWidth = (int)(width / 3);
+            DrawHeight = (int)(height / 3);
 
             centerX = width / 3;
             centerY = height / 3;
@@ -137,6 +142,7 @@ namespace JModelling.JModelling
             {
                 numTriangles += meshNode.dat.Triangles.Length;
                 meshNode = meshNode.next;
+                numMeshes += 1;
             }
 
 
@@ -174,6 +180,7 @@ namespace JModelling.JModelling
             numTriangles += mesh.Triangles.Length;
 
             meshListNodeDict.Add(mesh, node);
+            numMeshes += 1;
 
             return node;  
         }
@@ -185,6 +192,7 @@ namespace JModelling.JModelling
         public void RemoveMesh(ListNode<Mesh> mesh)
         {
             mesh.Remove();
+            numMeshes -= 1;
         }
 
         /// <summary>
@@ -199,6 +207,67 @@ namespace JModelling.JModelling
                 node.Remove();
         }
 
+        public void UpdateParallel()
+        {
+            int factor = 8;
+            int inc = numMeshes / factor;
+
+            ListNode<Mesh> startPoint = meshList.list;
+
+            ListNode<Mesh>[] startingPoints = new ListNode<Mesh>[factor];
+            for (int i = 0; i < factor; i++)
+            {
+                ListNode<Mesh> pointStart = startPoint;
+                for (int x = 0; x < inc; x++)
+                {
+                    pointStart = startPoint.next;
+                }
+                startingPoints[i] = pointStart;
+            }
+
+            //Parallel
+            try
+            {
+                meshDrawer.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone);
+                Parallel.ForEach(startingPoints, (point) =>
+                    {
+                        //Update(inc, point);
+                    }
+                );
+                meshDrawer.End();
+            }
+            catch (AggregateException ae)
+            {
+                ae.Handle((x) => 
+                    {
+                        if (x is ArgumentNullException)
+                        {
+                            // manage the exception.
+                            Console.WriteLine("Hello?");
+                            return true; // do not stop the program
+                        }
+                        else if (x is UnauthorizedAccessException)
+                        {
+                            // manage the access error.
+                            Console.WriteLine("Hello2");
+                            return true;
+                        }
+                        else if (x is Exception )
+                        {
+                            // Any other exception here
+                            Console.WriteLine("Hello3: " + x.ToString());
+                            return false;
+                        }
+                        else {
+                            return false;
+                        }   
+                    }
+                );
+            }
+
+        }
+
+    
 
         /// <summary>
         /// Will be called every time the program needs to update. 
@@ -234,6 +303,7 @@ namespace JModelling.JModelling
             int triIndex = 0;
 
             ListNode<Mesh> meshNode = meshList.list;
+
             while (meshNode != null)
             {
                 Mesh mesh = meshNode.dat;
@@ -426,6 +496,7 @@ namespace JModelling.JModelling
             }
 
             painter.DrawToScreen(painter.GetCanvas());
+            
         }
 
         private double Dist(Vec4 a, Vec4 b)

@@ -45,6 +45,7 @@ namespace GraphicsEngine
         /// </summary>
         private SpriteBatch spriteBatch;
 
+
         Texture2D image;
         int curDW = 0;
         int curDH = 0;
@@ -92,6 +93,26 @@ namespace GraphicsEngine
             texture.SetData<Color>(canvas);
 
             return texture; 
+        }
+
+
+        private SpriteBatch meshDrawer;
+        public void BeginDrawParallel(SpriteBatch meshDrawer)
+        {
+            this.meshDrawer = meshDrawer;
+            meshDrawer.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone);
+        }
+
+        public void DrawParallel(Texture2D texture, SpriteBatch batch)
+        {
+
+            batch.Draw(texture, new Rectangle(0, 0, width, height), Color.White);
+            
+        }
+
+        public void EndDrawParallel()
+        {
+            meshDrawer.End();
         }
 
         /// <summary>

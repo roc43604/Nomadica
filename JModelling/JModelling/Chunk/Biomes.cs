@@ -51,6 +51,13 @@ namespace JModelling.Chunk
         }
 
 
+        public bool biomeEquals(Biome other)
+        {
+            if (other.Name.Equals(this.Name))
+                return true;
+            return false;
+        }
+
         public string ToString()
         {
             return this.Name;

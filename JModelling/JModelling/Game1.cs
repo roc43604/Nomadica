@@ -88,10 +88,11 @@ namespace JModelling
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
+            SpriteBatch spriteBatch2 = new SpriteBatch(GraphicsDevice);
 
             // TODO: use this.Content to load your game content here
             Load.Init(Services);
-            manager = new JManager(this, Width, Height, graphics, spriteBatch);
+            manager = new JManager(this, Width, Height, graphics, spriteBatch, spriteBatch2);
 
             debugFont = this.Content.Load<SpriteFont>("DebugFont");
             // cube = Load.Mesh(@"Content/Models/cube.obj");
@@ -99,7 +100,7 @@ namespace JModelling
 
             cube = Load.Mesh(@"Content/Models/cube.obj");
             
-            generator = new ChunkGenerator(43545544, 4, 4, 4, manager, Load.Mesh(@"Content/Models/cube.obj"));
+            generator = new ChunkGenerator(43545544, 16, 16, 3, manager, spriteBatch, Load.Mesh(@"Content/Models/cube.obj"));
 
 
             Triangle a = new Triangle(

@@ -1,5 +1,6 @@
 ﻿using JModelling.Chunk;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -73,13 +74,15 @@ namespace JModelling.JModelling.Chunk
         private JManager manager;
 
         private bool generated;
-        
-        public ChunkGenerator(int seed, int chunkSizeX, int chunkSizeZ, int viewDist, JManager manager, Mesh cow)
+        private SpriteBatch spriteBatch;
+
+        public ChunkGenerator(int seed, int chunkSizeX, int chunkSizeZ, int viewDist, JManager manager, SpriteBatch spriteBatch, Mesh cow)
         {
             this.chunkSeed = seed;
             this.chunkSizeX = chunkSizeX;
             this.chunkSizeZ = chunkSizeZ;
             this.generated = false;
+            this.spriteBatch = spriteBatch;
 
             this.cow = cow;
             this.viewDist = viewDist;
@@ -123,6 +126,80 @@ namespace JModelling.JModelling.Chunk
             return "String";
         }
 
+        public float[,] lerpHeightsWithSides(float[] top, float[] bot, float[] lft, float[] rht, int sl)
+        {
+            float[,] points = new float[sl, sl];
+
+            //Top fill
+            for (int i=0; i<sl; i++)
+            {
+                points[i, 0] = top[i];
+            }
+            //Bottom fill
+            for (int i = 0; i <sl; i++)
+            {
+                points[i, sl-1] = bot[i];
+            }
+
+            //Left fill
+            for (int i = 0; i < sl; i++)
+            {
+                points[0, i] = lft[i];
+            }
+            //Right fill
+            for (int i = 0; i < sl; i++)
+            {
+                points[sl-1, i] = rht[i];
+            }
+
+
+            //Calculate points Top to Bottom
+            for (int x = 1; x < sl - 1; x++)//1, -1 because sides pre-calculated
+            {
+                float ptop = points[x, 0];
+                float pbot = points[x, sl - 1];
+
+                float dist = pbot - ptop;
+                float scle = dist / (sl - 1);
+
+                for (int y = 1; y < sl - 1; y++)//1, -1 because sides pre-calculated
+                {
+                    points[x, y] = ptop + scle * y;
+                    /*
+                    StringBuilder builder = new StringBuilder();
+                    for (int k=0; k<sl; k++)
+                    {
+                        for (int b = 0; b < sl; b++)
+                        {
+                            builder.Append((int)points[k, b]).Append(", ");
+                        }
+                        builder.Append("\n");
+                    }
+                    Console.WriteLine(builder.ToString());
+                    builder.ToString();
+                    */
+                }
+            }
+
+            //Calculate points Left to Right
+            for (int y = 1; y < sl-1; y++)//1, -1 because sides pre-calculated
+            {
+                float pleft = points[0, y];
+                float pright = points[sl - 1, y];
+
+                float dist = pright - pleft;
+                float scle = dist / (sl - 1);
+
+                for (int x = 1; x < sl - 1; x++)//1, -1 because sides pre-calculated
+                {
+                    points[x, y] += pleft + scle * x;
+                    points[x, y] /= 2; // divide by 2 for average
+                }
+            }
+
+            return points;
+        }
+
         public float[,] lerpHeights(float p10, float p11, float p20, float p21, int sl)
         {
             /*
@@ -151,13 +228,6 @@ namespace JModelling.JModelling.Chunk
             for (int x = 0; x < sl; x++)
                 points[x, sl-1] = p11 - f1121 * x;
 
-            //Side
-            // for (int y = 0; y < sl; y++)
-            //   points[0, y] = p10 - f1020 * y;
-            //Bottom
-            //for (int y = 0; y < sl; y++)
-            //   points[sl - 1, y] = p20 + f1121 * y;
-
             //Calculate points Top to Bottom
             for (int x = 0; x < sl; x++)
             {
@@ -174,17 +244,6 @@ namespace JModelling.JModelling.Chunk
                 }
             }
 
-            //StringBuilder builder2 = new StringBuilder();
-            //for (int x = 0; x < sl - 1; x++)
-            //{
-            //    for (int y = 0; y < sl - 1; y++)
-            //    {
-            //        builder2.Append((int)points[x, y]).Append(", ");
-            //    }
-            //    builder2.Append("\n");
-            //}
-            //Console.WriteLine(builder2.ToString());
-            //builder2.ToString();
             return points;
         }
 
@@ -201,401 +260,591 @@ namespace JModelling.JModelling.Chunk
             {
                 for (int cz = 0; cz<viewDist * 2; cz++)
                 {
-                    int increment = 1;
-                    int distFromMidX = Math.Abs(viewDist - cx);
-                   // int distFromMidZ = Math.Abs(viewDist = cz);
-                    if (distFromMidX > 2)
-                    {
-                      // increment = 2;
-                    }
 
-                    Triangle[] tris = new Triangle[(chunkSizeX * chunkSizeZ * 2)/increment];
+                    Triangle[] tris = new Triangle[(chunkSizeX * chunkSizeZ * 2)];
 
                     //Create tris
                     int idx = 0;
+                    int stepInc = 16;
+                    float biomeZoom = 200f;
+                    int limit = 35; //Gray limit
 
-                    int stepInc = 4;
-                    for (int x = 0; x < chunkSizeX/stepInc; x++)
+                    bool doLerp = false;
+
+                    //Determine if we should lerp or not
+                    for (int x = 0; x < chunkSizeX+4; x++)
                     {
-                        for (int z = 0; z < chunkSizeZ/stepInc; z++)
+                        for (int z = 0; z < chunkSizeZ+4; z++)
                         {
-                            //Find the biomes for amplitude, zoom, and magic data
-                            float biomeZoom = 200f;
+                            int tLX = ((x - 2) + (indexX - viewDist + cx) * chunkSizeX);
+                            int tLZ = ((z - 2) + (indexZ - viewDist + cz) * chunkSizeZ);
 
-                            int x10 = (x * increment + (indexX - viewDist + cx) * chunkSizeX);
-                            int z10 = (z * increment + (indexZ - viewDist + cz) * chunkSizeZ);
+                            int bRX = (((x-2) + stepInc) + (indexX - viewDist + cx) * chunkSizeX);
+                            int bRZ = (((z-2) + stepInc) + (indexZ - viewDist + cz) * chunkSizeZ);
 
-                            int x11 = ((x+stepInc) * increment + (indexX - viewDist + cx) * chunkSizeX);
-                            int z11 = ((z) * increment + (indexZ - viewDist + cz) * chunkSizeZ);
-
-                            Biome b10 = BiomeRegistry.GetBiomeFor(
+                            Biome bTL = BiomeRegistry.GetBiomeFor(
                                 biomeX.Noise(
-                                    x10 / biomeZoom,
-                                    z10 / biomeZoom,
+                                    (tLX) / biomeZoom,
+                                    (tLZ) / biomeZoom,
                                     0.5f
                                 ),
                                 biomeY.Noise(
-                                    x10 / biomeZoom,
-                                    z10 / biomeZoom,
-                                    0.5f
-                                )
-                            );
-                            Biome b11 = BiomeRegistry.GetBiomeFor(
-                                biomeX.Noise(
-                                    x11 / biomeZoom,
-                                    z11 / biomeZoom,
-                                    0.5f
-                                ),
-                                biomeY.Noise(
-                                    x11 / biomeZoom,
-                                    z11 / biomeZoom,
+                                    (tLX) / biomeZoom,
+                                    (tLZ) / biomeZoom,
                                     0.5f
                                 )
                             );
 
-
-                            int x20 = ((x) * increment + (indexX - viewDist + cx) * chunkSizeX);
-                            int z20 = ((z + stepInc) * increment + (indexZ - viewDist + cz) * chunkSizeZ);
-
-                            int x21 = ((x + stepInc) * increment + (indexX - viewDist + cx) * chunkSizeX);
-                            int z21 = ((z + stepInc) * increment + (indexZ - viewDist + cz) * chunkSizeZ);
-
-                            Biome b20 = BiomeRegistry.GetBiomeFor(
+                            Biome bBR = BiomeRegistry.GetBiomeFor(
                                 biomeX.Noise(
-                                    x20 / biomeZoom,
-                                    z20 / biomeZoom,
+                                    (bRX) / biomeZoom,
+                                    (bRZ) / biomeZoom,
                                     0.5f
                                 ),
                                 biomeY.Noise(
-                                    x20 / biomeZoom,
-                                    z20 / biomeZoom,
-                                    0.5f
-                                )
-                            );
-                            Biome b21 = BiomeRegistry.GetBiomeFor(
-                                biomeX.Noise(
-                                    x21 / biomeZoom,
-                                    z21 / biomeZoom,
-                                    0.5f
-                                ),
-                                biomeY.Noise(
-                                    x21 / biomeZoom,
-                                    z21 / biomeZoom,
+                                    (bRX) / biomeZoom,
+                                    (bRZ) / biomeZoom,
                                     0.5f
                                 )
                             );
 
-                            
-                            //Generate the heights
-                            float h10 = chunkNoise.CreateNoiseHeight(
-                                x10 / b10.zoom,
-                                z10 / b10.zoom,
-                                b10.thatMagicNumber
-                            ) * b10.amp;
-                            float h11 = chunkNoise.CreateNoiseHeight(
-                                x11 / b11.zoom,
-                                z11 / b11.zoom,
-                                b11.thatMagicNumber
-                            ) * b11.amp; ;
-                            float h20 = chunkNoise.CreateNoiseHeight(
-                                x20 / b20.zoom,
-                                z20 / b20.zoom,
-                                b20.thatMagicNumber
-                            ) * b20.amp; ;
-                            float h21 = chunkNoise.CreateNoiseHeight(
-                                x21 / b21.zoom,
-                                z21 / b21.zoom,
-                                b21.thatMagicNumber
-                            ) * b21.amp; ;
-
-                            //Now time to generate the triangles from the interpolation
-                            float[,] generatedPoints = lerpHeights(
-                                h10, h20,
-                                h11, h21,
-                                stepInc+1
-                            );
-
-                            float zoom = b10.zoom;
-
-                            for (int tx = 0; tx < stepInc; tx++)
+                            if (!bBR.Equals(bTL))
                             {
-                                for (int tz = 0; tz < stepInc; tz++)
-                                {
-                                    int iX = ((x + tx) * increment + (indexX - viewDist + cx) * chunkSizeX);
-                                    int iZ = ((z + tz) * increment + (indexX - viewDist + cz) * chunkSizeZ);
-
-                                    float pX = (x + tx) * triSizeX * increment + (indexX - viewDist + cx) * chunkSizeX * triSizeX;
-                                    float pZ = (z + tz) * triSizeZ * increment + (indexZ - viewDist + cz) * chunkSizeZ * triSizeZ;
-
-                                    float tL= generatedPoints[tx+1, tz+1];
-                                    float tR = generatedPoints[tx, tz+1];
-                                    float bL = generatedPoints[tx+1, tz];
-                                    float bR = generatedPoints[tx, tz];
-
-
-                                    //Top Right, Bottom Left, Top Left
-                                    Triangle nA = new Triangle(new Vec4[] {
-                                        new Vec4(
-                                            pX,
-                                            (float)tL,
-                                            pZ
-                                        ),
-                                        new Vec4(
-                                            pX - triSizeX*increment,
-                                            (float)tR,
-                                            pZ
-                                        ),
-                                        new Vec4(
-                                            pX,
-                                            (float)bL,
-                                            pZ - triSizeZ*increment
-                                        )
-
-                                    });
-                                    nA.Normal = Vec4.CrossProduct(
-                                        nA.Points[1] - nA.Points[0],
-                                        nA.Points[2] - nA.Points[0]
-                                    );
-                                    nA.Normal.Normalize();
-                                    nA.Normal *= -1;
-
-                                    //Bottom Left, Bottom Right, Top Right
-                                    Triangle nB = new Triangle(new Vec4[] {
-                                        new Vec4(
-                                            pX - triSizeX*increment,
-                                            (float)bR,
-                                            pZ - triSizeZ*increment
-                                        ),
-                                        new Vec4(
-                                            pX - triSizeX*increment,
-                                            (float)tR,
-                                            pZ
-                                        ),
-                                        new Vec4(
-                                            pX,
-                                            (float)bL,
-                                            pZ - triSizeZ*increment
-                                        )
-                                    });
-                                    nB.Normal = Vec4.CrossProduct(
-                                        nB.Points[1] - nB.Points[0],
-                                        nB.Points[2] - nB.Points[0]
-                                    );
-                                    nB.Normal.Normalize();
-
-
-
-
-                                    double clrNoise = colorNoise.Noise(
-                                        (pX / zoom) * 5,
-                                        (pZ / zoom) * 5,
-                                        0.5
-                                    );
-                                    double shadeModifier = 20;
-
-                                    Color biomeColor = b10.GetEstimatedColorY(clrNoise);
-                                    double txtrVari = clrNoise * 2 - 1;
-
-                                    Color curColor = new Color(
-                                        (int)(biomeColor.R + shadeModifier * txtrVari),
-                                        (int)(biomeColor.G + shadeModifier * txtrVari),
-                                        (int)(biomeColor.B + shadeModifier * txtrVari)
-                                    );
-
-
-                                    nB.Color = curColor;
-                                    nA.Color = curColor;
-
-                                    int limit = 35;
-                                    if (MathHelper.ToDegrees((float)Math.Sin(nA.Normal.Y)) < limit || MathHelper.ToDegrees((float)Math.Sin(nB.Normal.Y)) < 35)
-                                    {
-                                        nA.Color = Color.Gray;
-                                        nB.Color = Color.Gray;
-                                    }
-
-
-                                    //Add triangles to the triangle array
-                                    tris[idx] = nA;
-                                    idx++;
-                                    tris[idx] = nB;
-                                    idx++;
-
-
-                                }
+                                doLerp = true;
                             }
-
                         }
                     }
+                            
 
-                    chunkMesh[cx, cz].Triangles = tris;
-
-
-
-                    /*
-
-                    for (int x = 0; x < chunkSizeX; x++)
+                    //Looks like they are not the same biome, lets lerp
+                    if (doLerp)
                     {
-                        if (idx >= tris.Length)
+                        for (int x = 0; x < chunkSizeX / stepInc; x++)
                         {
-                            continue;
+                            for (int z = 0; z < chunkSizeZ / stepInc; z++)
+                            {
+                                //Find the biomes for amplitude, zoom, and magic data
+
+                                int x10 = (x + (indexX - viewDist + cx) * chunkSizeX);
+                                int z10 = (z + (indexZ - viewDist + cz) * chunkSizeZ);
+
+                                int x11 = ((x + stepInc) + (indexX - viewDist + cx) * chunkSizeX);
+                                int z11 = ((z) + (indexZ - viewDist + cz) * chunkSizeZ);
+
+                                Biome b10 = BiomeRegistry.GetBiomeFor(
+                                    biomeX.Noise(
+                                        x10 / biomeZoom,
+                                        z10 / biomeZoom,
+                                        0.5f
+                                    ),
+                                    biomeY.Noise(
+                                        x10 / biomeZoom,
+                                        z10 / biomeZoom,
+                                        0.5f
+                                    )
+                                );
+                                Biome b11 = BiomeRegistry.GetBiomeFor(
+                                    biomeX.Noise(
+                                        x11 / biomeZoom,
+                                        z11 / biomeZoom,
+                                        0.5f
+                                    ),
+                                    biomeY.Noise(
+                                        x11 / biomeZoom,
+                                        z11 / biomeZoom,
+                                        0.5f
+                                    )
+                                );
+
+
+                                int x20 = ((x) + (indexX - viewDist + cx) * chunkSizeX);
+                                int z20 = ((z + stepInc) + (indexZ - viewDist + cz) * chunkSizeZ);
+
+                                int x21 = ((x + stepInc) + (indexX - viewDist + cx) * chunkSizeX);
+                                int z21 = ((z + stepInc) + (indexZ - viewDist + cz) * chunkSizeZ);
+
+                                Biome b20 = BiomeRegistry.GetBiomeFor(
+                                    biomeX.Noise(
+                                        x20 / biomeZoom,
+                                        z20 / biomeZoom,
+                                        0.5f
+                                    ),
+                                    biomeY.Noise(
+                                        x20 / biomeZoom,
+                                        z20 / biomeZoom,
+                                        0.5f
+                                    )
+                                );
+                                Biome b21 = BiomeRegistry.GetBiomeFor(
+                                    biomeX.Noise(
+                                        x21 / biomeZoom,
+                                        z21 / biomeZoom,
+                                        0.5f
+                                    ),
+                                    biomeY.Noise(
+                                        x21 / biomeZoom,
+                                        z21 / biomeZoom,
+                                        0.5f
+                                    )
+                                );
+
+
+                                //Generate the heights
+                                float h10 = chunkNoise.CreateNoiseHeight(
+                                    x10 / b10.zoom,
+                                    z10 / b10.zoom,
+                                    b10.thatMagicNumber
+                                ) * b10.amp;
+                                float h11 = chunkNoise.CreateNoiseHeight(
+                                    x11 / b11.zoom,
+                                    z11 / b11.zoom,
+                                    b11.thatMagicNumber
+                                ) * b11.amp; ;
+                                float h20 = chunkNoise.CreateNoiseHeight(
+                                    x20 / b20.zoom,
+                                    z20 / b20.zoom,
+                                    b20.thatMagicNumber
+                                ) * b20.amp; ;
+                                float h21 = chunkNoise.CreateNoiseHeight(
+                                    x21 / b21.zoom,
+                                    z21 / b21.zoom,
+                                    b21.thatMagicNumber
+                                ) * b21.amp; ;
+
+                                float[,] generatedPoints = lerpHeights(
+                                    h10, h20,
+                                    h11, h21,
+                                    stepInc + 1
+                                );
+
+                                //Sample sides
+                                float[] leftSideSample = new float[stepInc +1];
+                                float[] rightSideSample = new float[stepInc +1];
+                                float[] topSideSample = new float[stepInc +1];
+                                float[] botSideSample = new float[stepInc +1];
+
+                                //Left
+                                for (int i=0; i<leftSideSample.Length; i++)
+                                {
+                                    int posX = ((x + i) + (indexX - viewDist + cx) * chunkSizeX);
+                                    int posZ = ((z) + (indexZ - viewDist + cz) * chunkSizeZ);
+
+                                    Biome biome = BiomeRegistry.GetBiomeFor(
+                                        biomeX.Noise(
+                                            posX / biomeZoom,
+                                            posZ / biomeZoom,
+                                            0.5f
+                                        ),
+                                        biomeY.Noise(
+                                            posX / biomeZoom,
+                                            posZ / biomeZoom,
+                                            0.5f
+                                        )
+                                    );
+
+                                    leftSideSample[i] = chunkNoise.CreateNoiseHeight(
+                                        posX / biome.zoom,
+                                        posZ / biome.zoom,
+                                        biome.thatMagicNumber
+                                    ) * biome.amp; ;
+                                }
+
+                                //Right
+                                for (int i = 0; i < rightSideSample.Length; i++)
+                                {
+                                    int posX = ((x + i) + (indexX - viewDist + cx) * chunkSizeX);
+                                    int posZ = ((z + stepInc) + (indexZ - viewDist + cz) * chunkSizeZ);
+
+                                    Biome biome = BiomeRegistry.GetBiomeFor(
+                                        biomeX.Noise(
+                                            posX / biomeZoom,
+                                            posZ / biomeZoom,
+                                            0.5f
+                                        ),
+                                        biomeY.Noise(
+                                            posX / biomeZoom,
+                                            posZ / biomeZoom,
+                                            0.5f
+                                        )
+                                    );
+
+                                    rightSideSample[i] = chunkNoise.CreateNoiseHeight(
+                                        posX / biome.zoom,
+                                        posZ / biome.zoom,
+                                        biome.thatMagicNumber
+                                    ) * biome.amp; ;
+                                }
+
+                                //Top
+                                for (int i = 0; i < topSideSample.Length; i++)
+                                {
+                                    int posX = ((x) + (indexX - viewDist + cx) * chunkSizeX);
+                                    int posZ = ((z + i) + (indexZ - viewDist + cz) * chunkSizeZ);
+
+                                    Biome biome = BiomeRegistry.GetBiomeFor(
+                                        biomeX.Noise(
+                                            posX / biomeZoom,
+                                            posZ / biomeZoom,
+                                            0.5f
+                                        ),
+                                        biomeY.Noise(
+                                            posX / biomeZoom,
+                                            posZ / biomeZoom,
+                                            0.5f
+                                        )
+                                    );
+
+                                    topSideSample[i] = chunkNoise.CreateNoiseHeight(
+                                        posX / biome.zoom,
+                                        posZ / biome.zoom,
+                                        biome.thatMagicNumber
+                                    ) * biome.amp; ;
+                                }
+
+                                //Bottom
+                                for (int i = 0; i < botSideSample.Length; i++)
+                                {
+                                    int posX = ((x + stepInc) + (indexX - viewDist + cx) * chunkSizeX);
+                                    int posZ = ((z + i) + (indexZ - viewDist + cz) * chunkSizeZ);
+
+                                    Biome biome = BiomeRegistry.GetBiomeFor(
+                                        biomeX.Noise(
+                                            posX / biomeZoom,
+                                            posZ / biomeZoom,
+                                            0.5f
+                                        ),
+                                        biomeY.Noise(
+                                            posX / biomeZoom,
+                                            posZ / biomeZoom,
+                                            0.5f
+                                        )
+                                    );
+
+                                    botSideSample[i] = chunkNoise.CreateNoiseHeight(
+                                        posX / biome.zoom,
+                                        posZ / biome.zoom,
+                                        biome.thatMagicNumber
+                                    ) * biome.amp; ;
+                                }
+
+                                float[,] generatedPoints2 = lerpHeightsWithSides(
+                                    leftSideSample, rightSideSample,
+                                   topSideSample, botSideSample,
+                                   
+                                   stepInc + 1
+                                );
+
+
+                                //Now time to generate the triangles from the interpolation
+                                for (int tx = 0; tx < stepInc; tx++)
+                                {
+                                    for (int tz = 0; tz < stepInc; tz++)
+                                    {
+
+                                        int iX = ((x + tx) + (indexX - viewDist + cx) * chunkSizeX);
+                                        int iZ = ((z + tz) + (indexZ - viewDist + cz) * chunkSizeZ);
+                                        
+                                        float pX = (x + tx+1) * triSizeX + (indexX - viewDist + cx) * chunkSizeX * triSizeX;
+                                        float pZ = (z + tz+1) * triSizeZ + (indexZ - viewDist + cz) * chunkSizeZ * triSizeZ;
+
+                                        float tL = generatedPoints2[tx + 1, tz + 1];
+                                        float tR = generatedPoints2[tx, tz + 1];
+                                        float bL = generatedPoints2[tx + 1, tz];
+                                        float bR = generatedPoints2[tx, tz];
+
+
+                                        //Top Right, Bottom Left, Top Left
+                                        Triangle nA = new Triangle(new Vec4[] {
+                                            new Vec4(
+                                                pX,
+                                                (float)tL,
+                                                pZ
+                                            ),
+                                            new Vec4(
+                                                pX - triSizeX,
+                                                (float)tR,
+                                                pZ
+                                            ),
+                                            new Vec4(
+                                                pX,
+                                                (float)bL,
+                                                pZ - triSizeZ
+                                            )
+
+                                        });
+                                        nA.Normal = Vec4.CrossProduct(
+                                            nA.Points[1] - nA.Points[0],
+                                            nA.Points[2] - nA.Points[0]
+                                        );
+                                        nA.Normal.Normalize();
+                                        nA.Normal *= -1;
+
+                                        //Bottom Left, Bottom Right, Top Right
+                                        Triangle nB = new Triangle(new Vec4[] {
+                                            new Vec4(
+                                                pX - triSizeX,
+                                                (float)bR,
+                                                pZ - triSizeZ
+                                            ),
+                                            new Vec4(
+                                                pX - triSizeX,
+                                                (float)tR,
+                                                pZ
+                                            ),
+                                            new Vec4(
+                                                pX,
+                                                (float)bL,
+                                                pZ - triSizeZ
+                                            )
+                                        });
+                                        nB.Normal = Vec4.CrossProduct(
+                                            nB.Points[1] - nB.Points[0],
+                                            nB.Points[2] - nB.Points[0]
+                                        );
+                                        nB.Normal.Normalize();
+
+                                        tris[idx] = nA;
+                                        idx++;
+                                        tris[idx] = nB;
+                                        idx++;
+
+
+
+                                        //Colors
+                                        Biome chunkBiome = BiomeRegistry.GetBiomeFor(
+                                            biomeX.Noise(
+                                                iX / biomeZoom,
+                                                iZ / biomeZoom,
+                                                0.5f
+                                            ),
+                                            biomeY.Noise(
+                                                iX / biomeZoom,
+                                                iZ / biomeZoom,
+                                                0.5f
+                                            )
+                                        );
+
+                                        double clrNoise = colorNoise.Noise(
+                                            (pX / 50) * 5,
+                                            (pZ / 50) * 5,
+                                            0.5
+                                        );
+                                        double shadeModifier = 20;
+
+                                        Color biomeColor = chunkBiome.GetEstimatedColorY(clrNoise);
+                                        double txtrVari = clrNoise * 2 - 1;
+
+                                        Color curColor = new Color(
+                                            (int)(biomeColor.R + shadeModifier * txtrVari),
+                                            (int)(biomeColor.G + shadeModifier * txtrVari),
+                                            (int)(biomeColor.B + shadeModifier * txtrVari)
+                                        );
+
+
+                                        nB.Color = curColor;
+                                        nA.Color = curColor;
+
+                                        
+                                        if (MathHelper.ToDegrees((float)Math.Sin(nA.Normal.Y)) < limit-5 || MathHelper.ToDegrees((float)Math.Sin(nB.Normal.Y)) < 35)
+                                        {
+                                            Color gray = new Color(
+                                                (int)(127 + txtrVari * 48),
+                                                (int)(127 + txtrVari * 48),
+                                                (int)(127 + txtrVari * 48)
+                                            );
+                                            nA.Color = gray;
+                                            nB.Color = gray;
+                                        }
+
+
+
+                                        //Object Placement
+
+                                        /*
+                                          Ned sum code hear
+                                        */
+
+
+                                    }
+                                }
+
+                            }
                         }
-                        for (int z = 0; z < chunkSizeZ; z++)
+
+                        chunkMesh[cx, cz].Triangles = tris;
+
+
+
+                    //Lools like they are the same biome
+                    }
+                    else
+                    {
+                        for (int x = 0; x < chunkSizeX; x++)
                         {
                             if (idx >= tris.Length)
                             {
                                 continue;
                             }
 
-                            float xF = (x*increment + (indexX - viewDist + cx) * chunkSizeX);
-                            float zF = (z*increment + (indexZ - viewDist + cz) * chunkSizeZ);
-                            
-
-
-                            
-                            float biomeZoom = 200f;
-                            float biomeScale = 1f;
-                            Biome chunkBiome = BiomeRegistry.GetBiomeFor(
-                                biomeX.Noise(
-                                    (xF + 1)* biomeScale / biomeZoom,
-                                    zF * biomeScale / biomeZoom,
-                                    0.5f
-                                ),
-                                biomeY.Noise(
-                                    xF * biomeScale / biomeZoom,
-                                    (zF - 1) * biomeScale / biomeZoom,
-                                    0.5f
-                                )
-                            );
-                            
-                            
-
-
-                            float amp = chunkBiome.amp;
-                            float zoom = chunkBiome.zoom;
-                            float modi = chunkBiome.thatMagicNumber;
-                            
-
-                            double tL = chunkNoise.CreateNoiseHeight(
-                                xF / zoom,
-                                zF / zoom,
-                                modi
-                            ) * amp;
-
-                            double tR = chunkNoise.CreateNoiseHeight(
-                                (xF + 1) / zoom,
-                                zF / zoom,
-                                modi
-                            ) * amp;
-                            double bL = chunkNoise.CreateNoiseHeight(
-                                xF / zoom,
-                                (zF + 1) / zoom,
-                                modi
-                            ) * amp;
-                            double bR = chunkNoise.CreateNoiseHeight(
-                                (xF + 1) / zoom,
-                                (zF + 1) / zoom,
-                                modi
-                            ) * amp;
-
-                            //Top Right, Bottom Left, Top Left
-                            Triangle nA = new Triangle(new Vec4[] {
-                                new Vec4(
-                                    basePX,
-                                    (float)tL,
-                                    basePZ
-                                ),
-                                new Vec4(
-                                    basePX + triSizeX*increment,
-                                    (float)tR,
-                                    basePZ
-                                ),
-                                new Vec4(
-                                    basePX,
-                                    (float)bL,
-                                    basePZ + triSizeZ*increment
-                                )
-                                
-                            });
-                            nA.Normal = Vec4.CrossProduct(
-                                nA.Points[1] - nA.Points[0],
-                                nA.Points[2] - nA.Points[0]
-                            );
-                            nA.Normal.Normalize();
-                            nA.Normal *= -1;
-
-
-                            //Bottom Left, Bottom Right, Top Right
-                            Triangle nB = new Triangle(new Vec4[] {
-                                new Vec4(
-                                    basePX + triSizeX*increment,
-                                    (float)bR,
-                                    basePZ + triSizeZ*increment
-                                ),
-                                new Vec4(
-                                    basePX + triSizeX*increment,
-                                    (float)tR,
-                                    basePZ
-                                ),
-                                new Vec4(
-                                    basePX,
-                                    (float)bL,
-                                    basePZ + triSizeZ*increment
-                                )
-                            });
-                            nB.Normal = Vec4.CrossProduct(
-                                nB.Points[1] - nB.Points[0],
-                                nB.Points[2] - nB.Points[0]
-                            );
-                            nB.Normal.Normalize();
-
-                            tris[idx] = nA;
-                            idx++;
-                            tris[idx] = nB;
-                            idx++;
-
-
-
-                            //Colors
-                            double clrNoise = colorNoise.Noise(
-                                (xF / zoom) * 5,
-                                (zF / zoom) * 5,
-                                0.5
-                            );
-                            double shadeModifier = 20;
-
-                            Color biomeColor = chunkBiome.GetEstimatedColorY(clrNoise);
-                            double txtrVari = clrNoise * 2 - 1;
-
-                            Color curColor = new Color(
-                                (int)(biomeColor.R + shadeModifier * txtrVari),
-                                (int)(biomeColor.G + shadeModifier * txtrVari),
-                                (int)(biomeColor.B + shadeModifier * txtrVari)
-                            );
-
-
-                            nB.Color = curColor;
-                            nA.Color = curColor;
-
-                            int limit = 35;
-                            if (MathHelper.ToDegrees((float)Math.Sin(nA.Normal.Y)) < limit || MathHelper.ToDegrees((float)Math.Sin(nB.Normal.Y)) < 35)
+                            for (int z = 0; z < chunkSizeZ; z++)
                             {
-                                nA.Color = Color.Gray;
-                                nB.Color = Color.Gray;
+                                if (idx >= tris.Length)
+                                {
+                                    continue;
+                                }
+
+                                float xF = (x + (indexX - viewDist + cx) * chunkSizeX);
+                                float zF = (z + (indexZ - viewDist + cz) * chunkSizeZ);
+
+                                float basePX = x * triSizeX + (indexX - viewDist + cx) * chunkSizeX * triSizeX;
+                                float basePZ = z * triSizeZ + (indexZ - viewDist + cz) * chunkSizeZ * triSizeZ;
+
+
+                                Biome chunkBiome = BiomeRegistry.GetBiomeFor(
+                                    biomeX.Noise(
+                                        xF / biomeZoom,
+                                        zF / biomeZoom,
+                                        0.5f
+                                    ),
+                                    biomeY.Noise(
+                                        xF / biomeZoom,
+                                        zF / biomeZoom,
+                                        0.5f
+                                    )
+                                );
+                                
+
+                                float amp = chunkBiome.amp;
+                                float zoom = chunkBiome.zoom;
+                                float modi = chunkBiome.thatMagicNumber;
+
+
+                                double tL = chunkNoise.CreateNoiseHeight(
+                                    xF / zoom,
+                                    zF / zoom,
+                                    modi
+                                ) * amp;
+
+                                double tR = chunkNoise.CreateNoiseHeight(
+                                    (xF + 1) / zoom,
+                                    zF / zoom,
+                                    modi
+                                ) * amp;
+                                double bL = chunkNoise.CreateNoiseHeight(
+                                    xF / zoom,
+                                    (zF + 1) / zoom,
+                                    modi
+                                ) * amp;
+                                double bR = chunkNoise.CreateNoiseHeight(
+                                    (xF + 1) / zoom,
+                                    (zF + 1) / zoom,
+                                    modi
+                                ) * amp;
+
+                                //Top Right, Bottom Left, Top Left
+                                Triangle nA = new Triangle(new Vec4[] {
+                                    new Vec4(
+                                        basePX,
+                                        (float)tL,
+                                        basePZ
+                                    ),
+                                    new Vec4(
+                                        basePX + triSizeX,
+                                        (float)tR,
+                                        basePZ
+                                    ),
+                                    new Vec4(
+                                        basePX,
+                                        (float)bL,
+                                        basePZ + triSizeZ
+                                    )
+
+                                });
+                                nA.Normal = Vec4.CrossProduct(
+                                    nA.Points[1] - nA.Points[0],
+                                    nA.Points[2] - nA.Points[0]
+                                );
+                                nA.Normal.Normalize();
+                                nA.Normal *= -1;
+
+
+                                //Bottom Left, Bottom Right, Top Right
+                                Triangle nB = new Triangle(new Vec4[] {
+                                    new Vec4(
+                                        basePX + triSizeX,
+                                        (float)bR,
+                                        basePZ + triSizeZ
+                                    ),
+                                    new Vec4(
+                                        basePX + triSizeX,
+                                        (float)tR,
+                                        basePZ
+                                    ),
+                                    new Vec4(
+                                        basePX,
+                                        (float)bL,
+                                        basePZ + triSizeZ
+                                    )
+                                });
+                                nB.Normal = Vec4.CrossProduct(
+                                    nB.Points[1] - nB.Points[0],
+                                    nB.Points[2] - nB.Points[0]
+                                );
+                                nB.Normal.Normalize();
+
+                                tris[idx] = nA;
+                                idx++;
+                                tris[idx] = nB;
+                                idx++;
+
+
+
+                                //Colors :)
+                                double clrNoise = colorNoise.Noise(
+                                    (basePX / 50) * 5,
+                                    (basePZ / 50) * 5,
+                                    0.5
+                                );
+                                double shadeModifier = 20;
+
+                                Color biomeColor = chunkBiome.GetEstimatedColorY(clrNoise);
+                                double txtrVari = clrNoise * 2 - 1;
+
+                                Color curColor = new Color(
+                                    (int)(biomeColor.R + shadeModifier * txtrVari),
+                                    (int)(biomeColor.G + shadeModifier * txtrVari),
+                                    (int)(biomeColor.B + shadeModifier * txtrVari)
+                                );
+
+
+                                nB.Color = curColor;
+                                nA.Color = curColor;
+
+                                if (MathHelper.ToDegrees((float)Math.Sin(nA.Normal.Y)) < limit || MathHelper.ToDegrees((float)Math.Sin(nB.Normal.Y)) < 35)
+                                {
+                                    Color gray = new Color(
+                                        (int)(127 + txtrVari * 48),
+                                        (int)(127 + txtrVari * 48),
+                                        (int)(127 + txtrVari * 48)
+                                    );
+                                    nA.Color = gray;
+                                    nB.Color = gray;
+                                }
+
+
+
+                                //Object Placement
+
+                                /*
+                                  Ned sum code hear
+                                */
+
                             }
-                            
-                            //Object Placement
-
-                            /*
-                              Ned sum code hear
-                            
-
                         }
-                    }
-            
-                    chunkMesh[cx, cz].Triangles = tris;
-                    */
 
-                    //Console.WriteLine(builder.ToString());
+                        chunkMesh[cx, cz].Triangles = tris;
+                    }
+
                 }
             }
 
