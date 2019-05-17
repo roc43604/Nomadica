@@ -3,3 +3,4 @@ C:\Users\150190\Desktop\JModelling\JModelling\JModellingContent\obj\x86\Release\
 \\Fisd-student1\hs\lhs\122341\Documents\GitHub\Nomadica\JModelling\JModellingContent\obj\x86\Release\JModellingContent.contentprojResolveAssemblyReference.cache
 C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModellingContent\obj\x86\Release\JModellingContent.contentprojResolveAssemblyReference.cache
 C:\Users\hunte\Desktop\CHUNKS\4\JModelling\JModelling\JModellingContent\obj\x86\Release\JModellingContent.contentprojResolveAssemblyReference.cache
+C:\Users\130113\Source\Repos\Nomadica3\JModelling\JModellingContent\obj\x86\Release\JModellingContent.contentprojResolveAssemblyReference.cache

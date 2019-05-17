@@ -12,16 +12,25 @@ namespace JModelling.Chunk
         private readonly static Biome[,] BIOMES = new Biome[,]{
             {
                 new Biome(
+                    "Orange",
+                    new Color[] {Color.Orange},
+                    new Color[] { },
+                    1300, 100, 0.05f,
+                    null
+                ),
+                new Biome(
                     "Red",
                     new Color[] {Color.Red},
                     new Color[] { },
-                    1500, 100, 0.5f
+                    1100, 100, 0.05f,
+                     null
                 ),
                 new Biome(
                     "Pink",
                     new Color[] {Color.Pink},
                     new Color[] { },
-                    2000, 75, 0.5f
+                    1000, 75, 0.5f,
+                     null
                 ),
             },
             {
@@ -29,14 +38,23 @@ namespace JModelling.Chunk
                     "Mountain",
                     new Color[] {Color.LawnGreen},
                     new Color[] { },
-                    2000, 75, 0.5f
+                    1500, 75, 0.5f,
+                     null
                 ),
                 new Biome(
                     "Desert",
                     new Color[] {Color.Tan},
                     new Color[] { },
-                    2000, 85, 0.5f
-                )
+                    2000, 55, 0.5f,
+                     null
+                ),
+                 new Biome(
+                    "Gold",
+                    new Color[] {Color.Gold},
+                    new Color[] { },
+                    1300, 100, 0.5f,
+                     null
+                ),
             }
         };
 

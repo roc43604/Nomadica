@@ -65,6 +65,8 @@ namespace JModelling.JModelling.Chunk
         public int triSizeX = 40;
         public int triSizeZ = 40;
 
+        private float biomeZoom = 100f;
+
         public int viewDistX;
         public int viewDistZ;
 
@@ -75,6 +77,8 @@ namespace JModelling.JModelling.Chunk
 
         private bool generated;
         private SpriteBatch spriteBatch;
+
+        private ListUtil<Mesh> placedList = new ListUtil<Mesh>();
 
         public ChunkGenerator(int seed, int chunkSizeX, int chunkSizeZ, int viewDist, JManager manager, SpriteBatch spriteBatch, Mesh cow)
         {
@@ -103,17 +107,38 @@ namespace JModelling.JModelling.Chunk
         }
 
 
+        class Point
+        {
+            public int x;
+            public int y;
+
+            public Point(int x, int y)
+            {
+                this.x = x;
+                this.y = y;
+            }
+        }
+        Dictionary<Point, bool> things = new Dictionary<Point, bool>();
+
         public float GetHeightAt(float posX, float posZ)
         {
-            Biome biome = BiomeRegistry.GetBiomeFor(
-                colorNoise.Noise(
-                    GetIndexX((int)posX),
-                    GetIndexZ((int)posZ),
-                    0.5
-                ),
-                0.5
-            );
+            int indexX = GetIndexX((int)posX) * chunkSizeX;
+            int indexZ = GetIndexZ((int)posZ) * chunkSizeZ;
 
+
+            Biome biome = BiomeRegistry.GetBiomeFor(
+                biomeX.Noise(
+                    (indexX)/ biomeZoom,
+                    (indexZ)/ biomeZoom,
+                    0.5f
+                ),
+                biomeY.Noise(
+                    (indexX)/ biomeZoom,
+                    (indexZ)/ biomeZoom,
+                    0.5f
+                )
+            );
+            
             return (float)chunkNoise.CreateNoiseHeight(
                 posX / biome.zoom / (triSizeX),
                 posZ / biome.zoom / (triSizeZ),
@@ -265,8 +290,7 @@ namespace JModelling.JModelling.Chunk
 
                     //Create tris
                     int idx = 0;
-                    int stepInc = 16;
-                    float biomeZoom = 200f;
+                    int stepInc = 8;
                     int limit = 35; //Gray limit
 
                     bool doLerp = false;
@@ -553,6 +577,8 @@ namespace JModelling.JModelling.Chunk
                                         float bR = generatedPoints2[tx, tz];
 
 
+                                        
+
                                         //Top Right, Bottom Left, Top Left
                                         Triangle nA = new Triangle(new Vec4[] {
                                             new Vec4(
@@ -609,8 +635,6 @@ namespace JModelling.JModelling.Chunk
                                         idx++;
 
 
-
-                                        //Colors
                                         Biome chunkBiome = BiomeRegistry.GetBiomeFor(
                                             biomeX.Noise(
                                                 iX / biomeZoom,
@@ -624,6 +648,7 @@ namespace JModelling.JModelling.Chunk
                                             )
                                         );
 
+                                        //Colors
                                         double clrNoise = colorNoise.Noise(
                                             (pX / 50) * 5,
                                             (pZ / 50) * 5,
@@ -659,12 +684,35 @@ namespace JModelling.JModelling.Chunk
 
 
                                         //Object Placement
+                                        Mesh tree = chunkBiome.Tree;
 
-                                        /*
-                                          Ned sum code hear
-                                        */
+                                        if (tree != null) {
+                                            double noise = colorNoise.Noise(
+                                                (pX / 50) * 5,
+                                                (pZ / 50) * 5,
+                                                0.5
+                                            );
 
+                                            if (noise < 0.5)
+                                            {
+                                                manager.AddMesh(tree);
+                                                placedList.Add(new ListNode<Mesh>(tree));
+                                            }
+                                            
+                                        }
 
+                                        ListNode<Mesh> placed = placedList.list;
+                                        while (placed != null)
+                                        {
+                                            Mesh mesh = placed.dat;
+                                            
+
+                                            if ((mesh.GetPosition() - manager.camera.loc).Length() > 5000)
+                                            {
+                                                placed.Remove();
+                                            }
+                                            placed = placed.next;
+                                        }
                                     }
                                 }
 

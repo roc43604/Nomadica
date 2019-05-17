@@ -17,12 +17,13 @@ namespace JModelling.Chunk
         public float amp;
         public float zoom;
         public float thatMagicNumber;
+        public Mesh Tree;
 
         public Biome(
             string Name, 
             Color[] colorHeights, Color[] colorVariation,
-            float amp, float zoom, float thatMagicNumber
-           // Dictionary<Mesh, float> adornments
+            float amp, float zoom, float thatMagicNumber,
+            Mesh tree
         )
         {
             this.Name = Name;
@@ -31,6 +32,7 @@ namespace JModelling.Chunk
             this.amp = amp;
             this.zoom = zoom;
             this.thatMagicNumber = thatMagicNumber;
+            this.Tree = tree;
          //   this.adornments = adornments;
         }
 

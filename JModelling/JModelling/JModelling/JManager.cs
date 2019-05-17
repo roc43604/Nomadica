@@ -120,6 +120,8 @@ namespace JModelling.JModelling
         public Light[] lights;
         private bool turnOnLights;
 
+        public Camera camera;
+
         /// <summary>
         /// Monster test. 
         /// </summary>
@@ -176,15 +178,15 @@ namespace JModelling.JModelling
             matProj = Matrix.MakeProjection(FOV, (float)height / width, 0.1f, 1000);
 
             // Create the player and their camera 
-            Camera camera = new Camera(0, 0, 0);
+            camera = new Camera(0, 0, 0);
             camera.yaw = 0;
             camera.pitch = 0;
             player = new Player(this, camera);
 
             // Create the satellite test.
             satellites = new Satellite[2]; 
-            satellites[0] = new Satellite((float)(Math.PI / 60 / 10), Load.OneDimImage(@"Images/sun"), 2000, 2000, (float)(Math.PI/2d), 500, 500, 300);
-            satellites[1] = new Satellite((float)(Math.PI / 60 / 10), Load.OneDimImage(@"Images/moon"), 1859, 1897, (float)(Math.PI/2d*3d), 500, 500, 800);
+            satellites[0] = new Satellite((float)(Math.PI / 60 / 100), Load.OneDimImage(@"Images/sun"), 2000, 2000, (float)(Math.PI/2d), 500, 500, 300);
+            satellites[1] = new Satellite((float)(Math.PI / 60 / 100), Load.OneDimImage(@"Images/moon"), 1859, 1897, (float)(Math.PI/2d*3d), 500, 500, 800);
 
             lights = new Light[1];
             lights[0] = new Light(100f, null);
