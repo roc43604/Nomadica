@@ -381,6 +381,11 @@ namespace JModelling.JModelling
         {
             Queue<Triangle> triangles = new Queue<Triangle>();
             int triIndex = 0; 
+
+            if (mesh.Triangles == null)
+            {
+                return new List<Triangle>();
+            }
             
             foreach (Triangle original in mesh.Triangles)
             {
