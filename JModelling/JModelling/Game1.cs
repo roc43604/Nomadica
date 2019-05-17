@@ -14,6 +14,7 @@ using JModelling.JModelling.Chunk;
 using System.Diagnostics;
 using JModelling.InventorySpace;
 using JModelling.Pause;
+using JModelling.Creature;
 
 namespace JModelling
 {
@@ -78,11 +79,13 @@ namespace JModelling
             Load.Init(Services);
             debugFont = Content.Load<SpriteFont>("DebugFont");
             InventoryMenu.LoadImages(Content);
-            PauseMenu.LoadImages(Content); 
+            PauseMenu.LoadImages(Content);
 
             generator = new ChunkGenerator(43545544, 10, 10, 3, manager, Load.Mesh(@"Content/Models/cube.obj"));
 
+            NPC.Init(Content);
             manager = new JManager(this, Width, Height, graphics, generator, spriteBatch);
+            NPC.parent = manager; 
 
             generator.manager = manager;
         }

@@ -26,6 +26,11 @@ namespace JModelling.JModelling
         /// Pause menu is showing. Player can move their mouse around and 
         /// change their settings or quit the game. 
         /// </summary>
-        Paused
+        Paused, 
+
+        /// <summary>
+        /// Player is talking with someone/something. 
+        /// </summary>
+        Talking
     }
 }

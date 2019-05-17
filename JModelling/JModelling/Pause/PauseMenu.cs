@@ -61,8 +61,7 @@ namespace JModelling.Pause
         public PauseMenu(int screenWidth, int screenHeight)
         {
             ConfigureScreen(screenWidth, screenHeight); 
-
-            Console.WriteLine(menuArea);
+            
             subsets = new PauseMenuSubset[]
             {
                 new GeneralMenu(subsetArea),

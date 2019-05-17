@@ -21,7 +21,7 @@ namespace JModelling.JModelling
         /// Will tell the program whether or not it should read mouse inputs
         /// and reset mouse position. 
         /// </summary>
-        public const Keys FocusOrUnfocusMouse = Keys.Tab;
+        public const Keys FocusOrUnfocusMouse = Keys.RightControl;
 
         /// <summary>
         /// Whether or not the debug menu should be showing. 
@@ -57,12 +57,18 @@ namespace JModelling.JModelling
         /// Opens the player's inventory, displaying the items they have
         /// in their possession. 
         /// </summary>
-        public const Keys Inventory = Keys.E;
+        public const Keys Inventory = Keys.Tab;
 
         /// <summary>
         /// Pauses the game, allowing the player to configure settings or
         /// exit the game through a button click. 
         /// </summary>
-        public const Keys Pause = Keys.Escape;  
+        public const Keys Pause = Keys.Escape;
+
+        /// <summary>
+        /// Allows the player to interact with certain things. For NPCs, it
+        /// lets the player talk to them. 
+        /// </summary>
+        public const Keys Interact = Keys.E; 
     }
 }

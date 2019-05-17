@@ -78,8 +78,6 @@ C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\obj\x86\Debug\JM
 C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\obj\x86\Debug\JModelling.pdb
 C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Debug\Content\DebugFont.xnb
 \\Fisd-student1\hs\lhs\122341\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Debug\Content\Images\Inventory\item.xnb
-\\Fisd-student1\hs\lhs\122341\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Debug\Content\Images\Inventory\white.xnb
-\\Fisd-student1\hs\lhs\122341\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Debug\Content\Images\Inventory\gray box.xnb
 \\Fisd-student1\hs\lhs\122341\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Debug\Content\DebugFont.xnb
 C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Debug\Content\Images\Inventory\item.xnb
 C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Debug\Content\Images\Inventory\cube.xnb
@@ -91,3 +89,12 @@ C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Debug\Co
 C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Debug\Content\Images\Menu\ThinRoundBox.xnb
 C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Debug\Content\Images\Menu\filled round box.xnb
 C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Debug\Content\Images\Menu\ThinFilledRoundBox.xnb
+\\Fisd-student1\hs\lhs\122341\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Debug\Content\Images\Menu\white.xnb
+\\Fisd-student1\hs\lhs\122341\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Debug\Content\Images\Inventory\cube.xnb
+\\Fisd-student1\hs\lhs\122341\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Debug\Content\Images\Menu\ThinRoundBox.xnb
+\\Fisd-student1\hs\lhs\122341\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Debug\Content\Images\Menu\round box.xnb
+\\Fisd-student1\hs\lhs\122341\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Debug\Content\Images\Menu\filled round box.xnb
+\\Fisd-student1\hs\lhs\122341\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Debug\Content\Images\Menu\ThinFilledRoundBox.xnb
+\\Fisd-student1\hs\lhs\122341\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Debug\Content\AnswerFont.xnb
+\\Fisd-student1\hs\lhs\122341\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Debug\Content\PauseFont.xnb
+\\Fisd-student1\hs\lhs\122341\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Debug\Content\QuestionFont.xnb

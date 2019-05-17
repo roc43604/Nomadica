@@ -42,7 +42,7 @@ namespace JModelling.Chunk
         }
 
 
-        public string ToString()
+        public override string ToString()
         {
             return this.Name;
         }

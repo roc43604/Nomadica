@@ -139,7 +139,11 @@ namespace JModelling.JModelling
         /// </summary>
         private LinkedList<Item> itemsInWorld;
 
-        private GraphicsDevice graphicsDevice; 
+        private GraphicsDevice graphicsDevice;
+
+        private NPC npc;
+
+        private DialogueBox dialogueBox; 
 
         /// <summary>
         /// Creates a manager that will construct necessary fields for use
@@ -226,6 +230,10 @@ namespace JModelling.JModelling
             //float h = cg.GetHeightAt(itemLoc.X, itemLoc.Z); 
             //cube = Load.Mesh(@"Content/Models/cube.obj", 25, itemLoc.X, h, itemLoc.Z);
             //AddMesh(cube); 
+
+            npc = new NPC(new JModelling.Vec4(-100, 0, -100), new string[] { "hello!", "this is a test", "do you accept?", "thanks!", "see ya!" }, 2, 3, 4);
+            dialogueBox = null;
+            DialogueBox.Init(Width, Height);  
         }
 
         /// <summary>
@@ -284,6 +292,10 @@ namespace JModelling.JModelling
 
                 case GameState.Paused:
                     UpdatePaused();
+                    break;
+
+                case GameState.Talking:
+                    UpdateTalking();
                     break; 
             }
             
@@ -328,7 +340,9 @@ namespace JModelling.JModelling
                 {
                     monster.Update(player, cg);
                 }
-            }            
+            }
+
+            npc.Update(player, cg);      
 
             // Update items to bob up and down
             LinkedList<Item> itemsToRemove = new LinkedList<Item>(); 
@@ -401,6 +415,9 @@ namespace JModelling.JModelling
                 monster.Mesh.MoveTo(monster.Loc.X, monster.Loc.Y, monster.Loc.Z);
                 DrawTrianglesToPainterCanvas(painter, depthBuffer, GetDrawableTrianglesFromMesh(monster.Mesh, hue, activeLights, matView, lightDirection, shadow));
             }
+            
+            npc.Mesh.MoveTo(npc.Loc.X, npc.Loc.Y, npc.Loc.Z);
+            DrawTrianglesToPainterCanvas(painter, depthBuffer, GetDrawableTrianglesFromMesh(npc.Mesh, hue, activeLights, matView, lightDirection, shadow)); 
 
             lastWorldTexture = painter.GetCanvas();
         }
@@ -416,6 +433,19 @@ namespace JModelling.JModelling
             pauseMenu.Update(ms, lastMs);
             UpdatePauseInputs();
             lastMs = ms; 
+        }
+
+        public void Talk(TalkingCreature source)
+        {
+            gameState = GameState.Talking;
+            dialogueBox = new DialogueBox(lastWorldTexture, lastSkyTexture, source);  
+        }
+
+        private void UpdateTalking()
+        {
+            KeyboardState kb = Keyboard.GetState();
+            dialogueBox.Update(kb, lastKb);
+            lastKb = kb; 
         }
 
         /// <summary>
@@ -435,6 +465,10 @@ namespace JModelling.JModelling
 
                 case GameState.Paused:
                     pauseMenu.Draw(spriteBatch);
+                    break;
+
+                case GameState.Talking:
+                    dialogueBox.Draw(spriteBatch);
                     break; 
             }
         }
@@ -1165,6 +1199,10 @@ namespace JModelling.JModelling
             // Perform any special actions with any special keys. 
             ProcessSpecialPlayingKeyInputs(kb);
 
+            if (npc.Talk(player, kb))
+            {
+                Talk(npc); 
+            }
             player.Update(kb, ms);
         }
 

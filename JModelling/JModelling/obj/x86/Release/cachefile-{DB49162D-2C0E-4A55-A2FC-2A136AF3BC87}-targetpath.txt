@@ -5,14 +5,14 @@ Content\Images\night.xnb
 Content\Images\skybox.xnb
 Content\Images\stone.xnb
 Content\Images\sun.xnb
+Content\Images\Menu\white.xnb
 Content\Images\Inventory\item.xnb
 Content\Images\Inventory\cube.xnb
-Content\DebugFont.xnb
-Content\Images\Menu\white.xnb
 Content\Images\Menu\ThinRoundBox.xnb
 Content\Images\Menu\round box.xnb
 Content\Images\Menu\filled round box.xnb
 Content\Images\Menu\ThinFilledRoundBox.xnb
+Content\DebugFont.xnb
 Content\AnswerFont.xnb
 Content\PauseFont.xnb
 Content\QuestionFont.xnb
