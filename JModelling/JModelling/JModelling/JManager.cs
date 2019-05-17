@@ -9,7 +9,8 @@ using Microsoft.Xna.Framework;
 using JModelling.Creature;
 using JModelling.JModelling.Chunk;
 using JModelling.InventorySpace;
-using JModelling.Pause;
+using JModelling.Creature.Nomad.ChiefQuestsHold;
+using JModelling.Creature.Nomad;
 
 namespace JModelling.JModelling
 {
@@ -24,9 +25,7 @@ namespace JModelling.JModelling
         /// <summary>
         /// The last keyboard state
         /// </summary>
-        private KeyboardState lastKb;
-
-        private MouseState lastMs; 
+        private KeyboardState lastKb; 
 
         /// <summary>
         /// The thing that this manager belongs to. 
@@ -63,12 +62,7 @@ namespace JModelling.JModelling
         /// <summary>
         /// Used for displaying the player's inventory. 
         /// </summary>
-        private InventoryMenu inventoryMenu;
-
-        /// <summary>
-        /// Used for configuring settings or quitting the game.
-        /// </summary>
-        private PauseMenu pauseMenu; 
+        private InventoryMenu inventoryMenu; 
 
         /// <summary>
         /// What will be dealing with drawing to the screen. 
@@ -133,17 +127,16 @@ namespace JModelling.JModelling
         /// </summary>
         public static MeleeAttacker monster;
 
+        private static Chief nomad;
+        private static Trader nomad1;
+        private static Nomads nomad2;
         /// <summary>
         /// A list of all of the items to draw in world-space. If they are
         /// picked up, they are removed from this list. 
         /// </summary>
         private LinkedList<Item> itemsInWorld;
 
-        private GraphicsDevice graphicsDevice;
-
-        private NPC npc;
-
-        private DialogueBox dialogueBox; 
+        
 
         /// <summary>
         /// Creates a manager that will construct necessary fields for use
@@ -152,8 +145,7 @@ namespace JModelling.JModelling
         public JManager(Game host, int width, int height, GraphicsDeviceManager graphicsDeviceManager, ChunkGenerator cg, SpriteBatch spriteBatch)
         {
             // Assigns the last keyboard state
-            lastKb = Keyboard.GetState();
-            lastMs = Mouse.GetState(); 
+            lastKb = Keyboard.GetState(); 
 
             // Assigns the host
             this.host = host; 
@@ -170,11 +162,9 @@ namespace JModelling.JModelling
 
             this.cg = cg;
 
-            gameState = GameState.Playing;
+            gameState = GameState.Playing; 
 
-            graphicsDevice = graphicsDeviceManager.GraphicsDevice; 
-
-            painter = new Painter(width, height, graphicsDevice, spriteBatch);
+            painter = new Painter(width, height, graphicsDeviceManager.GraphicsDevice, spriteBatch);
 
             // Create the skybox test
             skybox = new SkyBox(
@@ -217,23 +207,32 @@ namespace JModelling.JModelling
             monsterLoc.X += 200; 
             monsterLoc.Z += 200;
             monster = new MeleeAttacker(Load.Mesh(@"Content/Models/cube.obj", 25, 0, 0, 0), monsterLoc, Camera.NormalSpeed * 0.666f, 5, 100, 100, cg);
-            AddMesh(monster.Mesh); 
+            AddMesh(monster.Mesh);
+
+            Vec4 nomadLoc = camera.loc.Clone();
+            nomadLoc.X += 210;
+            nomadLoc.Z += 200;          
+            nomad = new Chief(Load.Mesh(@"Content/Models/cube.obj", 25, 0, 0, 0), nomadLoc, Camera.NormalSpeed * 0.666f, 5, 100, 100, cg);
+            AddMesh(nomad.Mesh);
+            Vec4 nomad1Loc = camera.loc.Clone();
+            nomad1Loc.X += 200;
+            nomad1Loc.Z += 200;
+            nomad1 = new Trader(Load.Mesh(@"Content/Models/cube.obj", 25, 0, 0, 0), nomad1Loc, Camera.NormalSpeed * 0.666f, 5, 100, 100, cg);
+            AddMesh(nomad1.Mesh);
+            Vec4 nomad2Loc = camera.loc.Clone();
+            nomad2Loc.X += 190;
+            nomad2Loc.Z += 200;           
+            nomad2 = new Nomads(Load.Mesh(@"Content/Models/cube.obj", 25, 0, 0, 0), nomad2Loc, Camera.NormalSpeed * 0.666f, 5, 100, 100, cg);
+            AddMesh(nomad2.Mesh);
 
             itemsInWorld = new LinkedList<Item>();
             Vec4 itemLoc = player.Camera.loc.Clone();
             itemLoc.X += 100; 
             itemsInWorld.AddLast(new DefaultItem(itemLoc, cg));
 
-            inventoryMenu = new InventoryMenu(player.Inventory, graphicsDevice, Width, Height);
-            pauseMenu = new PauseMenu(Width, Height);
-
             //float h = cg.GetHeightAt(itemLoc.X, itemLoc.Z); 
             //cube = Load.Mesh(@"Content/Models/cube.obj", 25, itemLoc.X, h, itemLoc.Z);
             //AddMesh(cube); 
-
-            npc = new NPC(new JModelling.Vec4(-100, 0, -100), new string[] { "hello!", "this is a test", "do you accept?", "thanks!", "see ya!" }, 2, 3, 4);
-            dialogueBox = null;
-            DialogueBox.Init(Width, Height);  
         }
 
         /// <summary>
@@ -289,14 +288,6 @@ namespace JModelling.JModelling
                 case GameState.Inventory:
                     UpdateInventory();
                     break;
-
-                case GameState.Paused:
-                    UpdatePaused();
-                    break;
-
-                case GameState.Talking:
-                    UpdateTalking();
-                    break; 
             }
             
             lastKb = Keyboard.GetState(); 
@@ -320,7 +311,7 @@ namespace JModelling.JModelling
 
             UpdatePlayingInputs();
             skybox.Update(camera.loc);
-       
+
             if (monster != null)
             {
                 // If creature died, remove them and drop their items
@@ -341,11 +332,20 @@ namespace JModelling.JModelling
                     monster.Update(player, cg);
                 }
             }
-
-            npc.Update(player, cg);      
-
-            // Update items to bob up and down
-            LinkedList<Item> itemsToRemove = new LinkedList<Item>(); 
+            if (nomad != null)
+            {
+                nomad.Update(player, cg);
+            }
+                if (nomad1 != null)
+                {
+                    nomad1.Update(player, cg);
+                }
+                if (nomad2 != null)
+                {
+                    nomad2.Update(player, cg);
+                }
+                // Update items to bob up and down
+                LinkedList<Item> itemsToRemove = new LinkedList<Item>(); 
             foreach (Item item in itemsInWorld)
             {
                 // If it's true, the player picked it up
@@ -415,37 +415,30 @@ namespace JModelling.JModelling
                 monster.Mesh.MoveTo(monster.Loc.X, monster.Loc.Y, monster.Loc.Z);
                 DrawTrianglesToPainterCanvas(painter, depthBuffer, GetDrawableTrianglesFromMesh(monster.Mesh, hue, activeLights, matView, lightDirection, shadow));
             }
-            
-            npc.Mesh.MoveTo(npc.Loc.X, npc.Loc.Y, npc.Loc.Z);
-            DrawTrianglesToPainterCanvas(painter, depthBuffer, GetDrawableTrianglesFromMesh(npc.Mesh, hue, activeLights, matView, lightDirection, shadow)); 
+            if (nomad != null)
+            {
+                
+                nomad.Mesh.MoveTo(nomad.Loc.X, nomad.Loc.Y, nomad.Loc.Z);
+                DrawTrianglesToPainterCanvas(painter, depthBuffer, GetDrawableTrianglesFromMesh(nomad.Mesh, hue, activeLights, matView, lightDirection, shadow));
+            }
+            if (nomad1 != null)
+            {
 
+                nomad1.Mesh.MoveTo(nomad1.Loc.X, nomad1.Loc.Y, nomad1.Loc.Z);
+                DrawTrianglesToPainterCanvas(painter, depthBuffer, GetDrawableTrianglesFromMesh(nomad1.Mesh, hue, activeLights, matView, lightDirection, shadow));
+            }
+            if (nomad != null)
+            {
+
+                nomad2.Mesh.MoveTo(nomad2.Loc.X, nomad2.Loc.Y, nomad2.Loc.Z);
+                DrawTrianglesToPainterCanvas(painter, depthBuffer, GetDrawableTrianglesFromMesh(nomad2.Mesh, hue, activeLights, matView, lightDirection, shadow));
+            }
             lastWorldTexture = painter.GetCanvas();
         }
 
         private void UpdateInventory()
         {
             UpdateInventoryInputs();    
-        }
-
-        private void UpdatePaused()
-        {
-            MouseState ms = Mouse.GetState(); 
-            pauseMenu.Update(ms, lastMs);
-            UpdatePauseInputs();
-            lastMs = ms; 
-        }
-
-        public void Talk(TalkingCreature source)
-        {
-            gameState = GameState.Talking;
-            dialogueBox = new DialogueBox(lastWorldTexture, lastSkyTexture, source);  
-        }
-
-        private void UpdateTalking()
-        {
-            KeyboardState kb = Keyboard.GetState();
-            dialogueBox.Update(kb, lastKb);
-            lastKb = kb; 
         }
 
         /// <summary>
@@ -461,14 +454,6 @@ namespace JModelling.JModelling
 
                 case GameState.Inventory:
                     inventoryMenu.Draw(spriteBatch);
-                    break;
-
-                case GameState.Paused:
-                    pauseMenu.Draw(spriteBatch);
-                    break;
-
-                case GameState.Talking:
-                    dialogueBox.Draw(spriteBatch);
                     break; 
             }
         }
@@ -1199,10 +1184,6 @@ namespace JModelling.JModelling
             // Perform any special actions with any special keys. 
             ProcessSpecialPlayingKeyInputs(kb);
 
-            if (npc.Talk(player, kb))
-            {
-                Talk(npc); 
-            }
             player.Update(kb, ms);
         }
 
@@ -1242,16 +1223,7 @@ namespace JModelling.JModelling
             else if (kb.IsKeyDown(Controls.Inventory) && lastKb.IsKeyUp(Controls.Inventory))
             {
                 gameState = GameState.Inventory;
-                inventoryMenu.Create(lastWorldTexture, lastSkyTexture);              
-                isMouseFocused = false;
-                host.IsMouseVisible = true; 
-            }
-
-            // If Pause is pressed, toggle pause menu. 
-            else if (kb.IsKeyDown(Controls.Pause) && lastKb.IsKeyUp(Controls.Pause))
-            {
-                gameState = GameState.Paused;
-                pauseMenu.Create(lastWorldTexture, lastSkyTexture); 
+                inventoryMenu = new InventoryMenu(painter, player.Inventory, Width, Height, lastWorldTexture, lastSkyTexture);
                 isMouseFocused = false;
                 host.IsMouseVisible = true; 
             }
@@ -1283,34 +1255,6 @@ namespace JModelling.JModelling
                 isMouseFocused = true; 
                 host.IsMouseVisible = false;
                 Mouse.SetPosition(centerX, centerY); 
-            }
-        }
-
-        /// <summary>
-        /// Updates the inputs coming specifically from the pause screen. 
-        /// </summary>
-        private void UpdatePauseInputs()
-        {
-            KeyboardState kb = Keyboard.GetState();
-            MouseState ms = Mouse.GetState();
-
-            ProcessSpecialPauseKeyInputs(kb); 
-        }
-
-        /// <summary>
-        /// Processes any special keys the user presses while on the Pause
-        /// screen. 
-        /// </summary>
-        private void ProcessSpecialPauseKeyInputs(KeyboardState kb)
-        {
-            // If the pause button is down, reset the player back to the playing screen. 
-            if (kb.IsKeyDown(Controls.Pause) && lastKb.IsKeyUp(Controls.Pause))
-            {
-                gameState = GameState.Playing;
-
-                isMouseFocused = true;
-                host.IsMouseVisible = false;
-                Mouse.SetPosition(centerX, centerY);
             }
         }
     }
