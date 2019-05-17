@@ -72,11 +72,6 @@
       <Importer>FontDescriptionImporter</Importer>
       <Processor>FontDescriptionProcessor</Processor>
     </Compile>
-    <Compile Include="AnswerFont.spritefont">
-      <Name>AnswerFont</Name>
-      <Importer>FontDescriptionImporter</Importer>
-      <Processor>FontDescriptionProcessor</Processor>
-    </Compile>
     <None Include="Models\cow.obj">
       <Name>cow</Name>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -97,20 +92,17 @@
       <Name>teapot</Name>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <Compile Include="PauseFont.spritefont">
-      <Name>PauseFont</Name>
-      <Importer>FontDescriptionImporter</Importer>
-      <Processor>FontDescriptionProcessor</Processor>
-    </Compile>
-    <Compile Include="QuestionFont.spritefont">
-      <Name>QuestionFont</Name>
-      <Importer>FontDescriptionImporter</Importer>
-      <Processor>FontDescriptionProcessor</Processor>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Images\Inventory\white.png">
+      <Name>white</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Images\Menu\white.png">
-      <Name>white</Name>
+    <Compile Include="Images\Inventory\round box.png">
+      <Name>round box</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
@@ -125,34 +117,6 @@
   <ItemGroup>
     <Compile Include="Images\Inventory\cube.png">
       <Name>cube</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Images\Menu\ThinRoundBox.png">
-      <Name>ThinRoundBox</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Images\Menu\round box.png">
-      <Name>round box</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Images\Menu\filled round box.png">
-      <Name>filled round box</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Images\Menu\ThinFilledRoundBox.png">
-      <Name>ThinFilledRoundBox</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
