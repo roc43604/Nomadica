@@ -20,6 +20,12 @@ namespace JModelling.JModelling
         /// Inventory menu is showing. Player can move their mouse around
         /// and change the state of their inventory. 
         /// </summary>
-        Inventory
+        Inventory,
+
+        /// <summary>
+        /// Pause menu is showing. Player can move their mouse around and 
+        /// change their settings or quit the game. 
+        /// </summary>
+        Paused
     }
 }

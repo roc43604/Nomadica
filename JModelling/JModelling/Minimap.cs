@@ -1,4 +1,5 @@
 ﻿using JModelling.JModelling;
+using JModelling.JModelling.Chunk;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -17,16 +18,24 @@ namespace JModelling
         /// <summary>
         /// Used for creating our own Texture2Ds. 
         /// </summary>
-        internal static GraphicsDevice gd; 
+        internal static GraphicsDevice gd;
+
+        private List<ChunkMap> maps; 
 
         /// <summary>
         /// Creates a new Minimap. Only one will be made per game, 
         /// and it will be displayed in the corner of the screen. 
         /// </summary>
         /// <param name="gd">Used to create Texture2Ds</param>
-        public Minimap(GraphicsDevice gd)
+        public Minimap(ChunkGenerator gen, GraphicsDevice gd)
         {
+            maps = new List<ChunkMap>(); 
+            maps.Add(new ChunkMap(gd, gen.chunkMesh[4, 4])); 
+        }
 
+        public void Draw(SpriteBatch spriteBatch)
+        {
+            spriteBatch.Draw(maps[0].tex, new Rectangle(0, 0, 100, 100), Color.White); 
         }
     }
 
@@ -38,13 +47,14 @@ namespace JModelling
     {
         internal Texture2D tex; 
 
-        internal ChunkMap(Mesh mesh)
+        internal ChunkMap(GraphicsDevice gd, Mesh mesh)
         {
             BoundingBox box = mesh.bounds;
 
             // Creates a color array that we can draw to, and later
-            // create a Texture2D from. Accessed via [x,y]. 
-            Color[,] map = new Color[(int)(box.Max.X - box.Min.X), (int)(box.Max.Y - box.Min.Y)]; 
+            // create a Texture2D from. Accessed via [x,z]. 
+            Color[,] map = new Color[(int)(box.Max.X - box.Min.X), (int)(box.Max.Z - box.Min.Z)];
+            Console.WriteLine((box.Max.X - box.Min.X) + " " + (box.Max.Z - box.Min.Z)); 
 
             foreach (Triangle tri in mesh.Triangles)
             {
@@ -53,13 +63,27 @@ namespace JModelling
                 MinimapTriangle miniTri = new MinimapTriangle(tri); 
                 if (miniTri.TwoPointsOnTop)
                 {
-
+                    if (miniTri.TwoPointsOnLeft)
+                    {
+                        int numSubtract = 0; 
+                        for (int z = (int)miniTri.MinZ; z < miniTri.MaxZ; z++)
+                        {
+                            for (int x = (int)miniTri.MinX; x < miniTri.MaxX - numSubtract; x++)
+                            {
+                                Console.WriteLine(x + " " + z + " " + miniTri.MinX + " " + miniTri.MinZ); 
+                                map[x-(int)miniTri.MinX, z-(int)miniTri.MinZ] = tri.Color; 
+                            }
+                            numSubtract++; 
+                        }
+                    }
                 }
                 else
                 {
 
                 }
             }
+
+            tex = new Texture2D(gd, (int)(mesh.bounds.Max.X - mesh.bounds.Min.X), (int)(mesh.bounds.Max.Z - mesh.bounds.Min.Z)); 
         }
     }
 
@@ -70,24 +94,31 @@ namespace JModelling
     internal class MinimapTriangle
     {
         /// <summary>
+        /// The triangle's points in the range of [0...triangle width]. 
+        /// </summary>
+        internal Vec4[] OffsetPoints; 
+
+        /// <summary>
         /// The bounds of the triangle. 
         /// </summary>
         internal float MinX, MaxX, MinZ, MaxZ;
 
         /// <summary>
-        /// The index of the min z value, use for determining if two
-        /// points are on the top of the triangle. 
+        /// The index of the min z/x value, use for determining if two
+        /// points are on the top/left of the triangle. 
         /// </summary>
-        private float minZIndex; 
+        private float minZIndex, minXIndex; 
 
         /// <summary>
-        /// Whether or not two points of this triangle are on the top. 
-        /// The alternative would be two points on the bottom. 
+        /// Whether or not two points of this triangle are on the top/left. 
+        /// The alternative would be two points on the bottom/right. 
         /// </summary>
-        internal bool TwoPointsOnTop; 
+        internal bool TwoPointsOnTop, TwoPointsOnLeft; 
 
         public MinimapTriangle(Triangle triangle)
         {
+            OffsetPoints = OffsetTrianglePoints(triangle); 
+
             GetTriangleBounds(triangle);
 
             // Determine if two points are on the top by seeing if 
@@ -96,18 +127,44 @@ namespace JModelling
             int index = 0; 
             while (true)
             {
-                if (index == 3) break; 
+                if (index == 3)
+                {
+                    TwoPointsOnTop = true;
+                    break;
+                } 
                 if (index != minZIndex)
                 {
                     if (triangle.Points[index].Z == MinZ)
                     {
                         TwoPointsOnTop = false;
-                        return; 
+                        break; 
                     }
                 }
                 index++; 
             }
-            TwoPointsOnTop = true; 
+
+            // Same as above, although checks for points on the left. 
+            index = 0; 
+            while (true)
+            {
+                if (index == 3)
+                {
+                    TwoPointsOnLeft = true;
+                    break;
+                }
+                if (index != minZIndex)
+                {
+                    if (index != minXIndex)
+                    {
+                        if (triangle.Points[index].X == MinX)
+                        {
+                            TwoPointsOnLeft = false;
+                            break; 
+                        }
+                    }
+                }
+                index++;
+            }
         }
 
         /// <summary>
@@ -149,6 +206,7 @@ namespace JModelling
                 if (point.X < MinX)
                 {
                     MinX = point.X;
+                    minXIndex = index; 
                 }
                 if (point.X > MaxX)
                 {

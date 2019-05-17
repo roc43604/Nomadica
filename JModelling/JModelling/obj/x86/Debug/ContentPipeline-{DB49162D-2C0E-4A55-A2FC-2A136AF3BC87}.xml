@@ -71,25 +71,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Debug\Content\Images\Inventory\item.xnb</Output>
-      <Time>2019-05-11T22:58:04.3005465-05:00</Time>
-    </Item>
-    <Item>
-      <Source>Images\Inventory\white.png</Source>
-      <Name>Images\Inventory\white</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-      <Options>None</Options>
-      <Output>C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Debug\Content\Images\Inventory\white.xnb</Output>
-      <Time>2019-05-11T13:25:42.8454867-05:00</Time>
-    </Item>
-    <Item>
-      <Source>Images\Inventory\round box.png</Source>
-      <Name>Images\Inventory\round box</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-      <Options>None</Options>
-      <Output>C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Debug\Content\Images\Inventory\round box.xnb</Output>
-      <Time>2019-05-11T22:54:13.7248389-05:00</Time>
+      <Time>2019-05-12T11:25:48.9263853-05:00</Time>
     </Item>
     <Item>
       <Source>DebugFont.spritefont</Source>
@@ -107,7 +89,79 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Debug\Content\Images\Inventory\cube.xnb</Output>
-      <Time>2019-05-11T23:19:18.103935-05:00</Time>
+      <Time>2019-05-12T11:25:48.9253875-05:00</Time>
+    </Item>
+    <Item>
+      <Source>Images\Menu\white.png</Source>
+      <Name>Images\Menu\white</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Debug\Content\Images\Menu\white.xnb</Output>
+      <Time>2019-05-12T11:25:48.9278827-05:00</Time>
+    </Item>
+    <Item>
+      <Source>Images\Menu\round box.png</Source>
+      <Name>Images\Menu\round box</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Debug\Content\Images\Menu\round box.xnb</Output>
+      <Time>2019-05-16T19:29:57.509672-05:00</Time>
+    </Item>
+    <Item>
+      <Source>PauseFont.spritefont</Source>
+      <Name>PauseFont</Name>
+      <Importer>FontDescriptionImporter</Importer>
+      <Processor>FontDescriptionProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Debug\Content\PauseFont.xnb</Output>
+      <Time>2019-05-16T19:11:49.8440524-05:00</Time>
+    </Item>
+    <Item>
+      <Source>AnswerFont.spritefont</Source>
+      <Name>AnswerFont</Name>
+      <Importer>FontDescriptionImporter</Importer>
+      <Processor>FontDescriptionProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Debug\Content\AnswerFont.xnb</Output>
+      <Time>2019-05-16T19:11:32.3550999-05:00</Time>
+    </Item>
+    <Item>
+      <Source>QuestionFont.spritefont</Source>
+      <Name>QuestionFont</Name>
+      <Importer>FontDescriptionImporter</Importer>
+      <Processor>FontDescriptionProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Debug\Content\QuestionFont.xnb</Output>
+      <Time>2019-05-16T19:11:32.3720668-05:00</Time>
+    </Item>
+    <Item>
+      <Source>Images\Menu\ThinRoundBox.png</Source>
+      <Name>Images\Menu\ThinRoundBox</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Debug\Content\Images\Menu\ThinRoundBox.xnb</Output>
+      <Time>2019-05-16T19:09:28.7330589-05:00</Time>
+    </Item>
+    <Item>
+      <Source>Images\Menu\filled round box.png</Source>
+      <Name>Images\Menu\filled round box</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Debug\Content\Images\Menu\filled round box.xnb</Output>
+      <Time>2019-05-16T19:31:34.0165426-05:00</Time>
+    </Item>
+    <Item>
+      <Source>Images\Menu\ThinFilledRoundBox.png</Source>
+      <Name>Images\Menu\ThinFilledRoundBox</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Debug\Content\Images\Menu\ThinFilledRoundBox.xnb</Output>
+      <Time>2019-05-16T20:56:30.7946359-05:00</Time>
     </Item>
     <BuildSuccessful>true</BuildSuccessful>
     <Settings>

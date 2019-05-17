@@ -12,7 +12,8 @@ using JModelling.JModelling;
 using GraphicsEngine;
 using JModelling.JModelling.Chunk;
 using System.Diagnostics;
-using JModelling.InventorySpace; 
+using JModelling.InventorySpace;
+using JModelling.Pause;
 
 namespace JModelling
 {
@@ -76,7 +77,8 @@ namespace JModelling
             // TODO: use this.Content to load your game content here
             Load.Init(Services);
             debugFont = Content.Load<SpriteFont>("DebugFont");
-            InventoryMenu.LoadImages(Content); 
+            InventoryMenu.LoadImages(Content);
+            PauseMenu.LoadImages(Content); 
 
             generator = new ChunkGenerator(43545544, 10, 10, 3, manager, Load.Mesh(@"Content/Models/cube.obj"));
 

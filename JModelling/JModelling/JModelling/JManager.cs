@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework;
 using JModelling.Creature;
 using JModelling.JModelling.Chunk;
 using JModelling.InventorySpace;
+using JModelling.Pause;
 
 namespace JModelling.JModelling
 {
@@ -23,7 +24,9 @@ namespace JModelling.JModelling
         /// <summary>
         /// The last keyboard state
         /// </summary>
-        private KeyboardState lastKb; 
+        private KeyboardState lastKb;
+
+        private MouseState lastMs; 
 
         /// <summary>
         /// The thing that this manager belongs to. 
@@ -60,7 +63,12 @@ namespace JModelling.JModelling
         /// <summary>
         /// Used for displaying the player's inventory. 
         /// </summary>
-        private InventoryMenu inventoryMenu; 
+        private InventoryMenu inventoryMenu;
+
+        /// <summary>
+        /// Used for configuring settings or quitting the game.
+        /// </summary>
+        private PauseMenu pauseMenu; 
 
         /// <summary>
         /// What will be dealing with drawing to the screen. 
@@ -129,7 +137,9 @@ namespace JModelling.JModelling
         /// A list of all of the items to draw in world-space. If they are
         /// picked up, they are removed from this list. 
         /// </summary>
-        private LinkedList<Item> itemsInWorld; 
+        private LinkedList<Item> itemsInWorld;
+
+        private GraphicsDevice graphicsDevice; 
 
         /// <summary>
         /// Creates a manager that will construct necessary fields for use
@@ -138,7 +148,8 @@ namespace JModelling.JModelling
         public JManager(Game host, int width, int height, GraphicsDeviceManager graphicsDeviceManager, ChunkGenerator cg, SpriteBatch spriteBatch)
         {
             // Assigns the last keyboard state
-            lastKb = Keyboard.GetState(); 
+            lastKb = Keyboard.GetState();
+            lastMs = Mouse.GetState(); 
 
             // Assigns the host
             this.host = host; 
@@ -155,9 +166,11 @@ namespace JModelling.JModelling
 
             this.cg = cg;
 
-            gameState = GameState.Playing; 
+            gameState = GameState.Playing;
 
-            painter = new Painter(width, height, graphicsDeviceManager.GraphicsDevice, spriteBatch);
+            graphicsDevice = graphicsDeviceManager.GraphicsDevice; 
+
+            painter = new Painter(width, height, graphicsDevice, spriteBatch);
 
             // Create the skybox test
             skybox = new SkyBox(
@@ -206,6 +219,9 @@ namespace JModelling.JModelling
             Vec4 itemLoc = player.Camera.loc.Clone();
             itemLoc.X += 100; 
             itemsInWorld.AddLast(new DefaultItem(itemLoc, cg));
+
+            inventoryMenu = new InventoryMenu(player.Inventory, graphicsDevice, Width, Height);
+            pauseMenu = new PauseMenu(Width, Height);
 
             //float h = cg.GetHeightAt(itemLoc.X, itemLoc.Z); 
             //cube = Load.Mesh(@"Content/Models/cube.obj", 25, itemLoc.X, h, itemLoc.Z);
@@ -265,6 +281,10 @@ namespace JModelling.JModelling
                 case GameState.Inventory:
                     UpdateInventory();
                     break;
+
+                case GameState.Paused:
+                    UpdatePaused();
+                    break; 
             }
             
             lastKb = Keyboard.GetState(); 
@@ -288,7 +308,7 @@ namespace JModelling.JModelling
 
             UpdatePlayingInputs();
             skybox.Update(camera.loc);
-
+       
             if (monster != null)
             {
                 // If creature died, remove them and drop their items
@@ -390,6 +410,14 @@ namespace JModelling.JModelling
             UpdateInventoryInputs();    
         }
 
+        private void UpdatePaused()
+        {
+            MouseState ms = Mouse.GetState(); 
+            pauseMenu.Update(ms, lastMs);
+            UpdatePauseInputs();
+            lastMs = ms; 
+        }
+
         /// <summary>
         /// Draws what the JManager has loaded to the screen. 
         /// </summary>
@@ -403,6 +431,10 @@ namespace JModelling.JModelling
 
                 case GameState.Inventory:
                     inventoryMenu.Draw(spriteBatch);
+                    break;
+
+                case GameState.Paused:
+                    pauseMenu.Draw(spriteBatch);
                     break; 
             }
         }
@@ -1172,7 +1204,16 @@ namespace JModelling.JModelling
             else if (kb.IsKeyDown(Controls.Inventory) && lastKb.IsKeyUp(Controls.Inventory))
             {
                 gameState = GameState.Inventory;
-                inventoryMenu = new InventoryMenu(painter, player.Inventory, Width, Height, lastWorldTexture, lastSkyTexture);
+                inventoryMenu.Create(lastWorldTexture, lastSkyTexture);              
+                isMouseFocused = false;
+                host.IsMouseVisible = true; 
+            }
+
+            // If Pause is pressed, toggle pause menu. 
+            else if (kb.IsKeyDown(Controls.Pause) && lastKb.IsKeyUp(Controls.Pause))
+            {
+                gameState = GameState.Paused;
+                pauseMenu.Create(lastWorldTexture, lastSkyTexture); 
                 isMouseFocused = false;
                 host.IsMouseVisible = true; 
             }
@@ -1204,6 +1245,34 @@ namespace JModelling.JModelling
                 isMouseFocused = true; 
                 host.IsMouseVisible = false;
                 Mouse.SetPosition(centerX, centerY); 
+            }
+        }
+
+        /// <summary>
+        /// Updates the inputs coming specifically from the pause screen. 
+        /// </summary>
+        private void UpdatePauseInputs()
+        {
+            KeyboardState kb = Keyboard.GetState();
+            MouseState ms = Mouse.GetState();
+
+            ProcessSpecialPauseKeyInputs(kb); 
+        }
+
+        /// <summary>
+        /// Processes any special keys the user presses while on the Pause
+        /// screen. 
+        /// </summary>
+        private void ProcessSpecialPauseKeyInputs(KeyboardState kb)
+        {
+            // If the pause button is down, reset the player back to the playing screen. 
+            if (kb.IsKeyDown(Controls.Pause) && lastKb.IsKeyUp(Controls.Pause))
+            {
+                gameState = GameState.Playing;
+
+                isMouseFocused = true;
+                host.IsMouseVisible = false;
+                Mouse.SetPosition(centerX, centerY);
             }
         }
     }

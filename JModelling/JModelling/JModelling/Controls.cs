@@ -15,7 +15,7 @@ namespace JModelling.JModelling
         /// <summary>
         /// Will exit the program when pressed. 
         /// </summary>
-        public const Keys QuitProgram = Keys.Escape;
+        public const Keys QuitProgram = Keys.Back;         
 
         /// <summary>
         /// Will tell the program whether or not it should read mouse inputs
@@ -57,6 +57,12 @@ namespace JModelling.JModelling
         /// Opens the player's inventory, displaying the items they have
         /// in their possession. 
         /// </summary>
-        public const Keys Inventory = Keys.E; 
+        public const Keys Inventory = Keys.E;
+
+        /// <summary>
+        /// Pauses the game, allowing the player to configure settings or
+        /// exit the game through a button click. 
+        /// </summary>
+        public const Keys Pause = Keys.Escape;  
     }
 }

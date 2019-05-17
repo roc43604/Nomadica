@@ -66,7 +66,7 @@ namespace JModelling.JModelling.Chunk
         public int viewDistZ;
 
         private int viewDist;
-        private Mesh[,] chunkMesh;
+        public Mesh[,] chunkMesh;
         private Mesh cow;
         public JManager manager;
 

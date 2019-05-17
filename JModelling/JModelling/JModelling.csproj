@@ -109,6 +109,14 @@
     <Compile Include="JModelling\WeatherAndTime.cs" />
     <Compile Include="ListUtil.cs" />
     <Compile Include="Minimap.cs" />
+    <Compile Include="Pause\Button.cs" />
+    <Compile Include="Pause\Font.cs" />
+    <Compile Include="Pause\GeneralMenu.cs" />
+    <Compile Include="Pause\MultipleChoiceOption.cs" />
+    <Compile Include="Pause\Option.cs" />
+    <Compile Include="Pause\PauseMenu.cs" />
+    <Compile Include="Pause\PauseMenuSubset.cs" />
+    <Compile Include="Pause\VideoMenu.cs" />
     <Compile Include="PerlinNoise.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

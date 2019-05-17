@@ -29,10 +29,7 @@ namespace JModelling.InventorySpace
         /// </summary>
         private static Texture2D RoundBox;
 
-        /// <summary>
-        /// The thing that's drawing the images to the screen. 
-        /// </summary>
-        private Painter painter; 
+        private GraphicsDevice graphicsDevice;
 
         /// <summary>
         /// The bounds of the entire viewing rectangle. 
@@ -64,12 +61,10 @@ namespace JModelling.InventorySpace
         /// </summary>
         private int itemSize; 
 
-        public InventoryMenu(Painter painter, Inventory inventory, int screenWidth, int screenHeight, Texture2D World, Texture2D Sky)
+        public InventoryMenu(Inventory inventory, GraphicsDevice graphicsDevice, int screenWidth, int screenHeight)
         {
-            this.painter = painter; 
             this.inventory = inventory;
-            this.World = World;
-            this.Sky = Sky; 
+            this.graphicsDevice = graphicsDevice;
             InitSizes(screenWidth, screenHeight);
             windowBounds = new Rectangle(0, 0, screenWidth, screenHeight); 
         }
@@ -95,10 +90,16 @@ namespace JModelling.InventorySpace
             menuBounds.Y = (screenHeight - menuBounds.Height) / 2; 
         }
 
+        public void Create(Texture2D World, Texture2D Sky)
+        {
+            this.World = World;
+            this.Sky = Sky;
+        }
+
         public static void LoadImages(ContentManager content)
         {
-            WhiteTexture = content.Load<Texture2D>("Images/Inventory/white");
-            RoundBox = content.Load<Texture2D>("Images/Inventory/round box"); 
+            WhiteTexture = content.Load<Texture2D>("Images/Menu/white");
+            RoundBox = content.Load<Texture2D>("Images/Menu/filled round box"); 
         }
 
         /// <summary>
@@ -128,10 +129,9 @@ namespace JModelling.InventorySpace
                     Item item = inventory.Items[x, y]; 
                     if (item != null)
                     {
-                        Texture2D tex = new Texture2D(painter.graphicsDevice, item.TextureWidth, item.TextureHeight);
+                        Texture2D tex = new Texture2D(graphicsDevice, item.TextureWidth, item.TextureHeight);
                         tex.SetData<Color>(item.Texture);
                         spriteBatch.Draw(tex, itemLoc, Color.White); 
-                        //painter.DrawImage(item.Texture, item.TextureWidth, item.TextureHeight, loc); 
                     }
                 }
             }

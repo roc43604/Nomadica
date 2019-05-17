@@ -197,8 +197,6 @@ namespace GraphicsEngine
                 startCol = 0;
             }
 
-            Console.WriteLine(endCol); 
-
             if (endCol > drawWidth - 1)
             {
                 float diff = 100f / (float)location.Width * (endCol - drawWidth);
