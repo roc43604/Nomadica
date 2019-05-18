@@ -82,7 +82,7 @@ namespace JModelling
             InventoryMenu.LoadImages(Content);
             PauseMenu.LoadImages(Content);
 
-            generator = new ChunkGenerator(43545544, 10, 10, 3, manager, Load.Mesh(@"Content/Models/cube.obj"));
+            generator = new ChunkGenerator(43545544, 8, 8, 3, manager, spriteBatch, Load.Mesh(@"Content/Models/cube.obj"));
 
             NPC.Init(Content);
             manager = new JManager(this, Width, Height, graphics, generator, spriteBatch);
@@ -124,7 +124,7 @@ namespace JModelling
 
             // TODO: Add your update logic here
             Stopwatch stopWatch = Stopwatch.StartNew();
-            stopWatch.Start(); 
+            stopWatch.Start();
 
             ////////////////////////////////////////////////////////////////////////////////////
             Vec4 pos = manager.player.Camera.loc;
@@ -146,11 +146,11 @@ namespace JModelling
 
             manager.Update();
             ////////////////////////////////////////////////////////////////////////////////////
-            stopWatch.Stop(); 
+            stopWatch.Stop();
             if (gameTime.TotalGameTime.TotalMilliseconds - debugLastUpdate > debugUpdateInterval)
             {
                 debugUPS = 1000 / (stopWatch.ElapsedMilliseconds + 1);
-                debugLastUpdate = gameTime.TotalGameTime.TotalMilliseconds; 
+                debugLastUpdate = gameTime.TotalGameTime.TotalMilliseconds;
             }
 
             base.Update(gameTime);

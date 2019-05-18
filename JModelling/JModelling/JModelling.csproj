@@ -72,7 +72,7 @@
     <Reference Include="System.Net" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BiomeThing.cs" />
+    <Compile Include="Chunk\BiomeThing.cs" />
     <Compile Include="Chunk\BiomeRegistry.cs" />
     <Compile Include="Chunk\Biomes.cs" />
     <Compile Include="Chunk\Chunk.cs" />
@@ -111,8 +111,7 @@
     <Compile Include="JModelling\Vec3.cs" />
     <Compile Include="JModelling\Vec4.cs" />
     <Compile Include="JModelling\WeatherAndTime.cs" />
-    <Compile Include="ListUtil.cs" />
-    <Compile Include="Minimap.cs" />
+    <Compile Include="Chunk\ListUtil.cs" />
     <Compile Include="GUI\Button.cs" />
     <Compile Include="GUI\GeneralMenu.cs" />
     <Compile Include="GUI\MultipleChoiceOption.cs" />
@@ -120,7 +119,7 @@
     <Compile Include="GUI\PauseMenu.cs" />
     <Compile Include="GUI\PauseMenuSubset.cs" />
     <Compile Include="GUI\VideoMenu.cs" />
-    <Compile Include="PerlinNoise.cs" />
+    <Compile Include="Chunk\PerlinNoise.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

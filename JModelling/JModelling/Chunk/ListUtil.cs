@@ -15,7 +15,7 @@ namespace JModelling.JModelling
         }
         public ListUtil(params ListNode<T>[] nodes)
         {
-            for (int i=0; i<nodes.Length; i++)
+            for (int i = 0; i < nodes.Length; i++)
             {
                 Add(nodes[i]);
             }
@@ -45,7 +45,7 @@ namespace JModelling.JModelling
 
         public void Add(T dat)
         {
-            Add(new ListNode<T>(dat));    
+            Add(new ListNode<T>(dat));
         }
 
         public void Remove(ListNode<T> node)
@@ -72,7 +72,7 @@ namespace JModelling.JModelling
         {
             if (last != null)
                 last.next = next;
-            
+
             if (next != null)
                 next.last = last;
         }
