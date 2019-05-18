@@ -15,6 +15,7 @@ using System.Diagnostics;
 using JModelling.InventorySpace;
 using JModelling.Pause;
 using JModelling.Creature;
+using JModelling.GUI;
 
 namespace JModelling
 {
@@ -85,7 +86,9 @@ namespace JModelling
 
             NPC.Init(Content);
             manager = new JManager(this, Width, Height, graphics, generator, spriteBatch);
-            NPC.parent = manager; 
+            NPC.parent = manager;
+                        
+            Compass.Load(Content);
 
             generator.manager = manager;
         }

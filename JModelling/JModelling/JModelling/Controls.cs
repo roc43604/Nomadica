@@ -13,9 +13,9 @@ namespace JModelling.JModelling
     class Controls
     {
         /// <summary>
-        /// Will exit the program when pressed. 
+        /// Will exit a menu. 
         /// </summary>
-        public const Keys QuitProgram = Keys.Back;         
+        public const Keys Quit = Keys.Escape;         
 
         /// <summary>
         /// Will tell the program whether or not it should read mouse inputs

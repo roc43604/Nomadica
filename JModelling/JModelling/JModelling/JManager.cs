@@ -10,6 +10,7 @@ using JModelling.Creature;
 using JModelling.JModelling.Chunk;
 using JModelling.InventorySpace;
 using JModelling.Pause;
+using JModelling.GUI;
 
 namespace JModelling.JModelling
 {
@@ -143,7 +144,9 @@ namespace JModelling.JModelling
 
         private NPC npc;
 
-        private DialogueBox dialogueBox; 
+        private DialogueBox dialogueBox;
+
+        private Compass compass;
 
         /// <summary>
         /// Creates a manager that will construct necessary fields for use
@@ -231,9 +234,13 @@ namespace JModelling.JModelling
             //cube = Load.Mesh(@"Content/Models/cube.obj", 25, itemLoc.X, h, itemLoc.Z);
             //AddMesh(cube); 
 
-            npc = new NPC(new JModelling.Vec4(-100, 0, -100), new string[] { "hello!", "this is a test", "do you accept?", "thanks!", "see ya!" }, 2, 3, 4);
+            npc = new NPC(new JModelling.Vec4(-100, 0, -100), new string[] { "hello!", "this is a test", "do you accept?\n", "thanks!", "see ya!" }, 2, 3, 4, new int[] { 3, 4 });
+            npc.Mesh.SetColor(Color.Blue); 
             dialogueBox = null;
-            DialogueBox.Init(Width, Height);  
+            DialogueBox.Init(Width, Height);
+
+            Compass.Init(camera, Width, Height); 
+            compass = new Compass(monster.Loc); 
         }
 
         /// <summary>
@@ -320,6 +327,8 @@ namespace JModelling.JModelling
 
             UpdatePlayingInputs();
             skybox.Update(camera.loc);
+
+            compass.Update(); 
        
             if (monster != null)
             {
@@ -438,14 +447,14 @@ namespace JModelling.JModelling
         public void Talk(TalkingCreature source)
         {
             gameState = GameState.Talking;
-            dialogueBox = new DialogueBox(lastWorldTexture, lastSkyTexture, source);  
+            dialogueBox = new DialogueBox(lastWorldTexture, lastSkyTexture, source);
+            isMouseFocused = false;
+            host.IsMouseVisible = true;
         }
 
         private void UpdateTalking()
         {
-            KeyboardState kb = Keyboard.GetState();
-            dialogueBox.Update(kb, lastKb);
-            lastKb = kb; 
+            UpdateTalkingInputs();
         }
 
         /// <summary>
@@ -477,6 +486,7 @@ namespace JModelling.JModelling
         {
             spriteBatch.Draw(GetSkyboxTexture(player.Camera), new Rectangle(0, 0, Width, Height), Color.White);
             spriteBatch.Draw(GetWorldTexture(), new Rectangle(0, 0, Width, Height), Color.White);
+            compass.Draw(spriteBatch); 
         }
 
         public Texture2D GetWorldTexture()
@@ -1199,7 +1209,7 @@ namespace JModelling.JModelling
             // Perform any special actions with any special keys. 
             ProcessSpecialPlayingKeyInputs(kb);
 
-            if (npc.Talk(player, kb))
+            if (npc.Talk(player, kb) && lastKb.IsKeyUp(Controls.Interact))
             {
                 Talk(npc); 
             }
@@ -1213,14 +1223,8 @@ namespace JModelling.JModelling
         /// </summary>
         private void ProcessSpecialPlayingKeyInputs(KeyboardState kb)
         {
-            // If Escape is pressed, close the program. 
-            if (kb.IsKeyDown(Controls.QuitProgram))
-            {
-                System.Environment.Exit(0); 
-            }
-
             // If Tab is pressed, unfocus/focus the mouse. 
-            else if (kb.IsKeyDown(Controls.FocusOrUnfocusMouse) && lastKb.IsKeyUp(Controls.FocusOrUnfocusMouse))
+            if (kb.IsKeyDown(Controls.FocusOrUnfocusMouse) && lastKb.IsKeyUp(Controls.FocusOrUnfocusMouse))
             {
                 isMouseFocused = !isMouseFocused;
                 host.IsMouseVisible = !isMouseFocused;
@@ -1311,6 +1315,34 @@ namespace JModelling.JModelling
                 isMouseFocused = true;
                 host.IsMouseVisible = false;
                 Mouse.SetPosition(centerX, centerY);
+            }
+        }
+
+        private void UpdateTalkingInputs()
+        {
+            KeyboardState kb = Keyboard.GetState();
+            MouseState ms = Mouse.GetState();                       
+            if (dialogueBox.Update(kb, lastKb, ms, lastMs))
+            {
+                gameState = GameState.Playing;
+                Mouse.SetPosition(centerX, centerY);
+                isMouseFocused = true;
+                host.IsMouseVisible = false;
+            }
+            ProcessSpecialTalkingKeyInputs(kb); 
+
+            lastKb = kb;
+            lastMs = ms; 
+        }
+
+        private void ProcessSpecialTalkingKeyInputs(KeyboardState kb)
+        {
+            if (kb.IsKeyDown(Controls.Quit))
+            {
+                gameState = GameState.Playing;
+                Mouse.SetPosition(centerX, centerY);
+                isMouseFocused = true;
+                host.IsMouseVisible = false;
             }
         }
     }

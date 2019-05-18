@@ -120,3 +120,6 @@ C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\
 \\Fisd-student1\hs\lhs\122341\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\AnswerFont.xnb
 \\Fisd-student1\hs\lhs\122341\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\PauseFont.xnb
 \\Fisd-student1\hs\lhs\122341\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\QuestionFont.xnb
+C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\ReminderFont.xnb
+C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\Images\Menu\Needle.xnb
+C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\Images\Menu\Compass.xnb

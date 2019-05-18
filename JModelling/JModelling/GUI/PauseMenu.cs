@@ -22,7 +22,7 @@ namespace JModelling.Pause
         /// <summary>
         /// For general text-drawing to the screen. 
         /// </summary>
-        public static SpriteFont font, questionFont, answerFont; 
+        public static SpriteFont font, questionFont, answerFont, reminderFont; 
 
         /// <summary>
         /// The image behind the menu. 
@@ -117,7 +117,8 @@ namespace JModelling.Pause
             ThinFilledRoundBox = content.Load<Texture2D>("Images/Menu/ThinFilledRoundBox"); 
             font = content.Load<SpriteFont>("PauseFont");
             questionFont = content.Load<SpriteFont>("QuestionFont");
-            answerFont = content.Load<SpriteFont>("AnswerFont"); 
+            answerFont = content.Load<SpriteFont>("AnswerFont");
+            reminderFont = content.Load<SpriteFont>("ReminderFont"); 
         }
 
         public void Update(MouseState ms, MouseState lastMs)

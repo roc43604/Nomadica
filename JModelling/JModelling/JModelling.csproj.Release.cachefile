@@ -16,6 +16,9 @@ Content\DebugFont.xnb
 Content\AnswerFont.xnb
 Content\PauseFont.xnb
 Content\QuestionFont.xnb
+Content\ReminderFont.xnb
+Content\Images\Menu\Needle.xnb
+Content\Images\Menu\Compass.xnb
 Content\Models\cow.obj
 Content\Models\cube.obj
 Content\Models\mountains.obj

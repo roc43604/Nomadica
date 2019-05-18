@@ -49,6 +49,11 @@ namespace JModelling.Creature
             get;
         }
 
+        HashSet<int> QuitIndices
+        {
+            get; 
+        }
+
         bool Talk(Player player, KeyboardState kb); 
     }
 }

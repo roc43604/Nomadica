@@ -56,17 +56,27 @@ namespace JModelling.Creature
             }
         }
 
+        private HashSet<int> quitIndices; 
+        public HashSet<int> QuitIndices
+        {
+            get
+            {
+                return quitIndices;
+            }
+        }
+
         private static Mesh mesh;
 
         public static JManager parent; 
 
-        public NPC(Vec4 loc, string[] text, int responseIndex, int acceptIndex, int denyIndex)
+        public NPC(Vec4 loc, string[] text, int responseIndex, int acceptIndex, int denyIndex, int[] quitIndices)
             : base(mesh, loc, speed, 0, 100, 100, new List<Item>(new Item[] { }))
         {
             this.text = text;
             this.responseIndex = responseIndex;
             this.acceptIndex = acceptIndex;
-            this.denyIndex = denyIndex; 
+            this.denyIndex = denyIndex;
+            this.quitIndices = new HashSet<int>(quitIndices); 
         }
 
         public static void Init(ContentManager content)
