@@ -8,7 +8,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\Images\fire.xnb</Output>
-      <Time>2019-05-07T19:14:55.2746281-05:00</Time>
+      <Time>2019-05-17T20:04:39.4115986-05:00</Time>
     </Item>
     <Item>
       <Source>Images\grass.jpg</Source>
@@ -17,7 +17,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\Images\grass.xnb</Output>
-      <Time>2019-05-04T16:56:02.3978084-05:00</Time>
+      <Time>2019-05-17T20:04:39.4120978-05:00</Time>
     </Item>
     <Item>
       <Source>Images\moon.png</Source>
@@ -26,7 +26,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\Images\moon.xnb</Output>
-      <Time>2019-05-07T19:14:55.3030748-05:00</Time>
+      <Time>2019-05-17T20:04:39.4325692-05:00</Time>
     </Item>
     <Item>
       <Source>Images\night.jpg</Source>
@@ -35,7 +35,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\Images\night.xnb</Output>
-      <Time>2019-05-07T19:14:55.3060839-05:00</Time>
+      <Time>2019-05-17T20:04:39.4350568-05:00</Time>
     </Item>
     <Item>
       <Source>Images\skybox.png</Source>
@@ -44,7 +44,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\Images\skybox.xnb</Output>
-      <Time>2019-05-07T19:14:55.3170497-05:00</Time>
+      <Time>2019-05-17T20:04:39.4425405-05:00</Time>
     </Item>
     <Item>
       <Source>Images\stone.jpg</Source>
@@ -53,7 +53,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\Images\stone.xnb</Output>
-      <Time>2019-05-04T16:56:02.3988082-05:00</Time>
+      <Time>2019-05-17T20:04:39.4435388-05:00</Time>
     </Item>
     <Item>
       <Source>Images\sun.png</Source>
@@ -62,7 +62,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\Images\sun.xnb</Output>
-      <Time>2019-05-07T19:14:55.3295258-05:00</Time>
+      <Time>2019-05-17T20:04:39.4490283-05:00</Time>
     </Item>
     <Item>
       <Source>Images\Menu\white.png</Source>
@@ -71,7 +71,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\Images\Menu\white.xnb</Output>
-      <Time>2019-05-17T19:51:25.0869741-05:00</Time>
+      <Time>2019-05-17T20:04:39.4110995-05:00</Time>
     </Item>
     <Item>
       <Source>Images\Inventory\item.png</Source>
@@ -80,7 +80,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\Images\Inventory\item.xnb</Output>
-      <Time>2019-05-17T19:51:25.0814842-05:00</Time>
+      <Time>2019-05-17T20:04:39.4061087-05:00</Time>
     </Item>
     <Item>
       <Source>Images\Inventory\cube.png</Source>
@@ -89,7 +89,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\Images\Inventory\cube.xnb</Output>
-      <Time>2019-05-17T19:51:25.0804859-05:00</Time>
+      <Time>2019-05-17T20:04:39.4051113-05:00</Time>
     </Item>
     <Item>
       <Source>Images\Menu\ThinRoundBox.png</Source>
@@ -98,7 +98,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\Images\Menu\ThinRoundBox.xnb</Output>
-      <Time>2019-05-17T19:51:25.0849776-05:00</Time>
+      <Time>2019-05-17T20:04:39.4091034-05:00</Time>
     </Item>
     <Item>
       <Source>Images\Menu\round box.png</Source>
@@ -107,7 +107,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\Images\Menu\round box.xnb</Output>
-      <Time>2019-05-17T19:51:25.086475-05:00</Time>
+      <Time>2019-05-17T20:04:39.4106004-05:00</Time>
     </Item>
     <Item>
       <Source>Images\Menu\filled round box.png</Source>
@@ -116,7 +116,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\Images\Menu\filled round box.xnb</Output>
-      <Time>2019-05-17T19:51:25.0854767-05:00</Time>
+      <Time>2019-05-17T20:04:39.4101013-05:00</Time>
     </Item>
     <Item>
       <Source>Images\Menu\ThinFilledRoundBox.png</Source>
@@ -125,7 +125,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\Images\Menu\ThinFilledRoundBox.xnb</Output>
-      <Time>2019-05-17T19:51:25.0839946-05:00</Time>
+      <Time>2019-05-17T20:04:39.4086043-05:00</Time>
     </Item>
     <Item>
       <Source>DebugFont.spritefont</Source>
@@ -134,7 +134,7 @@
       <Processor>FontDescriptionProcessor</Processor>
       <Options>None</Options>
       <Output>C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\DebugFont.xnb</Output>
-      <Time>2019-05-07T20:42:35.5640745-05:00</Time>
+      <Time>2019-05-17T20:04:39.4036135-05:00</Time>
     </Item>
     <Item>
       <Source>AnswerFont.spritefont</Source>
@@ -143,7 +143,7 @@
       <Processor>FontDescriptionProcessor</Processor>
       <Options>None</Options>
       <Output>C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\AnswerFont.xnb</Output>
-      <Time>2019-05-17T19:51:25.078989-05:00</Time>
+      <Time>2019-05-17T20:04:39.4031144-05:00</Time>
     </Item>
     <Item>
       <Source>PauseFont.spritefont</Source>
@@ -152,7 +152,7 @@
       <Processor>FontDescriptionProcessor</Processor>
       <Options>None</Options>
       <Output>C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\PauseFont.xnb</Output>
-      <Time>2019-05-17T19:51:25.0889706-05:00</Time>
+      <Time>2019-05-17T20:04:39.4565147-05:00</Time>
     </Item>
     <Item>
       <Source>QuestionFont.spritefont</Source>
@@ -161,7 +161,7 @@
       <Processor>FontDescriptionProcessor</Processor>
       <Options>None</Options>
       <Output>C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\QuestionFont.xnb</Output>
-      <Time>2019-05-17T19:51:25.089968-05:00</Time>
+      <Time>2019-05-17T20:04:39.4570134-05:00</Time>
     </Item>
     <Item>
       <Source>ReminderFont.spritefont</Source>
@@ -170,7 +170,7 @@
       <Processor>FontDescriptionProcessor</Processor>
       <Options>None</Options>
       <Output>C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\ReminderFont.xnb</Output>
-      <Time>2019-05-17T19:51:25.0904679-05:00</Time>
+      <Time>2019-05-17T20:04:39.4580117-05:00</Time>
     </Item>
     <Item>
       <Source>Images\Menu\Needle.png</Source>
@@ -179,7 +179,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\Images\Menu\Needle.xnb</Output>
-      <Time>2019-05-17T19:51:25.0834803-05:00</Time>
+      <Time>2019-05-17T20:04:39.4081052-05:00</Time>
     </Item>
     <Item>
       <Source>Images\Menu\Compass.png</Source>
@@ -188,7 +188,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Release\Content\Images\Menu\Compass.xnb</Output>
-      <Time>2019-05-17T19:51:25.082482-05:00</Time>
+      <Time>2019-05-17T20:04:39.407107-05:00</Time>
     </Item>
     <BuildSuccessful>true</BuildSuccessful>
     <Settings>

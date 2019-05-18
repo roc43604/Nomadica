@@ -27,7 +27,7 @@ namespace JModelling.Creature
 
         public bool tookDamage;
 
-        private Vec4 gravityVelocity;
+        public Vec4 gravityVelocity;
         public Vec4 TravelVector; 
 
         public MeleeAttacker(Mesh mesh, Vec4 Location, float Speed, int Damage, int Health, int NoticeDistance, ChunkGenerator cg) 
