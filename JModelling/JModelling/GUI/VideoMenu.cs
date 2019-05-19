@@ -40,9 +40,9 @@ namespace JModelling.Pause
 
             questions = new Option[]
             {
-                new MultipleChoiceOption(this, 0, "This is a test", new string[] {"One", "Two", "Three" }, rec),
-                new MultipleChoiceOption(this, 1, "This is a test", new string[] {"One", "Two", "Three" }, two),
-                new Button(this, 2, "This is a test", "Answer", three)
+                new MultipleChoiceOption(this, 0, "View Distance", new string[] {"1", "2", "3", "4", "5", "6", "7", "8" }, rec),
+                new MultipleChoiceOption(this, 1, "Image Draw Distance", new string[] {"0", "25", "50", "75", "100" }, two),
+                new Button(this, 2, "Particles", "On/Off", three)
             };
         }
 

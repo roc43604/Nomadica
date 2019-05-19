@@ -112,26 +112,31 @@ namespace JModelling.Creature
         private void Attacked()
         {
             // If the monster is off the attack cool-down timer
-            if (JManager.monster != null)
+            for (int k = 0; k < JManager.monsters.Length; k++)
             {
-                if (!JManager.monster.tookDamage)
+                MeleeAttacker monster = JManager.monsters[k];
+                if (monster != null)
                 {
-                    // If weaponLoc is within the monster's range, they take damage.
-                    if (Math.Abs((Camera.yaw + JManager.PITimesTwo) - (MathExtensions.Wrap(JManager.monster.AngleToPlayer + (float)Math.PI / 2f) + JManager.PITimesTwo)) < (Math.PI / 7))
+                    if (!monster.tookDamage)
                     {
-                        if (MathExtensions.Dist(Camera.loc, JManager.monster.Loc) < WeaponDist)
+                        // If weaponLoc is within the monster's range, they take damage.
+                        if (Math.Abs((Camera.yaw + JManager.PITimesTwo) - (MathExtensions.Wrap(monster.AngleToPlayer + (float)Math.PI / 2f) + JManager.PITimesTwo)) < (Math.PI / 7))
                         {
-                            JManager.monster.TookDamage(this);
-                        }
-                        //Console.WriteLine("Yes!!!\t\t" + (Camera.yaw - MathExtensions.Wrap(JManager.monster.AngleToPlayer + (float)Math.PI / 2f)));
+                            if (MathExtensions.Dist(Camera.loc, monster.Loc) < WeaponDist)
+                            {
+                                monster.TookDamage(this);
+                            }
+                            //Console.WriteLine("Yes!!!\t\t" + (Camera.yaw - MathExtensions.Wrap(JManager.monster.AngleToPlayer + (float)Math.PI / 2f)));
 
-                    }
-                    else
-                    {
-                        //Console.WriteLine("No!!!\t\t" + ((Camera.yaw + JManager.PITimesTwo) - (MathExtensions.Wrap(JManager.monster.AngleToPlayer + (float)Math.PI / 2f) + JManager.PITimesTwo)));
+                        }
+                        else
+                        {
+                            //Console.WriteLine("No!!!\t\t" + ((Camera.yaw + JManager.PITimesTwo) - (MathExtensions.Wrap(JManager.monster.AngleToPlayer + (float)Math.PI / 2f) + JManager.PITimesTwo)));
+                        }
                     }
                 }
             }
+            
 
             //Console.WriteLine(MathExtensions.Wrap(JManager.monster.AngleToPlayer + (float)Math.PI / 2f));
             //Console.WriteLine(Camera.yaw);

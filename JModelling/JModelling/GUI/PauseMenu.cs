@@ -66,8 +66,8 @@ namespace JModelling.Pause
             {
                 new GeneralMenu(subsetArea),
                 new VideoMenu(subsetArea),
-                new GeneralMenu(subsetArea),
-                new GeneralMenu(subsetArea)
+                new AudioMenu(subsetArea),
+                new ControlsMenu(subsetArea)
             };
             currentSubset = 0; 
         }

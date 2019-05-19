@@ -12,7 +12,7 @@ namespace JModelling.Pause
     /// <summary>
     /// A subset of the pause menu. Shows general settings, like the quit button. 
     /// </summary>
-    public class GeneralMenu : PauseMenuSubset
+    public class AudioMenu : PauseMenuSubset
     {
         Option[] questions;
 
@@ -20,30 +20,27 @@ namespace JModelling.Pause
         {
             get
             {
-                return "General"; 
+                return "Audio";
             }
         }
 
-        public GeneralMenu(Rectangle menuBounds)
+        public AudioMenu(Rectangle menuBounds)
         {
             Rectangle rec = new Rectangle(
                 menuBounds.X + 10,
                 menuBounds.Y + 10,
                 menuBounds.Width - 20,
-                menuBounds.Height / 5
-            );
+                menuBounds.Height / 5);
 
-            Rectangle two = new Rectangle(
-                rec.X,
-                rec.Y + rec.Height + 10,
-                rec.Width,
-                rec.Height
-            );
+            string[] choices = new string[100]; 
+            for (int k = 0; k < choices.Length; k++)
+            {
+                choices[k] = "";
+            }
 
             questions = new Option[]
             {
-                new MultipleChoiceOption(this, 0, "Difficulty", new string[] {"Easy", "Medium", "Hard" }, rec),
-                new Button(this, 1, "", "Quit Game?", two)
+                new MultipleChoiceOption(this, 0, "Volume", choices, rec)
             };
         }
 
@@ -53,10 +50,7 @@ namespace JModelling.Pause
             {
                 if (option.Update(ms, lastMs))
                 {
-                    if (option.id == 1) // Quit game
-                    {
-                        System.Environment.Exit(0); 
-                    }
+
                 }
             }
         }
@@ -65,7 +59,7 @@ namespace JModelling.Pause
         {
             foreach (Option option in questions)
             {
-                option.Draw(spriteBatch); 
+                option.Draw(spriteBatch);
             }
         }
 

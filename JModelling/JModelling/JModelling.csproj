@@ -89,7 +89,9 @@
     <Compile Include="Game1.cs" />
     <Compile Include="GraphicsEngine\ImageReference.cs" />
     <Compile Include="GraphicsEngine\Painter.cs" />
+    <Compile Include="GUI\AudioMenu.cs" />
     <Compile Include="GUI\Compass.cs" />
+    <Compile Include="GUI\ControlsMenu.cs" />
     <Compile Include="InventorySpace\CubeItem.cs" />
     <Compile Include="InventorySpace\DefaultItem.cs" />
     <Compile Include="InventorySpace\Inventory.cs" />

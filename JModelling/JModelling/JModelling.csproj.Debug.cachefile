@@ -12,10 +12,13 @@ Content\Images\Menu\ThinRoundBox.xnb
 Content\Images\Menu\round box.xnb
 Content\Images\Menu\filled round box.xnb
 Content\Images\Menu\ThinFilledRoundBox.xnb
+Content\Images\Menu\Needle.xnb
+Content\Images\Menu\Compass.xnb
 Content\DebugFont.xnb
 Content\AnswerFont.xnb
 Content\PauseFont.xnb
 Content\QuestionFont.xnb
+Content\ReminderFont.xnb
 Content\Models\cow.obj
 Content\Models\cube.obj
 Content\Models\mountains.obj

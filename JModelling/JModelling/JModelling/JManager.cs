@@ -132,7 +132,7 @@ namespace JModelling.JModelling
         /// <summary>
         /// Monster test. 
         /// </summary>
-        public static MeleeAttacker monster;
+        public static MeleeAttacker[] monsters;
 
         /// <summary>
         /// A list of all of the items to draw in world-space. If they are
@@ -142,7 +142,7 @@ namespace JModelling.JModelling
 
         private GraphicsDevice graphicsDevice;
 
-        private NPC npc;
+        private NPC[] npcs;
 
         private DialogueBox dialogueBox;
 
@@ -209,18 +209,24 @@ namespace JModelling.JModelling
 
             // Create the satellite test.
             satellites = new Satellite[2]; 
-            satellites[0] = new Satellite((float)(Math.PI / 60 / 60), Load.OneDimImage(@"Images/sun"), 2000, 2000, (float)(Math.PI/2d), 500, 500, 300);
-            satellites[1] = new Satellite((float)(Math.PI / 60 / 60), Load.OneDimImage(@"Images/moon"), 1859, 1897, (float)(Math.PI/2d*3d), 500, 500, 800);
+            satellites[0] = new Satellite((float)(Math.PI / 60 / 120), Load.OneDimImage(@"Images/sun"), 2000, 2000, (float)(Math.PI * 2), 1500, 1500, 800);
+            satellites[1] = new Satellite((float)(Math.PI / 60 / 120), Load.OneDimImage(@"Images/moon"), 1859, 1897, (float)(Math.PI / 2 * 3), 500, 500, 800);
 
             lights = new Light[1];
             lights[0] = new Light(100f, null);
             turnOnLights = false;
 
-            Vec4 monsterLoc = camera.loc.Clone();
-            monsterLoc.X += 200; 
-            monsterLoc.Z += 200;
-            monster = new MeleeAttacker(Load.Mesh(@"Content/Models/cube.obj", 25, 0, 0, 0), monsterLoc, Camera.NormalSpeed * 0.666f, 5, 100, 100, cg);
-            AddMesh(monster.Mesh); 
+            Random random = new Random();
+            monsters = new MeleeAttacker[1];
+            for (int k = 0; k < monsters.Length; k++)
+            {
+                Vec4 monsterLoc = camera.loc.Clone();
+                monsterLoc.X += 200 + random.Next(-100, 100);
+                monsterLoc.Z += 200 + random.Next(-100, 100);
+                monsters[k] = new MeleeAttacker(Load.Mesh(@"Content/Models/cube.obj", 20, 0, 0, 0), monsterLoc, Camera.NormalSpeed * 0.666f, 5, 100, 100, cg);
+                monsters[k].Mesh.SetColor(Color.LightBlue); 
+                AddMesh(monsters[k].Mesh);
+            }
 
             itemsInWorld = new LinkedList<Item>();
             Vec4 itemLoc = player.Camera.loc.Clone();
@@ -234,13 +240,18 @@ namespace JModelling.JModelling
             //cube = Load.Mesh(@"Content/Models/cube.obj", 25, itemLoc.X, h, itemLoc.Z);
             //AddMesh(cube); 
 
-            npc = new NPC(new JModelling.Vec4(-100, 0, -100), new string[] { "hello!", "this is a test", "do you accept?\n", "thanks!", "see ya!" }, 2, 3, 4, new int[] { 3, 4 });
-            npc.Mesh.SetColor(Color.Blue); 
-            dialogueBox = null;
-            DialogueBox.Init(Width, Height);
+            npcs = new NPC[5]; 
+
+            for (int k = 0; k < npcs.Length; k++)
+            {
+                npcs[k] = new NPC(new JModelling.Vec4(-100 + random.Next(0,100), 0, -100 + random.Next(0,100)), new string[] { "Thanks for dealing with those Zombies!", "Here is a new sword as a reward!"}, -1, -1, -1, new int[] { 1 });
+                npcs[k].Mesh.SetColor(Color.LightBlue);
+                dialogueBox = null;
+                DialogueBox.Init(Width, Height);
+            }
 
             Compass.Init(camera, Width, Height); 
-            compass = new Compass(monster.Loc); 
+            compass = new Compass(monsters[0].Loc); 
         }
 
         /// <summary>
@@ -330,28 +341,35 @@ namespace JModelling.JModelling
 
             compass.Update(); 
        
-            if (monster != null)
+            for (int k = 0; k < monsters.Length; k++)
             {
-                // If creature died, remove them and drop their items
-                if (monster.Health <= 0)
+                MeleeAttacker monster = monsters[k]; 
+                if (monster != null)
                 {
-                    Vec4 itemLoc = monster.Loc;
-                    itemLoc.Y = cg.GetHeightAt(itemLoc.X, itemLoc.Z) + 10; 
-                    foreach (Item item in monster.DroppedItems)
+                    // If creature died, remove them and drop their items
+                    if (monster.Health <= 0)
                     {
-                        item.SetInWorldSpace(itemLoc);                        
-                        itemsInWorld.AddLast(item);
+                        Vec4 itemLoc = monster.Loc;
+                        itemLoc.Y = cg.GetHeightAt(itemLoc.X, itemLoc.Z) + 10;
+                        foreach (Item item in monster.DroppedItems)
+                        {
+                            item.SetInWorldSpace(itemLoc);
+                            itemsInWorld.AddLast(item);
+                        }
+                        RemoveMesh(monster.Mesh);
+                        monsters[k] = null;
                     }
-                    RemoveMesh(monster.Mesh); 
-                    monster = null;
-                }
-                else // Update monster's movements and actions
-                {
-                    monster.Update(player, cg);
+                    else // Update monster's movements and actions
+                    {
+                        monster.Update(player, cg);
+                    }
                 }
             }
 
-            npc.Update(player, cg);      
+            foreach (NPC npc in npcs)
+            {
+                npc.Update(player, cg);
+            }
 
             // Update items to bob up and down
             LinkedList<Item> itemsToRemove = new LinkedList<Item>(); 
@@ -419,14 +437,21 @@ namespace JModelling.JModelling
                 item.DrawToCanvas(camera, painter, depthBuffer, matView, matProj, DrawWidth, DrawHeight);
             }
 
-            if (monster != null)
+            for (int k = 0; k < monsters.Length; k++)
             {
-                monster.Mesh.MoveTo(monster.Loc.X, monster.Loc.Y, monster.Loc.Z);
-                DrawTrianglesToPainterCanvas(painter, depthBuffer, GetDrawableTrianglesFromMesh(monster.Mesh, hue, activeLights, matView, lightDirection, shadow));
+                MeleeAttacker monster = monsters[k]; 
+                if (monster != null)
+                {
+                    monster.Mesh.MoveTo(monster.Loc.X, monster.Loc.Y, monster.Loc.Z);
+                    DrawTrianglesToPainterCanvas(painter, depthBuffer, GetDrawableTrianglesFromMesh(monster.Mesh, hue, activeLights, matView, lightDirection, shadow));
+                }
             }
             
-            npc.Mesh.MoveTo(npc.Loc.X, npc.Loc.Y, npc.Loc.Z);
-            DrawTrianglesToPainterCanvas(painter, depthBuffer, GetDrawableTrianglesFromMesh(npc.Mesh, hue, activeLights, matView, lightDirection, shadow)); 
+            foreach (NPC npc in npcs)
+            {
+                npc.Mesh.MoveTo(npc.Loc.X, npc.Loc.Y, npc.Loc.Z);
+                DrawTrianglesToPainterCanvas(painter, depthBuffer, GetDrawableTrianglesFromMesh(npc.Mesh, hue, activeLights, matView, lightDirection, shadow));
+            }
 
             lastWorldTexture = painter.GetCanvas();
         }
@@ -1209,9 +1234,12 @@ namespace JModelling.JModelling
             // Perform any special actions with any special keys. 
             ProcessSpecialPlayingKeyInputs(kb);
 
-            if (npc.Talk(player, kb) && lastKb.IsKeyUp(Controls.Interact))
+            foreach (NPC npc in npcs)
             {
-                Talk(npc); 
+                if (npc.Talk(player, kb) && lastKb.IsKeyUp(Controls.Interact))
+                {
+                    Talk(npc);
+                }
             }
             player.Update(kb, ms);
         }
