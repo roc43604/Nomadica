@@ -146,6 +146,29 @@ namespace JModelling
                 curChunkZ = chunkIndexZ;
             }
 
+            // HERE IS WHERE THE LOOPING THROUGH CERTAIN MESHES WITH AN ID ARE
+            ListUtil<ListNode<Mesh>> things = generator.GetMeshListById("Shrub");
+            if (things != null)
+            {
+                ListNode<ListNode<Mesh>> data = things.list;
+                
+                while (data != null)
+                {
+                    ListNode<Mesh> dat = data.dat;
+                    if (dat != null)
+                    {
+
+                        Mesh mesh = dat.dat;
+
+                        //JUSTIN PUT CODE HERE
+                        
+                    }
+                    data = data.next;
+                }
+            }
+            //HERE IS WHERE IT ENDS
+
+
             manager.Update();
             ////////////////////////////////////////////////////////////////////////////////////
             stopWatch.Stop();

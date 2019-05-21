@@ -240,7 +240,7 @@ namespace JModelling.JModelling
             //cube = Load.Mesh(@"Content/Models/cube.obj", 25, itemLoc.X, h, itemLoc.Z);
             //AddMesh(cube); 
 
-            npcs = new NPC[0]; 
+            npcs = new NPC[5]; 
 
             for (int k = 0; k < npcs.Length; k++)
             {

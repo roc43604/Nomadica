@@ -1060,7 +1060,9 @@ namespace JModelling.JModelling.Chunk
 
         public ListUtil<ListNode<Mesh>> GetMeshListById(string id)
         {
-            return placedAdornments[id];
+            if (placedAdornments.ContainsKey(id))
+                return placedAdornments[id];
+            return null;
         }
         
         public int GetIndexX(int posX)

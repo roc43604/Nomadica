@@ -62,7 +62,7 @@ namespace JModelling.Chunk
                             {
                                 new AdorneeMesh(
                                     Load.Mesh(@"Content/Models/cube.obj").Scale(5, 15, 5).SetColor(Color.Brown),
-                                    "Tree"
+                                    "Shrub"
                                 ),
                                 0.715f
                             },
