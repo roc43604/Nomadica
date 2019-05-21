@@ -1,5 +1,6 @@
 ﻿using JModelling.Chunk;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -16,14 +17,17 @@ namespace JModelling.JModelling.Chunk
         private ListUtil<Mesh> chunkMeshes;
         private ListUtil<ListNode<Mesh>> loadedMeshes;
 
+        private BiomeRegistry biomeRegistry;
+
         private JManager manager;
 
-        public Chunk(JManager manager, int indexX, int indexZ)
+        public Chunk(Load contentLoader, JManager manager, int indexX, int indexZ)
         {
             this.indexX = indexX;
             this.indexZ = indexZ;
 
             this.manager = manager;
+            
         }
 
         public void Load()
@@ -78,7 +82,11 @@ namespace JModelling.JModelling.Chunk
         private bool generated;
         private SpriteBatch spriteBatch;
 
+        private BiomeRegistry biomeRegistry;
+
         private ListUtil<Mesh> placedList = new ListUtil<Mesh>();
+
+        private Dictionary<string, ListUtil<Mesh>> placedAdornments;
 
         public ChunkGenerator(int seed, int chunkSizeX, int chunkSizeZ, int viewDist, JManager manager, SpriteBatch spriteBatch, Mesh cow)
         {
@@ -87,9 +95,12 @@ namespace JModelling.JModelling.Chunk
             this.chunkSizeZ = chunkSizeZ;
             this.generated = false;
             this.spriteBatch = spriteBatch;
+            this.biomeRegistry = new BiomeRegistry();
 
             this.cow = cow;
             this.viewDist = viewDist;
+
+            this.placedAdornments = new Dictionary<string, ListUtil<Mesh>>();
             // chunkMesh = new Mesh(new Triangle[] { });
 
             chunkMesh = new Mesh[viewDist*2, viewDist*2];
@@ -126,7 +137,7 @@ namespace JModelling.JModelling.Chunk
             int indexZ = GetIndexZ((int)posZ) * chunkSizeZ;
 
 
-            Biome biome = BiomeRegistry.GetBiomeFor(
+            Biome biome = biomeRegistry.GetBiomeFor(
                 biomeX.Noise(
                     (indexX)/ biomeZoom,
                     (indexZ)/ biomeZoom,
@@ -306,7 +317,7 @@ namespace JModelling.JModelling.Chunk
                             int bRX = (((x-2) + stepInc) + (indexX - viewDist + cx) * chunkSizeX);
                             int bRZ = (((z-2) + stepInc) + (indexZ - viewDist + cz) * chunkSizeZ);
 
-                            Biome bTL = BiomeRegistry.GetBiomeFor(
+                            Biome bTL = biomeRegistry.GetBiomeFor(
                                 biomeX.Noise(
                                     (tLX) / biomeZoom,
                                     (tLZ) / biomeZoom,
@@ -319,7 +330,7 @@ namespace JModelling.JModelling.Chunk
                                 )
                             );
 
-                            Biome bBR = BiomeRegistry.GetBiomeFor(
+                            Biome bBR = biomeRegistry.GetBiomeFor(
                                 biomeX.Noise(
                                     (bRX) / biomeZoom,
                                     (bRZ) / biomeZoom,
@@ -355,7 +366,7 @@ namespace JModelling.JModelling.Chunk
                                 int x11 = ((x + stepInc) + (indexX - viewDist + cx) * chunkSizeX);
                                 int z11 = ((z) + (indexZ - viewDist + cz) * chunkSizeZ);
 
-                                Biome b10 = BiomeRegistry.GetBiomeFor(
+                                Biome b10 = biomeRegistry.GetBiomeFor(
                                     biomeX.Noise(
                                         x10 / biomeZoom,
                                         z10 / biomeZoom,
@@ -367,7 +378,7 @@ namespace JModelling.JModelling.Chunk
                                         0.5f
                                     )
                                 );
-                                Biome b11 = BiomeRegistry.GetBiomeFor(
+                                Biome b11 = biomeRegistry.GetBiomeFor(
                                     biomeX.Noise(
                                         x11 / biomeZoom,
                                         z11 / biomeZoom,
@@ -387,7 +398,7 @@ namespace JModelling.JModelling.Chunk
                                 int x21 = ((x + stepInc) + (indexX - viewDist + cx) * chunkSizeX);
                                 int z21 = ((z + stepInc) + (indexZ - viewDist + cz) * chunkSizeZ);
 
-                                Biome b20 = BiomeRegistry.GetBiomeFor(
+                                Biome b20 = biomeRegistry.GetBiomeFor(
                                     biomeX.Noise(
                                         x20 / biomeZoom,
                                         z20 / biomeZoom,
@@ -399,7 +410,7 @@ namespace JModelling.JModelling.Chunk
                                         0.5f
                                     )
                                 );
-                                Biome b21 = BiomeRegistry.GetBiomeFor(
+                                Biome b21 = biomeRegistry.GetBiomeFor(
                                     biomeX.Noise(
                                         x21 / biomeZoom,
                                         z21 / biomeZoom,
@@ -453,7 +464,7 @@ namespace JModelling.JModelling.Chunk
                                     int posX = ((x + i) + (indexX - viewDist + cx) * chunkSizeX);
                                     int posZ = ((z) + (indexZ - viewDist + cz) * chunkSizeZ);
 
-                                    Biome biome = BiomeRegistry.GetBiomeFor(
+                                    Biome biome = biomeRegistry.GetBiomeFor(
                                         biomeX.Noise(
                                             posX / biomeZoom,
                                             posZ / biomeZoom,
@@ -479,7 +490,7 @@ namespace JModelling.JModelling.Chunk
                                     int posX = ((x + i) + (indexX - viewDist + cx) * chunkSizeX);
                                     int posZ = ((z + stepInc) + (indexZ - viewDist + cz) * chunkSizeZ);
 
-                                    Biome biome = BiomeRegistry.GetBiomeFor(
+                                    Biome biome = biomeRegistry.GetBiomeFor(
                                         biomeX.Noise(
                                             posX / biomeZoom,
                                             posZ / biomeZoom,
@@ -505,7 +516,7 @@ namespace JModelling.JModelling.Chunk
                                     int posX = ((x) + (indexX - viewDist + cx) * chunkSizeX);
                                     int posZ = ((z + i) + (indexZ - viewDist + cz) * chunkSizeZ);
 
-                                    Biome biome = BiomeRegistry.GetBiomeFor(
+                                    Biome biome = biomeRegistry.GetBiomeFor(
                                         biomeX.Noise(
                                             posX / biomeZoom,
                                             posZ / biomeZoom,
@@ -531,7 +542,7 @@ namespace JModelling.JModelling.Chunk
                                     int posX = ((x + stepInc) + (indexX - viewDist + cx) * chunkSizeX);
                                     int posZ = ((z + i) + (indexZ - viewDist + cz) * chunkSizeZ);
 
-                                    Biome biome = BiomeRegistry.GetBiomeFor(
+                                    Biome biome = biomeRegistry.GetBiomeFor(
                                         biomeX.Noise(
                                             posX / biomeZoom,
                                             posZ / biomeZoom,
@@ -635,7 +646,7 @@ namespace JModelling.JModelling.Chunk
                                         idx++;
 
 
-                                        Biome chunkBiome = BiomeRegistry.GetBiomeFor(
+                                        Biome chunkBiome = biomeRegistry.GetBiomeFor(
                                             biomeX.Noise(
                                                 iX / biomeZoom,
                                                 iZ / biomeZoom,
@@ -684,7 +695,7 @@ namespace JModelling.JModelling.Chunk
 
 
                                         //Object Placement
-                                        Mesh tree = chunkBiome.Tree;
+                                        Dictionary<AdorneeMesh, float> tree = chunkBiome.adornments;
 
                                         if (tree != null) {
                                             double noise = colorNoise.Noise(
@@ -693,25 +704,36 @@ namespace JModelling.JModelling.Chunk
                                                 0.5
                                             );
 
-                                            if (noise < 0.5)
+                                            AdorneeMesh selected = chunkBiome.GetAdorneeMeshAt((float)noise);
+
+                                            Console.WriteLine(selected);
+                                            if (placedAdornments[selected.Id] != null)
                                             {
-                                                manager.AddMesh(tree);
-                                                placedList.Add(new ListNode<Mesh>(tree));
+                                                placedAdornments[selected.Id].Add(selected.mesh);
                                             }
-                                            
+                                            else
+                                            {
+                                                placedAdornments[selected.Id] = new ListUtil<Mesh>();
+                                                placedAdornments[selected.Id].Add(selected.mesh);
+                                            }
+
                                         }
 
-                                        ListNode<Mesh> placed = placedList.list;
-                                        while (placed != null)
+                                        foreach (KeyValuePair<string, ListUtil<Mesh>> entry in placedAdornments)
                                         {
-                                            Mesh mesh = placed.dat;
-
-                                            if ((mesh.GetPosition() - manager.player.Camera.loc).Length() > 5000)
+                                            ListNode<Mesh> placed = entry.Value.list;
+                                            while (placed != null)
                                             {
-                                                placed.Remove();
+                                                Mesh mesh = placed.dat;
+
+                                                if ((mesh.GetPosition() - manager.player.Camera.loc).Length() > 5000)
+                                                {
+                                                    placed.Remove();
+                                                }
+                                                placed = placed.next;
                                             }
-                                            placed = placed.next;
                                         }
+
                                     }
                                 }
 
@@ -747,7 +769,7 @@ namespace JModelling.JModelling.Chunk
                                 float basePZ = z * triSizeZ + (indexZ - viewDist + cz) * chunkSizeZ * triSizeZ;
 
 
-                                Biome chunkBiome = BiomeRegistry.GetBiomeFor(
+                                Biome chunkBiome = biomeRegistry.GetBiomeFor(
                                     biomeX.Noise(
                                         xF / biomeZoom,
                                         zF / biomeZoom,
@@ -879,12 +901,53 @@ namespace JModelling.JModelling.Chunk
                                 }
 
 
-
                                 //Object Placement
+                                Dictionary<AdorneeMesh, float> tree = chunkBiome.adornments;
 
-                                /*
-                                  Ned sum code hear
-                                */
+                                if (tree != null)
+                                {
+                                    double noise = colorNoise.Noise(
+                                        (basePX / 50) * 5,
+                                        (basePZ / 50) * 5,
+                                        0.5
+                                    );
+
+                                    AdorneeMesh selected = chunkBiome.GetAdorneeMeshAt((float)noise);
+
+                                    if (selected != null)
+                                    {
+                                        if (placedAdornments.ContainsKey(selected.Id))
+                                        {
+                                            if (placedAdornments[selected.Id] != null) {
+                                                placedAdornments[selected.Id].Add(selected.mesh);
+
+                                                selected.mesh.MoveTo(basePX, (float)tL, basePZ);
+                                                manager.AddMesh(selected.mesh);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            placedAdornments[selected.Id] = new ListUtil<Mesh>();
+                                            placedAdornments[selected.Id].Add(selected.mesh);
+                                        }
+                                    }
+
+                                }
+
+                                foreach (KeyValuePair<string, ListUtil<Mesh>> entry in placedAdornments)
+                                {
+                                    ListNode<Mesh> placed = entry.Value.list;
+                                    while (placed != null)
+                                    {
+                                        Mesh mesh = placed.dat;
+
+                                        if ((mesh.GetPosition() - manager.player.Camera.loc).Length() > 5000)
+                                        {
+                                            placed.Remove();
+                                        }
+                                        placed = placed.next;
+                                    }
+                                }
 
                             }
                         }
@@ -908,6 +971,11 @@ namespace JModelling.JModelling.Chunk
             }
 
 
+        }
+
+        public ListUtil<Mesh> GetMeshListById(string id)
+        {
+            return placedAdornments[id];
         }
         
         public int GetIndexX(int posX)

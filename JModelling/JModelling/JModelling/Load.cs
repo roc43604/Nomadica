@@ -13,7 +13,7 @@ namespace JModelling.JModelling
     /// A loading class, used to load in things JModelling needs, like 
     /// .obj files and height-maps. 
     /// </summary>
-    class Load
+    public class Load
     {
         private static ContentManager content; 
 

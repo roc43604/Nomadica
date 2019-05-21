@@ -127,7 +127,7 @@ namespace JModelling.JModelling
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <param name="z"></param>
-        public void Scale(float x, float y, float z)
+        public Mesh Scale(float x, float y, float z)
         {
             for (int i = 0; i < Points.Length; i++)
             {
@@ -139,6 +139,8 @@ namespace JModelling.JModelling
             Size.X *= x;
             Size.Y *= y;
             Size.Z *= z;
+
+            return this;
         }
 
         /// <summary>

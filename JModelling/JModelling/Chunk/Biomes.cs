@@ -13,17 +13,16 @@ namespace JModelling.Chunk
         public string Name;
         public Color[] clrYRange;
         public Color[] clrVariation;
-        public Dictionary<Mesh, float> adornments;
+        public Dictionary<AdorneeMesh, float> adornments;
         public float amp;
         public float zoom;
         public float thatMagicNumber;
-        public Mesh Tree;
 
         public Biome(
             string Name, 
             Color[] colorHeights, Color[] colorVariation,
             float amp, float zoom, float thatMagicNumber,
-            Mesh tree
+            Dictionary<AdorneeMesh, float> adornments
         )
         {
             this.Name = Name;
@@ -32,8 +31,7 @@ namespace JModelling.Chunk
             this.amp = amp;
             this.zoom = zoom;
             this.thatMagicNumber = thatMagicNumber;
-            this.Tree = tree;
-         //   this.adornments = adornments;
+            this.adornments = adornments;
         }
 
         /// <summary>
@@ -52,6 +50,17 @@ namespace JModelling.Chunk
             return clrYRange[level];
         }
 
+        public AdorneeMesh GetAdorneeMeshAt(float f)
+        {
+            AdorneeMesh returningMesh = null;
+            foreach (KeyValuePair<AdorneeMesh, float> entry in adornments)
+            {
+                if (entry.Value < f)
+                    returningMesh = entry.Key;
+            }
+
+            return returningMesh;
+        }
 
         public bool biomeEquals(Biome other)
         {
