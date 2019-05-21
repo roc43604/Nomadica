@@ -79,13 +79,17 @@
     <Compile Include="Creature\Creature.cs" />
     <Compile Include="Creature\DialogueBox.cs" />
     <Compile Include="Creature\MeleeAttacker.cs" />
+    <Compile Include="Creature\MonsterType.cs" />
     <Compile Include="Creature\Nomads.cs" />
     <Compile Include="Creature\Nomad\Chief.cs" />
+    <Compile Include="Creature\Nomad\Quest.cs" />
     <Compile Include="Creature\Nomad\Quests.cs" />
+    <Compile Include="Creature\Nomad\QuestType.cs" />
     <Compile Include="Creature\Nomad\Trader.cs" />
     <Compile Include="Creature\NPC.cs" />
     <Compile Include="Creature\Player.cs" />
     <Compile Include="Creature\TalkingCreature.cs" />
+    <Compile Include="Creature\Zombie.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="GraphicsEngine\ImageReference.cs" />
     <Compile Include="GraphicsEngine\Painter.cs" />

@@ -11,6 +11,7 @@ using JModelling.JModelling.Chunk;
 using JModelling.InventorySpace;
 using JModelling.Pause;
 using JModelling.GUI;
+using JModelling.Creature.Nomad;
 
 namespace JModelling.JModelling
 {
@@ -218,12 +219,13 @@ namespace JModelling.JModelling
 
             Random random = new Random();
             monsters = new MeleeAttacker[1];
+            MeleeAttacker.Init(cg); 
             for (int k = 0; k < monsters.Length; k++)
             {
                 Vec4 monsterLoc = camera.loc.Clone();
                 monsterLoc.X += 200 + random.Next(-100, 100);
                 monsterLoc.Z += 200 + random.Next(-100, 100);
-                monsters[k] = new MeleeAttacker(Load.Mesh(@"Content/Models/cube.obj", 20, 0, 0, 0), monsterLoc, Camera.NormalSpeed * 0.666f, 5, 100, 100, cg);
+                monsters[k] = new Zombie(monsterLoc);
                 monsters[k].Mesh.SetColor(Color.LightBlue); 
                 AddMesh(monsters[k].Mesh);
             }
@@ -1236,7 +1238,8 @@ namespace JModelling.JModelling
 
             foreach (NPC npc in npcs)
             {
-                if (npc.Talk(player, kb) && lastKb.IsKeyUp(Controls.Interact))
+                Quest quest = npc.Talk(player, kb);
+                if (quest != null && lastKb.IsKeyUp(Controls.Interact))
                 {
                     Talk(npc);
                 }

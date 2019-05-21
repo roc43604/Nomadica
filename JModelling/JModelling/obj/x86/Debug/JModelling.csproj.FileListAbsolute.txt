@@ -101,3 +101,6 @@ C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Debug\Co
 C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Debug\Content\Images\Menu\Needle.xnb
 C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Debug\Content\Images\Menu\Compass.xnb
 C:\Users\Justin\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Debug\Content\ReminderFont.xnb
+\\Fisd-student1\hs\lhs\122341\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Debug\Content\Images\Menu\Needle.xnb
+\\Fisd-student1\hs\lhs\122341\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Debug\Content\Images\Menu\Compass.xnb
+\\Fisd-student1\hs\lhs\122341\Documents\GitHub\Nomadica\JModelling\JModelling\bin\x86\Debug\Content\ReminderFont.xnb

@@ -1,4 +1,5 @@
-﻿using JModelling.InventorySpace;
+﻿using JModelling.Creature.Nomad;
+using JModelling.InventorySpace;
 using JModelling.JModelling;
 using JModelling.JModelling.Chunk;
 using Microsoft.Xna.Framework.Content;
@@ -88,14 +89,14 @@ namespace JModelling.Creature
         /// If the player talks to this NPC, show a dialogue box. 
         /// </summary>
         /// <param name="kb"></param>
-        public bool Talk(Player player, KeyboardState kb)
+        public Quest Talk(Player player, KeyboardState kb)
         {    
             if (kb.IsKeyDown(Controls.Interact) && MathExtensions.Dist(player.Camera.loc, Loc) < 50)
             {
-                return true; 
+                return new Quest(); 
             }
 
-            return false; 
+            return null; 
         }
 
         public override void Update(Player player, ChunkGenerator cg)
