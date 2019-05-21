@@ -1,10 +1,12 @@
 ﻿using JModelling.InventorySpace;
 using JModelling.JModelling;
 using JModelling.JModelling.Chunk;
+using Microsoft.Xna.Framework.Audio;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+
 
 namespace JModelling.Creature
 {
@@ -51,8 +53,8 @@ namespace JModelling.Creature
         /// <summary>
         /// The items this creature drops when killed. 
         /// </summary>
-        public List<Item> DroppedItems; 
-
+        public List<Item> DroppedItems;
+        
         public Creature(Mesh mesh, Vec4 location, float Speed, int Damage, int Health, int NoticeDistance, List<Item> DroppedItems)
             : base(location, mesh)
         {

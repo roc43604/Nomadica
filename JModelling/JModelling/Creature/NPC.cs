@@ -16,6 +16,7 @@ namespace JModelling.Creature
     /// </summary>
     public class NPC : Creature, TalkingCreature
     {
+          
         private const string meshName = @"Content/Models/cube.obj";
         private const int height = 20;
         private const float speed = 1.5f;
@@ -92,7 +93,8 @@ namespace JModelling.Creature
         {    
             if (kb.IsKeyDown(Controls.Interact) && MathExtensions.Dist(player.Camera.loc, Loc) < 50)
             {
-                return true; 
+                
+                return true;              
             }
 
             return false; 

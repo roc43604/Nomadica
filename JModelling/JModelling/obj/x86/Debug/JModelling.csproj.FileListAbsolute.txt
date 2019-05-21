@@ -143,3 +143,5 @@ C:\Users\130113\Source\Repos\Nomadica4\JModelling\JModelling\obj\x86\Debug\JMode
 C:\Users\130113\Source\Repos\Nomadica4\JModelling\JModelling\obj\x86\Debug\Microsoft.Xna.Framework.RuntimeProfile.txt
 C:\Users\130113\Source\Repos\Nomadica4\JModelling\JModelling\obj\x86\Debug\JModelling.exe
 C:\Users\130113\Source\Repos\Nomadica4\JModelling\JModelling\obj\x86\Debug\JModelling.pdb
+C:\Users\rocwa\Desktop\Nomadica-master\JModelling\JModelling\obj\x86\Debug\JModelling.exe
+C:\Users\rocwa\Desktop\Nomadica-master\JModelling\JModelling\obj\x86\Debug\JModelling.pdb

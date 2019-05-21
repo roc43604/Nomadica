@@ -26,7 +26,9 @@ namespace JModelling
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-
+        public SoundEffect Vil;
+        public SoundEffect com;
+        public SoundEffect rew;
         JManager manager;
 
         ChunkGenerator generator;
@@ -47,7 +49,6 @@ namespace JModelling
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-
             graphics.PreferredBackBufferWidth = Width;
             graphics.PreferredBackBufferHeight = Height;
             graphics.ApplyChanges();
@@ -73,6 +74,7 @@ namespace JModelling
         /// </summary>
         protected override void LoadContent()
         {
+            
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
@@ -93,6 +95,9 @@ namespace JModelling
             Compass.Load(Content);
 
             generator.manager = manager;
+            manager.Vil = Content.Load<SoundEffect>("vils");
+           
+            manager.com = Content.Load<SoundEffect>("growl");
         }
 
         /// <summary>

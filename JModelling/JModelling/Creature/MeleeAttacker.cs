@@ -1,10 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.GamerServices;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media;
 using JModelling.JModelling;
 using JModelling.JModelling.Chunk;
-using JModelling.InventorySpace; 
+using JModelling.InventorySpace;
+
 
 namespace JModelling.Creature
 {
@@ -28,8 +35,8 @@ namespace JModelling.Creature
         public bool tookDamage;
 
         private Vec4 gravityVelocity;
-        public Vec4 TravelVector; 
-
+        public Vec4 TravelVector;
+        public SoundEffect noise;
         public MeleeAttacker(Mesh mesh, Vec4 Location, float Speed, int Damage, int Health, int NoticeDistance, ChunkGenerator cg) 
             : base(mesh, Location, Speed, Damage, Health, NoticeDistance, new List<Item>(new Item[] { new CubeItem(Vec4.Zero, cg) }))
         {
@@ -90,6 +97,7 @@ namespace JModelling.Creature
 
         public void TookDamage(Player player)
         {
+            noise.Play();
             Health -= player.Damage;             
             tookDamage = true;
             gravityVelocity = new Vec4(0, 1, 0); 

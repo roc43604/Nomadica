@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework;
 using JModelling.Creature;
@@ -11,6 +13,7 @@ using JModelling.JModelling.Chunk;
 using JModelling.InventorySpace;
 using JModelling.Pause;
 using JModelling.GUI;
+
 
 namespace JModelling.JModelling
 {
@@ -33,7 +36,6 @@ namespace JModelling.JModelling
         /// The thing that this manager belongs to. 
         /// </summary>
         private Game host; 
-
         /// <summary>
         /// The screen dimensions. 
         /// </summary>
@@ -129,6 +131,9 @@ namespace JModelling.JModelling
         public Light[] lights;
         private bool turnOnLights;
 
+        public SoundEffect Vil;
+        public SoundEffect com;
+        public SoundEffect rew;
         /// <summary>
         /// Monster test. 
         /// </summary>
@@ -224,7 +229,8 @@ namespace JModelling.JModelling
                 monsterLoc.X += 200 + random.Next(-100, 100);
                 monsterLoc.Z += 200 + random.Next(-100, 100);
                 monsters[k] = new MeleeAttacker(Load.Mesh(@"Content/Models/cube.obj", 20, 0, 0, 0), monsterLoc, Camera.NormalSpeed * 0.666f, 5, 100, 100, cg);
-                monsters[k].Mesh.SetColor(Color.LightBlue); 
+                monsters[k].Mesh.SetColor(Color.LightBlue);
+                monsters[k].noise = com;
                 AddMesh(monsters[k].Mesh);
             }
 
@@ -1238,7 +1244,8 @@ namespace JModelling.JModelling
             {
                 if (npc.Talk(player, kb) && lastKb.IsKeyUp(Controls.Interact))
                 {
-                    Talk(npc);
+                    Vil.Play();
+                    Talk(npc);                   
                 }
             }
             player.Update(kb, ms);
