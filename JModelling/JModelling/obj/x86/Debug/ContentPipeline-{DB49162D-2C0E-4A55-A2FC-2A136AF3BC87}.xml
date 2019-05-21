@@ -7,8 +7,8 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\130113\Source\Repos\Nomadica4\JModelling\JModelling\bin\x86\Debug\Content\Images\fire.xnb</Output>
-      <Time>2019-05-21T11:17:24.7859414-05:00</Time>
+      <Output>C:\Users\hunte\Source\Repos\Nomadica\JModelling\JModelling\bin\x86\Debug\Content\Images\fire.xnb</Output>
+      <Time>2019-05-17T15:20:23.0923337-05:00</Time>
     </Item>
     <Item>
       <Source>Images\grass.jpg</Source>
@@ -16,8 +16,8 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\130113\Source\Repos\Nomadica4\JModelling\JModelling\bin\x86\Debug\Content\Images\grass.xnb</Output>
-      <Time>2019-05-21T11:17:24.7889417-05:00</Time>
+      <Output>C:\Users\hunte\Source\Repos\Nomadica\JModelling\JModelling\bin\x86\Debug\Content\Images\grass.xnb</Output>
+      <Time>2019-05-17T15:20:23.0925117-05:00</Time>
     </Item>
     <Item>
       <Source>Images\moon.png</Source>
@@ -25,8 +25,8 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\130113\Source\Repos\Nomadica4\JModelling\JModelling\bin\x86\Debug\Content\Images\moon.xnb</Output>
-      <Time>2019-05-21T11:17:24.8679496-05:00</Time>
+      <Output>C:\Users\hunte\Source\Repos\Nomadica\JModelling\JModelling\bin\x86\Debug\Content\Images\moon.xnb</Output>
+      <Time>2019-05-17T15:20:23.1318325-05:00</Time>
     </Item>
     <Item>
       <Source>Images\night.jpg</Source>
@@ -34,8 +34,8 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\130113\Source\Repos\Nomadica4\JModelling\JModelling\bin\x86\Debug\Content\Images\night.xnb</Output>
-      <Time>2019-05-21T11:17:24.9529581-05:00</Time>
+      <Output>C:\Users\hunte\Source\Repos\Nomadica\JModelling\JModelling\bin\x86\Debug\Content\Images\night.xnb</Output>
+      <Time>2019-05-17T15:20:23.136632-05:00</Time>
     </Item>
     <Item>
       <Source>Images\skybox.png</Source>
@@ -43,8 +43,8 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\130113\Source\Repos\Nomadica4\JModelling\JModelling\bin\x86\Debug\Content\Images\skybox.xnb</Output>
-      <Time>2019-05-21T11:17:24.9699598-05:00</Time>
+      <Output>C:\Users\hunte\Source\Repos\Nomadica\JModelling\JModelling\bin\x86\Debug\Content\Images\skybox.xnb</Output>
+      <Time>2019-05-17T15:20:23.1439489-05:00</Time>
     </Item>
     <Item>
       <Source>Images\stone.jpg</Source>
@@ -52,8 +52,8 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\130113\Source\Repos\Nomadica4\JModelling\JModelling\bin\x86\Debug\Content\Images\stone.xnb</Output>
-      <Time>2019-05-21T11:17:24.9739602-05:00</Time>
+      <Output>C:\Users\hunte\Source\Repos\Nomadica\JModelling\JModelling\bin\x86\Debug\Content\Images\stone.xnb</Output>
+      <Time>2019-05-17T15:20:23.1453925-05:00</Time>
     </Item>
     <Item>
       <Source>Images\sun.png</Source>
@@ -61,8 +61,8 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\130113\Source\Repos\Nomadica4\JModelling\JModelling\bin\x86\Debug\Content\Images\sun.xnb</Output>
-      <Time>2019-05-21T11:17:24.9889617-05:00</Time>
+      <Output>C:\Users\hunte\Source\Repos\Nomadica\JModelling\JModelling\bin\x86\Debug\Content\Images\sun.xnb</Output>
+      <Time>2019-05-17T15:20:23.1526702-05:00</Time>
     </Item>
     <Item>
       <Source>Images\Menu\white.png</Source>
@@ -70,8 +70,8 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\130113\Source\Repos\Nomadica4\JModelling\JModelling\bin\x86\Debug\Content\Images\Menu\white.xnb</Output>
-      <Time>2019-05-21T11:17:24.8189447-05:00</Time>
+      <Output>C:\Users\hunte\Source\Repos\Nomadica\JModelling\JModelling\bin\x86\Debug\Content\Images\Menu\white.xnb</Output>
+      <Time>2019-05-21T14:48:47.8934833-05:00</Time>
     </Item>
     <Item>
       <Source>Images\Inventory\item.png</Source>
@@ -79,8 +79,8 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\130113\Source\Repos\Nomadica4\JModelling\JModelling\bin\x86\Debug\Content\Images\Inventory\item.xnb</Output>
-      <Time>2019-05-21T11:17:24.7949423-05:00</Time>
+      <Output>C:\Users\hunte\Source\Repos\Nomadica\JModelling\JModelling\bin\x86\Debug\Content\Images\Inventory\item.xnb</Output>
+      <Time>2019-05-21T14:48:47.8882103-05:00</Time>
     </Item>
     <Item>
       <Source>Images\Inventory\cube.png</Source>
@@ -88,8 +88,8 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\130113\Source\Repos\Nomadica4\JModelling\JModelling\bin\x86\Debug\Content\Images\Inventory\cube.xnb</Output>
-      <Time>2019-05-21T11:17:24.791942-05:00</Time>
+      <Output>C:\Users\hunte\Source\Repos\Nomadica\JModelling\JModelling\bin\x86\Debug\Content\Images\Inventory\cube.xnb</Output>
+      <Time>2019-05-21T14:48:47.8869879-05:00</Time>
     </Item>
     <Item>
       <Source>Images\Menu\ThinRoundBox.png</Source>
@@ -97,8 +97,8 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\130113\Source\Repos\Nomadica4\JModelling\JModelling\bin\x86\Debug\Content\Images\Menu\ThinRoundBox.xnb</Output>
-      <Time>2019-05-21T11:17:24.8159444-05:00</Time>
+      <Output>C:\Users\hunte\Source\Repos\Nomadica\JModelling\JModelling\bin\x86\Debug\Content\Images\Menu\ThinRoundBox.xnb</Output>
+      <Time>2019-05-21T14:48:47.8924796-05:00</Time>
     </Item>
     <Item>
       <Source>Images\Menu\round box.png</Source>
@@ -106,8 +106,8 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\130113\Source\Repos\Nomadica4\JModelling\JModelling\bin\x86\Debug\Content\Images\Menu\round box.xnb</Output>
-      <Time>2019-05-21T11:17:24.8059434-05:00</Time>
+      <Output>C:\Users\hunte\Source\Repos\Nomadica\JModelling\JModelling\bin\x86\Debug\Content\Images\Menu\round box.xnb</Output>
+      <Time>2019-05-21T14:48:47.8892093-05:00</Time>
     </Item>
     <Item>
       <Source>Images\Menu\filled round box.png</Source>
@@ -115,8 +115,8 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\130113\Source\Repos\Nomadica4\JModelling\JModelling\bin\x86\Debug\Content\Images\Menu\filled round box.xnb</Output>
-      <Time>2019-05-21T11:17:24.8009429-05:00</Time>
+      <Output>C:\Users\hunte\Source\Repos\Nomadica\JModelling\JModelling\bin\x86\Debug\Content\Images\Menu\filled round box.xnb</Output>
+      <Time>2019-05-21T14:48:47.8892093-05:00</Time>
     </Item>
     <Item>
       <Source>Images\Menu\ThinFilledRoundBox.png</Source>
@@ -124,8 +124,8 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\130113\Source\Repos\Nomadica4\JModelling\JModelling\bin\x86\Debug\Content\Images\Menu\ThinFilledRoundBox.xnb</Output>
-      <Time>2019-05-21T11:17:24.8139442-05:00</Time>
+      <Output>C:\Users\hunte\Source\Repos\Nomadica\JModelling\JModelling\bin\x86\Debug\Content\Images\Menu\ThinFilledRoundBox.xnb</Output>
+      <Time>2019-05-21T14:48:47.8924796-05:00</Time>
     </Item>
     <Item>
       <Source>Images\Menu\Needle.png</Source>
@@ -133,8 +133,8 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\130113\Source\Repos\Nomadica4\JModelling\JModelling\bin\x86\Debug\Content\Images\Menu\Needle.xnb</Output>
-      <Time>2019-05-21T11:17:24.8029431-05:00</Time>
+      <Output>C:\Users\hunte\Source\Repos\Nomadica\JModelling\JModelling\bin\x86\Debug\Content\Images\Menu\Needle.xnb</Output>
+      <Time>2019-05-21T14:50:37.6095954-05:00</Time>
     </Item>
     <Item>
       <Source>Images\Menu\Compass.png</Source>
@@ -142,8 +142,8 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\130113\Source\Repos\Nomadica4\JModelling\JModelling\bin\x86\Debug\Content\Images\Menu\Compass.xnb</Output>
-      <Time>2019-05-21T11:17:24.7979426-05:00</Time>
+      <Output>C:\Users\hunte\Source\Repos\Nomadica\JModelling\JModelling\bin\x86\Debug\Content\Images\Menu\Compass.xnb</Output>
+      <Time>2019-05-21T14:50:37.6085985-05:00</Time>
     </Item>
     <Item>
       <Source>DebugFont.spritefont</Source>
@@ -151,8 +151,8 @@
       <Importer>FontDescriptionImporter</Importer>
       <Processor>FontDescriptionProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\130113\Source\Repos\Nomadica4\JModelling\JModelling\bin\x86\Debug\Content\DebugFont.xnb</Output>
-      <Time>2019-05-21T11:17:24.7579386-05:00</Time>
+      <Output>C:\Users\hunte\Source\Repos\Nomadica\JModelling\JModelling\bin\x86\Debug\Content\DebugFont.xnb</Output>
+      <Time>2019-05-17T15:20:23.0887107-05:00</Time>
     </Item>
     <Item>
       <Source>AnswerFont.spritefont</Source>
@@ -160,8 +160,8 @@
       <Importer>FontDescriptionImporter</Importer>
       <Processor>FontDescriptionProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\130113\Source\Repos\Nomadica4\JModelling\JModelling\bin\x86\Debug\Content\AnswerFont.xnb</Output>
-      <Time>2019-05-21T11:17:24.7549383-05:00</Time>
+      <Output>C:\Users\hunte\Source\Repos\Nomadica\JModelling\JModelling\bin\x86\Debug\Content\AnswerFont.xnb</Output>
+      <Time>2019-05-21T14:48:47.8859958-05:00</Time>
     </Item>
     <Item>
       <Source>PauseFont.spritefont</Source>
@@ -169,8 +169,8 @@
       <Importer>FontDescriptionImporter</Importer>
       <Processor>FontDescriptionProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\130113\Source\Repos\Nomadica4\JModelling\JModelling\bin\x86\Debug\Content\PauseFont.xnb</Output>
-      <Time>2019-05-21T11:17:25.0789707-05:00</Time>
+      <Output>C:\Users\hunte\Source\Repos\Nomadica\JModelling\JModelling\bin\x86\Debug\Content\PauseFont.xnb</Output>
+      <Time>2019-05-21T14:48:47.9166437-05:00</Time>
     </Item>
     <Item>
       <Source>QuestionFont.spritefont</Source>
@@ -178,8 +178,8 @@
       <Importer>FontDescriptionImporter</Importer>
       <Processor>FontDescriptionProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\130113\Source\Repos\Nomadica4\JModelling\JModelling\bin\x86\Debug\Content\QuestionFont.xnb</Output>
-      <Time>2019-05-21T11:17:25.0809709-05:00</Time>
+      <Output>C:\Users\hunte\Source\Repos\Nomadica\JModelling\JModelling\bin\x86\Debug\Content\QuestionFont.xnb</Output>
+      <Time>2019-05-21T14:48:47.9176401-05:00</Time>
     </Item>
     <Item>
       <Source>ReminderFont.spritefont</Source>
@@ -187,8 +187,8 @@
       <Importer>FontDescriptionImporter</Importer>
       <Processor>FontDescriptionProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\130113\Source\Repos\Nomadica4\JModelling\JModelling\bin\x86\Debug\Content\ReminderFont.xnb</Output>
-      <Time>2019-05-21T11:17:25.0829711-05:00</Time>
+      <Output>C:\Users\hunte\Source\Repos\Nomadica\JModelling\JModelling\bin\x86\Debug\Content\ReminderFont.xnb</Output>
+      <Time>2019-05-21T14:50:37.6135848-05:00</Time>
     </Item>
     <BuildSuccessful>true</BuildSuccessful>
     <Settings>
@@ -197,10 +197,10 @@
       <TargetProfile>Reach</TargetProfile>
       <BuildConfiguration>Debug</BuildConfiguration>
       <CompressContent>false</CompressContent>
-      <RootDirectory>C:\Users\130113\Source\Repos\Nomadica4\JModelling\JModellingContent\</RootDirectory>
-      <LoggerRootDirectory>C:\Users\130113\Source\Repos\Nomadica4\JModelling\JModelling\</LoggerRootDirectory>
-      <IntermediateDirectory>C:\Users\130113\Source\Repos\Nomadica4\JModelling\JModelling\obj\x86\Debug\</IntermediateDirectory>
-      <OutputDirectory>C:\Users\130113\Source\Repos\Nomadica4\JModelling\JModelling\bin\x86\Debug\Content\</OutputDirectory>
+      <RootDirectory>C:\Users\hunte\Source\Repos\Nomadica\JModelling\JModellingContent\</RootDirectory>
+      <LoggerRootDirectory>C:\Users\hunte\Source\Repos\Nomadica\JModelling\JModelling\</LoggerRootDirectory>
+      <IntermediateDirectory>C:\Users\hunte\Source\Repos\Nomadica\JModelling\JModelling\obj\x86\Debug\</IntermediateDirectory>
+      <OutputDirectory>C:\Users\hunte\Source\Repos\Nomadica\JModelling\JModelling\bin\x86\Debug\Content\</OutputDirectory>
     </Settings>
     <Assemblies>
       <Assembly>
@@ -228,8 +228,8 @@
         <Value>2011-09-01T16:22:30-05:00</Value>
       </Assembly>
       <Assembly>
-        <Key>C:\Windows\Microsoft.Net\assembly\GAC_32\Microsoft.Xna.Framework.Content.Pipeline\v4.0_4.0.0.0__842cf8be1de50553\Microsoft.Xna.Framework.Content.Pipeline.dll</Key>
-        <Value>2017-05-17T12:17:11.6083928-05:00</Value>
+        <Key>C:\WINDOWS\Microsoft.Net\assembly\GAC_32\Microsoft.Xna.Framework.Content.Pipeline\v4.0_4.0.0.0__842cf8be1de50553\Microsoft.Xna.Framework.Content.Pipeline.dll</Key>
+        <Value>2019-05-11T01:35:02.6786915-05:00</Value>
       </Assembly>
     </Assemblies>
   </Asset>

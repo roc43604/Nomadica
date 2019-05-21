@@ -8,16 +8,18 @@ namespace JModelling.JModelling
     public class ListUtil<T>
     {
         public ListNode<T> list;
+        private int count;
 
         public ListUtil()
         {
-
+            count = 0;
         }
         public ListUtil(params ListNode<T>[] nodes)
         {
             for (int i = 0; i < nodes.Length; i++)
             {
                 Add(nodes[i]);
+                count++;
             }
         }
         public ListUtil(params T[] data)
@@ -25,6 +27,7 @@ namespace JModelling.JModelling
             for (int i = 0; i < data.Length; i++)
             {
                 Add(data[i]);
+                count++;
             }
         }
 
@@ -36,21 +39,29 @@ namespace JModelling.JModelling
                 list.last = node;
                 node.next = list;
                 list = node;
+                count++;
             }
             else
             {
                 list = node;
+                count++;
             }
         }
 
         public void Add(T dat)
         {
             Add(new ListNode<T>(dat));
+            count++;
         }
 
         public void Remove(ListNode<T> node)
         {
             node.Remove();
+            count--;
+            if (count <= 1)
+            {
+             //   list = null;
+            }
         }
 
     }

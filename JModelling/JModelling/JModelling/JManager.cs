@@ -240,7 +240,7 @@ namespace JModelling.JModelling
             //cube = Load.Mesh(@"Content/Models/cube.obj", 25, itemLoc.X, h, itemLoc.Z);
             //AddMesh(cube); 
 
-            npcs = new NPC[5]; 
+            npcs = new NPC[0]; 
 
             for (int k = 0; k < npcs.Length; k++)
             {
@@ -267,7 +267,7 @@ namespace JModelling.JModelling
             meshList.Add(node);
             numTriangles += mesh.Triangles.Length;
 
-            meshListNodeDict.Add(mesh, node);
+            //meshListNodeDict.Add(mesh, node);
 
             return node;
         }
@@ -278,7 +278,7 @@ namespace JModelling.JModelling
         /// <param name="mesh"> <see cref="ListNode"/> to remove </param>
         public void RemoveMesh(ListNode<Mesh> mesh)
         {
-            mesh.Remove();
+            meshList.Remove(mesh);
         }
 
         /// <summary>

@@ -17,6 +17,8 @@ namespace JModelling.JModelling.Chunk
         private ListUtil<Mesh> chunkMeshes;
         private ListUtil<ListNode<Mesh>> loadedMeshes;
 
+        private int count = 0;
+
         private BiomeRegistry biomeRegistry;
 
         private JManager manager;
@@ -86,7 +88,9 @@ namespace JModelling.JModelling.Chunk
 
         private ListUtil<Mesh> placedList = new ListUtil<Mesh>();
 
-        private Dictionary<string, ListUtil<Mesh>> placedAdornments;
+        private Dictionary<string, ListUtil<ListNode<Mesh>>> placedAdornments;
+
+        private int count;
 
         public ChunkGenerator(int seed, int chunkSizeX, int chunkSizeZ, int viewDist, JManager manager, SpriteBatch spriteBatch, Mesh cow)
         {
@@ -100,7 +104,7 @@ namespace JModelling.JModelling.Chunk
             this.cow = cow;
             this.viewDist = viewDist;
 
-            this.placedAdornments = new Dictionary<string, ListUtil<Mesh>>();
+            this.placedAdornments = new Dictionary<string, ListUtil<ListNode<Mesh>>>();
             // chunkMesh = new Mesh(new Triangle[] { });
 
             chunkMesh = new Mesh[viewDist*2, viewDist*2];
@@ -694,10 +698,12 @@ namespace JModelling.JModelling.Chunk
 
 
 
-                                        //Object Placement
+                                        //////////////////////////
+
                                         Dictionary<AdorneeMesh, float> tree = chunkBiome.adornments;
 
-                                        if (tree != null) {
+                                        if (tree != null)
+                                        {
                                             double noise = colorNoise.Noise(
                                                 (pX / 50) * 5,
                                                 (pZ / 50) * 5,
@@ -706,33 +712,75 @@ namespace JModelling.JModelling.Chunk
 
                                             AdorneeMesh selected = chunkBiome.GetAdorneeMeshAt((float)noise);
 
-                                            Console.WriteLine(selected);
-                                            if (placedAdornments[selected.Id] != null)
+                                            if (selected != null)
                                             {
-                                                placedAdornments[selected.Id].Add(selected.mesh);
-                                            }
-                                            else
-                                            {
-                                                placedAdornments[selected.Id] = new ListUtil<Mesh>();
-                                                placedAdornments[selected.Id].Add(selected.mesh);
+                                                if (placedAdornments.ContainsKey(selected.Id))
+                                                {
+                                                    if (placedAdornments[selected.Id] != null)
+                                                    {
+                                                        Mesh mesh = selected.mesh.Clone();
+
+                                                        mesh.MoveTo(pX, GetHeightAt(pX, pZ) - 1056765, pZ);
+
+                                                        //placedAdornments[selected.Id].Add(manager.AddMesh(mesh));
+                                                    }
+                                                    else
+                                                    {
+                                                        Mesh mesh = selected.mesh.Clone();
+
+                                                        placedAdornments[selected.Id] = new ListUtil<ListNode<Mesh>>();
+
+                                                        mesh.MoveTo(pX, GetHeightAt(pX, pZ) + mesh.Size.Y, pZ);
+
+                                                        //placedAdornments[selected.Id].Add(manager.AddMesh(mesh));
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    Mesh mesh = selected.mesh.Clone();
+
+                                                    placedAdornments[selected.Id] = new ListUtil<ListNode<Mesh>>();
+
+                                                    mesh.MoveTo(pX, GetHeightAt(pX, pZ) - 1056765, pZ);
+
+                                                  //  placedAdornments[selected.Id].Add(manager.AddMesh(mesh));
+                                                }
                                             }
 
                                         }
 
-                                        foreach (KeyValuePair<string, ListUtil<Mesh>> entry in placedAdornments)
+                                        foreach (KeyValuePair<string, ListUtil<ListNode<Mesh>>> entry in placedAdornments)
                                         {
-                                            ListNode<Mesh> placed = entry.Value.list;
+                                            ListUtil<ListNode<Mesh>> util = entry.Value;
+                                            ListNode<ListNode<Mesh>> placed = util.list;
+
                                             while (placed != null)
                                             {
-                                                Mesh mesh = placed.dat;
+                                                ListNode<Mesh> data = placed.dat;
+                                                Mesh mesh = data.dat;
 
-                                                if ((mesh.GetPosition() - manager.player.Camera.loc).Length() > 5000)
+                                                Vec4 b = manager.player.Camera.loc;
+                                                Vec4 a = mesh.GetPosition();
+
+                                                double res = Math.Sqrt(
+                                                    (a.X - b.X) * (a.X - b.X) +
+                                                    (a.Y - b.Y) * (a.X - b.Y) +
+                                                    (a.Z - b.Z) * (a.Z - b.Z)
+                                                );
+
+                                                if (res > 600)
                                                 {
-                                                    placed.Remove();
+                                                    manager.RemoveMesh(data);
+                                                    util.Remove(placed);
+                                                    manager.RemoveMesh(data);
+                                                    util.Remove(placed);
                                                 }
+
                                                 placed = placed.next;
                                             }
                                         }
+
+                                        //////////////////////////
 
                                     }
                                 }
@@ -781,7 +829,7 @@ namespace JModelling.JModelling.Chunk
                                         0.5f
                                     )
                                 );
-                                
+
 
                                 float amp = chunkBiome.amp;
                                 float zoom = chunkBiome.zoom;
@@ -901,7 +949,10 @@ namespace JModelling.JModelling.Chunk
                                 }
 
 
-                                //Object Placement
+
+
+                                //////////////////////////
+
                                 Dictionary<AdorneeMesh, float> tree = chunkBiome.adornments;
 
                                 if (tree != null)
@@ -919,35 +970,69 @@ namespace JModelling.JModelling.Chunk
                                         if (placedAdornments.ContainsKey(selected.Id))
                                         {
                                             if (placedAdornments[selected.Id] != null) {
-                                                placedAdornments[selected.Id].Add(selected.mesh);
+                                                Mesh mesh = selected.mesh.Clone();
 
-                                                selected.mesh.MoveTo(basePX, (float)tL, basePZ);
-                                                manager.AddMesh(selected.mesh);
+                                                mesh.MoveTo(basePX, GetHeightAt(basePX, basePZ) + mesh.Size.Y, basePZ);
+
+                                                placedAdornments[selected.Id].Add(manager.AddMesh(mesh));
+                                            }
+                                            else
+                                            {
+                                                Mesh mesh = selected.mesh.Clone();
+
+                                                placedAdornments[selected.Id] = new ListUtil<ListNode<Mesh>>();
+                                                
+                                                mesh.MoveTo(basePX, GetHeightAt(basePX, basePZ) + mesh.Size.Y, basePZ);
+
+                                                placedAdornments[selected.Id].Add(manager.AddMesh(mesh));
                                             }
                                         }
                                         else
                                         {
-                                            placedAdornments[selected.Id] = new ListUtil<Mesh>();
-                                            placedAdornments[selected.Id].Add(selected.mesh);
+                                            Mesh mesh = selected.mesh.Clone();
+
+                                            placedAdornments[selected.Id] = new ListUtil<ListNode<Mesh>>();
+                                           
+                                            mesh.MoveTo(basePX, GetHeightAt(basePX, basePZ) + mesh.Size.Y, basePZ);
+
+                                            placedAdornments[selected.Id].Add(manager.AddMesh(mesh));
                                         }
                                     }
 
                                 }
 
-                                foreach (KeyValuePair<string, ListUtil<Mesh>> entry in placedAdornments)
+                                foreach (KeyValuePair<string, ListUtil<ListNode<Mesh>>> entry in placedAdornments)
                                 {
-                                    ListNode<Mesh> placed = entry.Value.list;
+                                    ListUtil<ListNode<Mesh>> util = entry.Value;
+                                    ListNode<ListNode<Mesh>> placed = util.list;
+                                    
                                     while (placed != null)
                                     {
-                                        Mesh mesh = placed.dat;
+                                        ListNode<Mesh> data = placed.dat;
+                                        Mesh mesh = data.dat;
 
-                                        if ((mesh.GetPosition() - manager.player.Camera.loc).Length() > 5000)
+                                        Vec4 b = manager.player.Camera.loc;
+                                        Vec4 a = mesh.GetPosition();
+
+                                        double res = Math.Sqrt(
+                                            (a.X - b.X) * (a.X - b.X) +
+                                            (a.Y - b.Y) * (a.X - b.Y) +
+                                            (a.Z - b.Z) * (a.Z - b.Z)
+                                        );
+                                       
+                                        if (res > 600)
                                         {
-                                            placed.Remove();
+                                            manager.RemoveMesh(data);
+                                            util.Remove(placed);
+                                            manager.RemoveMesh(data);
+                                            util.Remove(placed);
                                         }
+
                                         placed = placed.next;
                                     }
                                 }
+
+                                //////////////////////////
 
                             }
                         }
@@ -964,7 +1049,7 @@ namespace JModelling.JModelling.Chunk
                 {
                     for (int z = 0; z < viewDist * 2; z++)
                     {
-                        manager.AddMesh(chunkMesh[x, z]);
+                       manager.AddMesh(chunkMesh[x, z]);
                     }
                 }
                 generated = true;
@@ -973,7 +1058,7 @@ namespace JModelling.JModelling.Chunk
 
         }
 
-        public ListUtil<Mesh> GetMeshListById(string id)
+        public ListUtil<ListNode<Mesh>> GetMeshListById(string id)
         {
             return placedAdornments[id];
         }

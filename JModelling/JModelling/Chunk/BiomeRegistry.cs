@@ -37,10 +37,10 @@ namespace JModelling.Chunk
                         new Dictionary<AdorneeMesh, float>(){
                             {
                                 new AdorneeMesh(
-                                    Load.Mesh(@"Content/Models/cube.obj"),
+                                    Load.Mesh(@"Content/Models/cube.obj").Scale(10, 100, 10).SetColor(Color.DarkOliveGreen),
                                     "Tree"
                                 ),
-                                0.25f
+                                0.68f
                             },
                         }
                     ),
@@ -51,22 +51,7 @@ namespace JModelling.Chunk
                         new Color[] {Color.LawnGreen},
                         new Color[] { },
                         1500, 75, 0.5f,
-                        new Dictionary<AdorneeMesh, float>(){
-                            {
-                                new AdorneeMesh(
-                                    Load.Mesh(@"Content/Models/cube.obj"),
-                                    "Tree"
-                                ),
-                                0.75f
-                            },
-                            {
-                                new AdorneeMesh(
-                                    Load.Mesh(@"Content/Models/cube.obj").Scale(0.25f, 0.5f, 0.25f),
-                                    "Flower"
-                                ),
-                                0.75f
-                            },
-                        }
+                        null
                     ),
                     new Biome(
                         "Desert",
@@ -76,10 +61,10 @@ namespace JModelling.Chunk
                         new Dictionary<AdorneeMesh, float>(){
                             {
                                 new AdorneeMesh(
-                                    Load.Mesh(@"Content/Models/cube.obj"),
+                                    Load.Mesh(@"Content/Models/cube.obj").Scale(5, 15, 5).SetColor(Color.Brown),
                                     "Tree"
                                 ),
-                                0.5f
+                                0.715f
                             },
                         }
                     ),

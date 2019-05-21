@@ -163,6 +163,7 @@ namespace JModelling.JModelling
                 point.Y -= distY;
                 point.Z -= distZ;
             }
+
             Position.X = x;
             Position.Y = y;
             Position.Z = z;
@@ -202,12 +203,14 @@ namespace JModelling.JModelling
 
         }
 
-        public void SetColor(Color color)
+        public Mesh SetColor(Color color)
         {
             for (int i = 0; i < Triangles.Length; i++)
             {
                 Triangles[i].Color = color;
             }
+
+            return this;
         }
 
         /// <returns>A printable statement of what this mesh is
