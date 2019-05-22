@@ -11,6 +11,7 @@ using JModelling.JModelling.Chunk;
 using JModelling.InventorySpace;
 using JModelling.Pause;
 using JModelling.GUI;
+using JModelling.Creature.Nomad;
 
 namespace JModelling.JModelling
 {
@@ -32,7 +33,7 @@ namespace JModelling.JModelling
         /// <summary>
         /// The thing that this manager belongs to. 
         /// </summary>
-        private Game host; 
+        public Game host; 
 
         /// <summary>
         /// The screen dimensions. 
@@ -59,7 +60,7 @@ namespace JModelling.JModelling
         /// <summary>
         /// What the current state of the game is. 
         /// </summary>
-        private GameState gameState;
+        public GameState gameState;
 
         /// <summary>
         /// Used for displaying the player's inventory. 
@@ -79,7 +80,7 @@ namespace JModelling.JModelling
         /// <summary>
         /// The thing generating the terrain. Used for collision detection. 
         /// </summary>
-        public ChunkGenerator cg; 
+        public static ChunkGenerator cg; 
 
         /// <summary>
         /// Represents the player character. Contains a reference to the 
@@ -132,21 +133,25 @@ namespace JModelling.JModelling
         /// <summary>
         /// Monster test. 
         /// </summary>
-        public static MeleeAttacker[] monsters;
+        public List<Creature.Creature> creatures;
 
         /// <summary>
         /// A list of all of the items to draw in world-space. If they are
         /// picked up, they are removed from this list. 
         /// </summary>
-        private LinkedList<Item> itemsInWorld;
+        public LinkedList<Item> itemsInWorld;
 
         private GraphicsDevice graphicsDevice;
 
-        private NPC[] npcs;
-
         private DialogueBox dialogueBox;
 
-        private Compass compass;
+        public Compass compass;
+
+        public List<Settlement> settlements;
+
+        public Zombie monster;
+
+        public DeadMenu deadMenu; 
 
         /// <summary>
         /// Creates a manager that will construct necessary fields for use
@@ -156,7 +161,7 @@ namespace JModelling.JModelling
         {
             // Assigns the last keyboard state
             lastKb = Keyboard.GetState();
-            lastMs = Mouse.GetState(); 
+            lastMs = Mouse.GetState();
 
             // Assigns the host
             this.host = host; 
@@ -171,7 +176,7 @@ namespace JModelling.JModelling
             centerX = width / 2;
             centerY = height / 2;
 
-            this.cg = cg;
+            JManager.cg = cg;
 
             gameState = GameState.Playing;
 
@@ -216,17 +221,11 @@ namespace JModelling.JModelling
             lights[0] = new Light(100f, null);
             turnOnLights = false;
 
+            Creature.Creature.Init(this, cg); 
+
             Random random = new Random();
-            monsters = new MeleeAttacker[1];
-            for (int k = 0; k < monsters.Length; k++)
-            {
-                Vec4 monsterLoc = camera.loc.Clone();
-                monsterLoc.X += 200 + random.Next(-100, 100);
-                monsterLoc.Z += 200 + random.Next(-100, 100);
-                monsters[k] = new MeleeAttacker(Load.Mesh(@"Content/Models/cube.obj", 20, 0, 0, 0), monsterLoc, Camera.NormalSpeed * 0.666f, 5, 100, 100, cg);
-                monsters[k].Mesh.SetColor(Color.LightBlue); 
-                AddMesh(monsters[k].Mesh);
-            }
+            creatures = new List<Creature.Creature>(); 
+            MeleeAttacker.Init(cg); 
 
             itemsInWorld = new LinkedList<Item>();
             Vec4 itemLoc = player.Camera.loc.Clone();
@@ -236,22 +235,19 @@ namespace JModelling.JModelling
             inventoryMenu = new InventoryMenu(player.Inventory, graphicsDevice, Width, Height);
             pauseMenu = new PauseMenu(Width, Height);
 
-            //float h = cg.GetHeightAt(itemLoc.X, itemLoc.Z); 
-            //cube = Load.Mesh(@"Content/Models/cube.obj", 25, itemLoc.X, h, itemLoc.Z);
-            //AddMesh(cube); 
+            Compass.Init(camera, Width, Height);
 
-            npcs = new NPC[5]; 
+            Quest.Init(player, cg, this);
+            player.CreateQuest();
 
-            for (int k = 0; k < npcs.Length; k++)
-            {
-                npcs[k] = new NPC(new JModelling.Vec4(-100 + random.Next(0,100), 0, -100 + random.Next(0,100)), new string[] { "Thanks for dealing with those Zombies!", "Here is a new sword as a reward!"}, -1, -1, -1, new int[] { 1 });
-                npcs[k].Mesh.SetColor(Color.LightBlue);
-                dialogueBox = null;
-                DialogueBox.Init(Width, Height);
-            }
+            Settlement.Init(cg); 
+            settlements = new List<Settlement>();
+            settlements.Add(new Settlement(new Vec4(camera.loc.X + 1000, 0, camera.loc.Z + 1000), Color.LightBlue));
+            Settlement.SetQuest(player.quest);             
 
-            Compass.Init(camera, Width, Height); 
-            compass = new Compass(monsters[0].Loc); 
+            compass = new Compass(settlements[0].group[0].Loc );
+
+            deadMenu = new DeadMenu(this, cg, Width, Height); 
         }
 
         /// <summary>
@@ -267,7 +263,7 @@ namespace JModelling.JModelling
             meshList.Add(node);
             numTriangles += mesh.Triangles.Length;
 
-            //meshListNodeDict.Add(mesh, node);
+            meshListNodeDict.Add(mesh, node);
 
             return node;
         }
@@ -278,7 +274,7 @@ namespace JModelling.JModelling
         /// <param name="mesh"> <see cref="ListNode"/> to remove </param>
         public void RemoveMesh(ListNode<Mesh> mesh)
         {
-            meshList.Remove(mesh);
+            mesh.Remove();
         }
 
         /// <summary>
@@ -301,7 +297,7 @@ namespace JModelling.JModelling
             switch (gameState)
             {
                 case GameState.Playing:
-                    UpdatePlaying();
+                    UpdatePlaying(true);
                     break;
 
                 case GameState.Inventory:
@@ -314,13 +310,18 @@ namespace JModelling.JModelling
 
                 case GameState.Talking:
                     UpdateTalking();
+                    break;
+
+                case GameState.Dead:
+                    UpdatePlaying(false);
+                    UpdateDead(); 
                     break; 
             }
             
             lastKb = Keyboard.GetState(); 
         }
 
-        private void UpdatePlaying()
+        private void UpdatePlaying(bool movementEnabled)
         {
             // TEST ILLUMINATION
             float shadow = -0.347f * (satellites[0].Angle * satellites[0].Angle) + 1.091f * satellites[0].Angle - 0.028f;
@@ -336,39 +337,22 @@ namespace JModelling.JModelling
             // Store camera value for quick accessing
             Camera camera = player.Camera;
 
-            UpdatePlayingInputs();
+            if (movementEnabled) UpdatePlayingInputs();
             skybox.Update(camera.loc);
 
-            compass.Update(); 
-       
-            for (int k = 0; k < monsters.Length; k++)
+            compass.Update();
+
+            foreach (Creature.Creature creature in creatures)
             {
-                MeleeAttacker monster = monsters[k]; 
-                if (monster != null)
-                {
-                    // If creature died, remove them and drop their items
-                    if (monster.Health <= 0)
-                    {
-                        Vec4 itemLoc = monster.Loc;
-                        itemLoc.Y = cg.GetHeightAt(itemLoc.X, itemLoc.Z) + 10;
-                        foreach (Item item in monster.DroppedItems)
-                        {
-                            item.SetInWorldSpace(itemLoc);
-                            itemsInWorld.AddLast(item);
-                        }
-                        RemoveMesh(monster.Mesh);
-                        monsters[k] = null;
-                    }
-                    else // Update monster's movements and actions
-                    {
-                        monster.Update(player, cg);
-                    }
-                }
+                creature.Update(player); 
             }
 
-            foreach (NPC npc in npcs)
+            foreach (Settlement settlement in settlements)
             {
-                npc.Update(player, cg);
+                foreach (NPC npc in settlement.group)
+                {
+                    npc.Update(player); 
+                }
             }
 
             // Update items to bob up and down
@@ -437,20 +421,19 @@ namespace JModelling.JModelling
                 item.DrawToCanvas(camera, painter, depthBuffer, matView, matProj, DrawWidth, DrawHeight);
             }
 
-            for (int k = 0; k < monsters.Length; k++)
+            foreach (Creature.Creature creature in creatures)
             {
-                MeleeAttacker monster = monsters[k]; 
-                if (monster != null)
-                {
-                    monster.Mesh.MoveTo(monster.Loc.X, monster.Loc.Y, monster.Loc.Z);
-                    DrawTrianglesToPainterCanvas(painter, depthBuffer, GetDrawableTrianglesFromMesh(monster.Mesh, hue, activeLights, matView, lightDirection, shadow));
-                }
+                creature.Mesh.MoveTo(creature.Loc.X, creature.Loc.Y, creature.Loc.Z);
+                DrawTrianglesToPainterCanvas(painter, depthBuffer, GetDrawableTrianglesFromMesh(creature.Mesh, hue, activeLights, matView, lightDirection, shadow));
             }
             
-            foreach (NPC npc in npcs)
+            foreach (Settlement settlement in settlements)
             {
-                npc.Mesh.MoveTo(npc.Loc.X, npc.Loc.Y, npc.Loc.Z);
-                DrawTrianglesToPainterCanvas(painter, depthBuffer, GetDrawableTrianglesFromMesh(npc.Mesh, hue, activeLights, matView, lightDirection, shadow));
+                foreach (NPC npc in settlement.group)
+                {
+                    npc.Mesh.MoveTo(npc.Loc.X, npc.Loc.Y, npc.Loc.Z);
+                    DrawTrianglesToPainterCanvas(painter, depthBuffer, GetDrawableTrianglesFromMesh(npc.Mesh, hue, activeLights, matView, lightDirection, shadow));
+                }
             }
 
             lastWorldTexture = painter.GetCanvas();
@@ -482,6 +465,13 @@ namespace JModelling.JModelling
             UpdateTalkingInputs();
         }
 
+        private void UpdateDead()
+        {
+            MouseState ms = Mouse.GetState();
+            deadMenu.Update(ms, lastMs);
+            lastMs = ms; 
+        }
+
         /// <summary>
         /// Draws what the JManager has loaded to the screen. 
         /// </summary>
@@ -503,6 +493,10 @@ namespace JModelling.JModelling
 
                 case GameState.Talking:
                     dialogueBox.Draw(spriteBatch);
+                    break;
+
+                case GameState.Dead:
+                    DrawDead(spriteBatch);
                     break; 
             }
         }
@@ -512,6 +506,13 @@ namespace JModelling.JModelling
             spriteBatch.Draw(GetSkyboxTexture(player.Camera), new Rectangle(0, 0, Width, Height), Color.White);
             spriteBatch.Draw(GetWorldTexture(), new Rectangle(0, 0, Width, Height), Color.White);
             compass.Draw(spriteBatch); 
+        }
+
+        private void DrawDead(SpriteBatch spriteBatch)
+        {
+            spriteBatch.Draw(GetSkyboxTexture(player.Camera), new Rectangle(0, 0, Width, Height), Color.Red);
+            spriteBatch.Draw(GetWorldTexture(), new Rectangle(0, 0, Width, Height), Color.Red);
+            deadMenu.Draw(spriteBatch); 
         }
 
         public Texture2D GetWorldTexture()
@@ -939,6 +940,8 @@ namespace JModelling.JModelling
             float u3, float v3, float w3,             
             float alpha, Color[,] sprite, Painter painter, float[,] depthBuffer)
         {
+            if (sprite == null) return; 
+
             if (y2 < y1)
             {
                 // Swap y1 and y2
@@ -1234,11 +1237,14 @@ namespace JModelling.JModelling
             // Perform any special actions with any special keys. 
             ProcessSpecialPlayingKeyInputs(kb);
 
-            foreach (NPC npc in npcs)
+            foreach (Settlement settlement in settlements)
             {
-                if (npc.Talk(player, kb) && lastKb.IsKeyUp(Controls.Interact))
+                foreach (NPC npc in settlement.group)
                 {
-                    Talk(npc);
+                    if (npc.Talk(player, kb) && lastKb.IsKeyUp(Controls.Interact))
+                    {
+                        Talk(npc);
+                    }
                 }
             }
             player.Update(kb, ms);

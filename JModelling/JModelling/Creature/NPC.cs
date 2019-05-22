@@ -1,4 +1,5 @@
-﻿using JModelling.InventorySpace;
+﻿using JModelling.Creature.Nomad;
+using JModelling.InventorySpace;
 using JModelling.JModelling;
 using JModelling.JModelling.Chunk;
 using Microsoft.Xna.Framework.Content;
@@ -20,63 +21,54 @@ namespace JModelling.Creature
         private const int height = 20;
         private const float speed = 1.5f;
 
-        private string[] text; 
-        public string[] Text
+        public static JManager parent;
+
+        public int index; 
+        public int Index
         {
             get
             {
-                return text; 
+                return index; 
+            }
+            set
+            {
+                index = value;
+
+                foreach (Settlement settlement in parent.settlements)
+                {
+                    foreach (NPC npc in settlement.group)
+                    {
+                        npc.index = index; 
+                    }
+                }
+
+                if (index == 1)
+                {
+                    parent.compass = new GUI.Compass(parent.player.quest.targets[0].Loc);
+                    parent.player.quest.StartQuest();
+                }
             }
         }
 
-        private int responseIndex; 
-        public int ResponseIndex
+        private Dialogue[] dialogues;
+        public Dialogue[] Dialogues
         {
             get
             {
-                return responseIndex; 
+                return dialogues; 
             }
-        }
-
-        private int acceptIndex; 
-        public int AcceptIndex
-        {
-            get
+            set
             {
-                return acceptIndex; 
-            }
-        }
-
-        private int denyIndex; 
-        public int DenyIndex
-        {
-            get
-            {
-                return denyIndex; 
-            }
-        }
-
-        private HashSet<int> quitIndices; 
-        public HashSet<int> QuitIndices
-        {
-            get
-            {
-                return quitIndices;
+                dialogues = value; 
             }
         }
 
         private static Mesh mesh;
 
-        public static JManager parent; 
-
-        public NPC(Vec4 loc, string[] text, int responseIndex, int acceptIndex, int denyIndex, int[] quitIndices)
-            : base(mesh, loc, speed, 0, 100, 100, new List<Item>(new Item[] { }))
+        public NPC(Vec4 loc, Dialogue[] dialogues)
+            : base(mesh, loc, speed, 0, 100, 100, new List<Item>(new Item[] { }), MonsterType.None)
         {
-            this.text = text;
-            this.responseIndex = responseIndex;
-            this.acceptIndex = acceptIndex;
-            this.denyIndex = denyIndex;
-            this.quitIndices = new HashSet<int>(quitIndices); 
+            this.dialogues = dialogues; 
         }
 
         public static void Init(ContentManager content)
@@ -98,7 +90,7 @@ namespace JModelling.Creature
             return false; 
         }
 
-        public override void Update(Player player, ChunkGenerator cg)
+        public override void Update(Player player)
         {
             float altitude = cg.GetHeightAt(Loc.X, Loc.Z) + height; 
             if (Loc.Y < altitude)

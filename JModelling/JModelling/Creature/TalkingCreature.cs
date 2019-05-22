@@ -15,43 +15,16 @@ namespace JModelling.Creature
     /// </summary>
     public interface TalkingCreature
     {
-        /// <summary>
-        /// The things the creature wants to say to the player. 
-        /// </summary>
-        string[] Text
+        int Index
         {
             get;
+            set; 
         }
 
-        /// <summary>
-        /// The index the player will accept or deny a quest from. 
-        /// </summary>
-        int ResponseIndex
+        Dialogue[] Dialogues
         {
             get;
-        } 
-
-        /// <summary>
-        /// The index the text will go to if the answer to the response
-        /// was "accept". 
-        /// </summary>
-        int AcceptIndex
-        {
-            get;
-        }
-
-        /// <summary>
-        /// The index the text will go to if the answer to the responce
-        /// was "deny". 
-        /// </summary>
-        int DenyIndex
-        {
-            get;
-        }
-
-        HashSet<int> QuitIndices
-        {
-            get; 
+            set; 
         }
 
         bool Talk(Player player, KeyboardState kb); 

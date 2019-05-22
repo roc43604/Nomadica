@@ -27,7 +27,7 @@ namespace JModelling.Creature
         public Vec4 gravityVelocity;
         public Vec4 TravelVector;
         public Nomads(Mesh mesh, Vec4 Location, float Speed, int Damage, int Health, int NoticeDistance, ChunkGenerator cg)
-            : base(mesh, Location, Speed, Damage, Health, NoticeDistance, new List<Item>(new Item[] { new CubeItem(Vec4.Zero, cg) }))
+            : base(mesh, Location, Speed, Damage, Health, NoticeDistance, new List<Item>(new Item[] { new CubeItem(Vec4.Zero, cg) }), MonsterType.None)
         {
             Height = (Mesh.bounds.Max.Y - Mesh.bounds.Min.Y) / 2;
             gravityVelocity = Vec4.Zero;
@@ -39,7 +39,7 @@ namespace JModelling.Creature
         {
 
         }
-        public override void Update(Player player, ChunkGenerator cg)
+        public override void Update(Player player)
         {
             // Gravity 
             Loc.Y += gravityVelocity.Y;

@@ -8,7 +8,7 @@ namespace JModelling.JModelling
     /// <summary>
     /// What screen is showing
     /// </summary>
-    enum GameState
+    public enum GameState
     {
         /// <summary>
         /// Regular game is showing. Mouse is invisible, and key inputs
@@ -31,6 +31,11 @@ namespace JModelling.JModelling
         /// <summary>
         /// Player is talking with someone/something. 
         /// </summary>
-        Talking
+        Talking,
+
+        /// <summary>
+        /// Player has died. Awaiting input to respawn. 
+        /// </summary>
+        Dead
     }
 }

@@ -20,23 +20,19 @@ namespace JModelling.Creature.Nomad
         {
             Mesh.SetColor(Color.Orange);
         }
-        public override void Update(Player player, ChunkGenerator cg)
+        public override void Update(Player player)
         {
-
             // Gravity 
             Loc.Y += gravityVelocity.Y;
             gravityVelocity.Y -= Player.Gravity;
 
-            Console.WriteLine("df");
             // Monster should be on floor, not floating
             float floor = cg.GetHeightAt(Loc.X, Loc.Z) + Height;
             if (Loc.Y < floor)
             {
-
                 gravityVelocity = Vec4.Zero;
                 Loc.Y = floor;
             }
-
         }
     }
 }

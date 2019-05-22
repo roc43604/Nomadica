@@ -1,4 +1,5 @@
-﻿using JModelling.JModelling;
+﻿using JModelling.Creature.Nomad;
+using JModelling.JModelling;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
@@ -75,6 +76,8 @@ namespace JModelling.Creature
         /// of time. 
         /// </summary>
         public bool tookDamage;
+
+        public Quest quest; 
         
         public Player(JManager manager, Camera Camera)
         {
@@ -90,7 +93,12 @@ namespace JModelling.Creature
             isOnGround = false;
             tookDamage = false;
 
-            Inventory = new InventorySpace.Inventory(); 
+            Inventory = new InventorySpace.Inventory();
+        }
+
+        public void CreateQuest()
+        {
+            quest = new Quest(); 
         }
 
         /// <summary>
@@ -104,6 +112,18 @@ namespace JModelling.Creature
 
             lastVelocity = ((MeleeAttacker)attacker).TravelVector;
             lastVelocity.Y = 1; 
+
+            if (Health <= 0)
+            {
+                Died(); 
+            }
+        }
+
+        private void Died()
+        {
+            manager.gameState = GameState.Dead;
+            manager.isMouseFocused = false;
+            manager.host.IsMouseVisible = true;             
         }
 
         /// <summary>
@@ -112,35 +132,30 @@ namespace JModelling.Creature
         private void Attacked()
         {
             // If the monster is off the attack cool-down timer
-            for (int k = 0; k < JManager.monsters.Length; k++)
+            List<Creature> creaturesToRemove = new List<Creature>();
+            foreach (Creature creature in manager.creatures)
             {
-                MeleeAttacker monster = JManager.monsters[k];
-                if (monster != null)
+                if (!creature.tookDamage)
                 {
-                    if (!monster.tookDamage)
+                    // If weaponLoc is within the monster's range, they take damage.
+                    if (Math.Abs((Camera.yaw + JManager.PITimesTwo) - (MathExtensions.Wrap(creature.AngleToPlayer + (float)Math.PI / 2f) + JManager.PITimesTwo)) < (Math.PI / 7))
                     {
-                        // If weaponLoc is within the monster's range, they take damage.
-                        if (Math.Abs((Camera.yaw + JManager.PITimesTwo) - (MathExtensions.Wrap(monster.AngleToPlayer + (float)Math.PI / 2f) + JManager.PITimesTwo)) < (Math.PI / 7))
+                        if (MathExtensions.Dist(Camera.loc, creature.Loc) < WeaponDist)
                         {
-                            if (MathExtensions.Dist(Camera.loc, monster.Loc) < WeaponDist)
+                            creature.TookDamage(this, false);
+                            if (creature.killed)
                             {
-                                monster.TookDamage(this);
+                                creaturesToRemove.Add(creature);
                             }
-                            //Console.WriteLine("Yes!!!\t\t" + (Camera.yaw - MathExtensions.Wrap(JManager.monster.AngleToPlayer + (float)Math.PI / 2f)));
-
-                        }
-                        else
-                        {
-                            //Console.WriteLine("No!!!\t\t" + ((Camera.yaw + JManager.PITimesTwo) - (MathExtensions.Wrap(JManager.monster.AngleToPlayer + (float)Math.PI / 2f) + JManager.PITimesTwo)));
                         }
                     }
                 }
             }
-            
 
-            //Console.WriteLine(MathExtensions.Wrap(JManager.monster.AngleToPlayer + (float)Math.PI / 2f));
-            //Console.WriteLine(Camera.yaw);
-            //Console.WriteLine(); 
+            foreach (Creature creature in creaturesToRemove)
+            {
+                manager.creatures.Remove(creature);
+            }
         }
 
         /// <summary>
@@ -175,7 +190,7 @@ namespace JModelling.Creature
             }
 
             // If player is below ground, set them on the ground. 
-            float ground = manager.cg.GetHeightAt(Camera.loc.X, Camera.loc.Z);
+            float ground = JManager.cg.GetHeightAt(Camera.loc.X, Camera.loc.Z);
             if (Camera.loc.Y < ground + Height)
             {
                 Camera.loc.Y = ground + Height;

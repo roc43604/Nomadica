@@ -25,7 +25,7 @@ namespace JModelling.Creature.Nomad
             Inventory = new InventorySpace.Inventory();
             Mesh.SetColor(Color.Green);
         }
-        public override void Update(Player player, ChunkGenerator cg)
+        public override void Update(Player player)
         {
 
             // Gravity 

@@ -140,7 +140,7 @@ namespace JModelling.JModelling
             Size.Y *= y;
             Size.Z *= z;
 
-            return this;
+            return this; 
         }
 
         /// <summary>
@@ -163,7 +163,6 @@ namespace JModelling.JModelling
                 point.Y -= distY;
                 point.Z -= distZ;
             }
-
             Position.X = x;
             Position.Y = y;
             Position.Z = z;
@@ -209,8 +208,7 @@ namespace JModelling.JModelling
             {
                 Triangles[i].Color = color;
             }
-
-            return this;
+            return this; 
         }
 
         /// <returns>A printable statement of what this mesh is
